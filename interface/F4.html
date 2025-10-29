@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Listado de Habilitaciones</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #fcebeb;
+            color: #333;
+        }
+        .container {
+            max-width: 1000px; /* Un poco más ancho para la tabla */
+            margin: 20px auto;
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e0b4b4;
+            overflow: hidden;
+        }
+        header {
+            padding: 20px 30px;
+            background-color: #f7e0e0;
+            border-bottom: 1px solid #e0b4b4;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        header h1 {
+            margin: 0;
+            color: #a94442;
+            font-size: 1.8em;
+        }
+        header img {
+            max-height: 50px;
+            width: auto;
+            margin-left: 20px;
+        }
+        form, .seccion-tabla {
+            padding: 30px;
+        }
+        fieldset {
+            border: 1px solid #e74c3c;
+            border-radius: 6px;
+            padding: 20px;
+            margin-bottom: 25px;
+            background-color: #fffafa;
+        }
+        legend {
+            font-size: 1.2em;
+            font-weight: 600;
+            padding: 0 10px;
+            color: #c0392b;
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            align-items: flex-end; /* Para alinear el botón */
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        label {
+            font-weight: 600;
+            margin-bottom: 6px;
+            font-size: 0.9em;
+            color: #882a2a;
+        }
+        label.required::after {
+            content: ' *';
+            color: #e74c3c;
+            font-weight: bold;
+        }
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #c8a3a3;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 1em;
+            background-color: #fff;
+        }
+        
+        /* --- ESTILOS PARA LA TABLA DE RESULTADOS --- */
+        
+        .tabla-container {
+            width: 100%;
+            overflow-x: auto; /* Para responsividad en móviles */
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 0.9em;
+        }
+        table th, table td {
+            border: 1px solid #e0b4b4;
+            padding: 10px 12px;
+            text-align: left;
+        }
+        table thead {
+            background-color: #f7e0e0; /* Rojo suave */
+        }
+        table thead th {
+            color: #a94442; /* Texto rojo oscuro */
+            font-weight: 600;
+        }
+        table tbody tr:nth-child(even) {
+            background-color: #fffafa; /* Fondo rosado muy suave */
+        }
+        table tbody tr:hover {
+            background-color: #f5eded; /* Hover rosado más oscuro */
+        }
+        
+        /* Botón */
+        .button-container {
+            text-align: left;
+        }
+        button {
+            padding: 10px 18px; /* Ligeramente más pequeño para estar en línea */
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: background-color 0.2s ease;
+            background-color: #e74c3c;
+            color: white;
+        }
+        button:hover {
+            background-color: #c0392b;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Listado de Habilitaciones</h1>
+            <img src="ucsc.png" alt="Logo UCSC">
+        </header>
+
+        <form action="#" method="POST" onsubmit="return false;">
+            <fieldset>
+                <legend>Generar Reporte</legend>
+                <div class="form-grid">
+                    
+                    <div class="form-group">
+                        <label for="tipo_listado" class="required">Tipo de Listado</label>
+                        <select id="tipo_listado" name="tipo_listado" required>
+                            <option value="" disabled selected>Seleccione un tipo...</option>
+                            <option value="semestral">Listado Semestral (Actual)</option>
+                            <option value="historico">Listado Histórico (Completo)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="filtro_modalidad">Filtrar por Modalidad</label>
+                        <select id="filtro_modalidad" name="filtro_modalidad">
+                            <option value="todas">Todas las modalidades</option>
+                            <option value="PrIng">PrIng (Proyecto de Ingeniería)</option>
+                            <option value="PrInv">PrInv (Proyecto de Innovación)</option>
+                            <option value="PrTut">PrTut (Práctica Tutelada)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group button-container">
+                        <button type="submit">Generar Listado</button>
+                    </div>
+                </div>
+            </fieldset>
+        </form>
+
+        <div class="seccion-tabla">
+            <fieldset>
+                <legend>Resultados del Listado</legend>
+                
+                <div class="tabla-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Semestre</th>
+                                <th>RUT Alumno</th>
+                                <th>Nombre Alumno</th>
+                                <th>Modalidad</th>
+                                <th>Profesor Guía / Tutor</th>
+                                <th>Profesor Comisión</th>
+                                <th>Supervisor (Práctica)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>2024-2</td>
+                                <td>12345678</td>
+                                <td>Ana García López</td>
+                                <td>PrIng</td>
+                                <td>Profesor DINF Uno</td>
+                                <td>Profesor DINF Dos</td>
+                                <td>N/A</td>
+                            </tr>
+                            <tr>
+                                <td>2024-1</td>
+                                <td>23456789</td>
+                                <td>Luis Martínez Fernández</td>
+                                <td>PrTut</td>
+                                <td>Profesor DINF Tres</td>
+                                <td>N/A</td>
+                                <td>Juan Pérez (Empresa X)</td>
+                            </tr>
+                            <tr>
+                                <td>2023-2</td>
+                                <td>34567890</td>
+                                <td>Carla Sánchez Ruiz</td>
+                                <td>PrInv</td>
+                                <td>Profesor DINF Cuatro</td>
+                                <td>Profesor DINF Uno</td>
+                                <td>N/A</td>
+                            </tr>
+                            <tr>
+                                <td>2023-1</td>
+                                <td>45678901</td>
+                                <td>Miguel Rodríguez Pérez</td>
+                                <td>PrTut</td>
+                                <td>Profesor DINF Dos</td>
+                                <td>N/A</td>
+                                <td>María González (Empresa Y)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </fieldset>
+        </div>
+
+    </div>
+
+</body>
+</html>
