@@ -16,13 +16,15 @@ class Proyecto extends Model
     public $incrementing = false;
     protected $keyType = 'integer';
 
-    const Tipo_Pr_Ing ='Pr_Ing';
-    const Tipo_Pr_Tut ='Pr_Tut';
+    const Tipo_Pr_Ing ='PrIng';
+    const Tipo_Pr_Inv ='PrInv';
+    const Tipo_Pr_Tut ='PrTut';
 
     public static function getTiposProyecto()
     {
         return [
             self::Tipo_Pr_Ing,
+            self::Tipo_Pr_Inv,
             self::Tipo_Pr_Tut,
         ];
     }

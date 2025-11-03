@@ -73,6 +73,19 @@
             font-size: 0.9em;
             color: #333333; /* <- Color cambiado */
         }
+        .error-message {
+            color: #721C24;
+            background-color: #F8D7DA;
+            border: 1px solid #F5C6CB;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            text-align: center;
+            display: none;
+        }
+        .input-error {
+            border-color: #dc3545;
+        }
         label.required::after {
             content: ' *';
             color: #E60026; /* <- Color cambiado (Rojo UCSC) */
@@ -252,7 +265,11 @@
         </div>
 
         
+        <div class="error-message" id="form-error" style="display: none;"></div>
+
         <form action="#" method="POST" onsubmit="return false;" class="hidden" id="form-modificar">
+            @csrf
+            @method('PUT')
             <fieldset>
                 <legend>Datos Principales (Editando)</legend>
                 <div class="form-grid">
@@ -284,37 +301,25 @@
                 </div>
             </fieldset>
 
-            <fieldset>
-                <legend>Datos del Alumno (Solo Lectura)</legend>
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label for="nombre_alumno">Nombre Alumno</label>
-                        <input type="text" id="nombre_alumno" name="nombre_alumno" readonly value="Ana">
-                    </div>
-                    <div class="form-group">
-                        <label for="apellido_alumno">Apellido Alumno</label>
-                        <input type="text" id="apellido_alumno" name="apellido_alumno" readonly value="García López">
-                    </div>
-                    <div class="form-group">
-                        <label for="rut_alumno">RUT Alumno</label>
-                        <input type="text" id="rut_alumno" name="rut_alumno" readonly value="12345678">
-                    </div>
-                </div>
-            </fieldset>
+
 
             <fieldset>
                 <legend>Descripción del Trabajo (Editando)</legend>
                 <div class="form-grid">
                     <div class="form-group form-group-full">
                         <label for="titulo" class="required">Título del Trabajo</label>
-                        <input type="text" id="titulo" name="titulo" required 
-                               minlength="6" maxlength="80" 
+                        <input type="text" id="titulo" name="titulo" required
+                               minlength="6" maxlength="80"
+                               pattern="[a-zA-Z0-9\s.,;:\'&-_()]+" title="Solo alfanumérico y algunos símbolos."
                                value="Sistema de Gestión para el DINF">
+                        <small class="help-text">Entre 6 y 80 caracteres. Símbolos permitidos: . , ; : ' " - _ ( )</small>
                     </div>
                     <div class="form-group form-group-full">
                         <label for="descripcion" class="required">Descripción / Resumen</label>
-                        <textarea id="descripcion" name="descripcion" required 
+                        <textarea id="descripcion" name="descripcion" required
                                   minlength="30" maxlength="500">Un sistema web para gestionar las habilitaciones profesionales, prácticas y proyectos de los alumnos del departamento.</textarea>
+                        <small class="help-text">Entre 30 y 500 caracteres. Símbolos permitidos: . , ; : ' " - _ ( )</small>
+                        <div class="error-message" id="descripcion-error"></div>
                     </div>
                 </div>
             </fieldset>
@@ -401,7 +406,7 @@
 
             <div class="button-container">
                 <button type="reset" class="btn-secondary" onclick="cancelarEdicion()">Cancelar Edición</button>
-                <button type="submit" class="btn-primary" onclick="guardarCambios()">Guardar Cambios</button>
+                <button type="button" class="btn-primary" onclick="guardarCambios()">Guardar Cambios</button>
             </div>
         </form>
 
@@ -438,6 +443,8 @@
             document.getElementById('seleccion-accion').classList.add('hidden');
             document.getElementById('form-modificar').classList.remove('hidden');
             document.getElementById('confirmar-eliminacion').classList.add('hidden');
+            // Cargar datos del alumno seleccionado
+            cargarDatosHabilitacion();
         }
 
         // Función para mostrar sección de eliminar
@@ -458,8 +465,14 @@
         // Función para confirmar eliminación
         function confirmarEliminar() {
             if (confirm('¿Está seguro de eliminar los datos de la Habilitación Profesional de ' + document.getElementById('alumno-eliminar').textContent + '?')) {
-                alert('Habilitación eliminada correctamente.');
-                // Aquí iría la lógica para eliminar la habilitación
+                // Crear formulario para eliminación
+                const form = document.createElement('form');
+                form.method = 'POST';
+                const selectedRut = document.getElementById('buscar_alumno').value;
+                form.action = '{{ route("habilitaciones.destroy", ":rut") }}'.replace(':rut', selectedRut);
+                form.innerHTML = '@csrf @method("DELETE")';
+                document.body.appendChild(form);
+                form.submit();
             }
         }
 
@@ -481,11 +494,111 @@
             document.getElementById('seleccion-accion').classList.remove('hidden');
         }
 
+        // Función para validar formulario
+        function validarFormulario() {
+            let isValid = true;
+
+            // Limpiar errores previos
+            document.querySelectorAll('.error-message').forEach(function(el) {
+                el.style.display = 'none';
+                el.textContent = '';
+            });
+            document.getElementById('form-error').style.display = 'none';
+            document.querySelectorAll('input, textarea, select').forEach(function(el) {
+                el.classList.remove('input-error');
+            });
+
+            // Validar título
+            const titulo = document.getElementById('titulo');
+            if (!titulo.checkValidity()) {
+                document.getElementById('titulo-error').textContent = 'El título debe tener entre 6 y 80 caracteres, solo letras, números y símbolos permitidos.';
+                document.getElementById('titulo-error').style.display = 'block';
+                titulo.classList.add('input-error');
+                isValid = false;
+            }
+
+            // Validar descripción
+            const descripcion = document.getElementById('descripcion');
+            if (!descripcion.checkValidity()) {
+                document.getElementById('descripcion-error').textContent = 'La descripción debe tener entre 30 y 500 caracteres.';
+                document.getElementById('descripcion-error').style.display = 'block';
+                descripcion.classList.add('input-error');
+                isValid = false;
+            }
+
+            // Validar que no se repitan profesores en PrIng/PrInv
+            const tipo = document.getElementById('tipo_habilitacion').value;
+            if (tipo === 'PrIng' || tipo === 'PrInv') {
+                const guia = document.getElementById('seleccion_guia').value;
+                const coGuia = document.getElementById('seleccion_co_guia').value;
+                const comision = document.getElementById('seleccion_comision').value;
+
+                const profesores = [guia, coGuia, comision].filter(function(rut) { return rut !== ''; });
+
+                if (profesores.length !== new Set(profesores).size) {
+                    document.getElementById('form-error').textContent = 'Un profesor no puede tener múltiples roles en la misma habilitación.';
+                    document.getElementById('form-error').style.display = 'block';
+                    document.getElementById('seleccion_guia').classList.add('input-error');
+                    document.getElementById('seleccion_co_guia').classList.add('input-error');
+                    document.getElementById('seleccion_comision').classList.add('input-error');
+                    isValid = false;
+                }
+            }
+
+            return isValid;
+        }
+
         // Función para guardar cambios
         function guardarCambios() {
+            if (!validarFormulario()) {
+                return false;
+            }
+
             if (confirm('¿Desea guardar los cambios realizados?')) {
-                alert('Los datos fueron modificados correctamente.');
-                // Aquí iría la lógica para guardar los cambios
+                const form = document.getElementById('form-modificar');
+                const selectedRut = document.getElementById('buscar_alumno').value;
+                form.action = '{{ route("habilitaciones.update", ":rut") }}'.replace(':rut', selectedRut);
+                form.submit();
+            }
+        }
+
+        // Función para cargar datos de la habilitación
+        function cargarDatosHabilitacion() {
+            const selectedRut = document.getElementById('buscar_alumno').value;
+            if (selectedRut) {
+                // Buscar los datos del alumno seleccionado
+                const alumnos = JSON.parse('{{ json_encode($alumnos) }}');
+                const alumno = alumnos.find(function(a) { return a.rut_alumno == selectedRut; });
+                console.log('Alumno encontrado:', alumno);
+
+                if (alumno && alumno.habilitacion) {
+                    const hab = alumno.habilitacion;
+
+                    // Llenar campos comunes
+                    document.getElementById('tipo_habilitacion').value = hab.proyecto ? hab.proyecto.tipo_proyecto : 'PrTut';
+                    console.log('Tipo habilitacion:', hab.proyecto ? hab.proyecto.tipo_proyecto : 'PrTut');
+                    document.getElementById('semestre_inicio').value = hab.semestre_inicio;
+                    document.getElementById('titulo').value = hab.titulo;
+                    document.getElementById('descripcion').value = hab.descripcion;
+                    document.getElementById('nota_final').value = hab.nota_final || '';
+
+                    // Mostrar/ocultar secciones según tipo
+                    if (hab.proyecto) {
+                        document.getElementById('seccion-pring-prinv').classList.remove('hidden');
+                        document.getElementById('seccion-prtut').classList.add('hidden');
+
+                        document.getElementById('seleccion_guia').value = hab.proyecto.rut_profesor_guia;
+                        document.getElementById('seleccion_co_guia').value = hab.proyecto.rut_profesor_co_guia || '';
+                        document.getElementById('seleccion_comision').value = hab.proyecto.rut_profesor_comision;
+                    } else if (hab.pr_tut) {
+                        document.getElementById('seccion-pring-prinv').classList.add('hidden');
+                        document.getElementById('seccion-prtut').classList.remove('hidden');
+
+                        document.getElementById('nombre_empresa').value = hab.pr_tut.nombre_empresa;
+                        document.getElementById('nombre_supervisor').value = hab.pr_tut.nombre_supervisor;
+                        document.getElementById('seleccion_tutor').value = hab.pr_tut.rut_profesor_tutor;
+                    }
+                }
             }
         }
 
