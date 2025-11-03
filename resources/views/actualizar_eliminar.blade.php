@@ -221,9 +221,15 @@
                     <label for="buscar_alumno" class="required">Seleccionar Alumno</label>
                     <select id="buscar_alumno" name="buscar_alumno_rut" required>
                         <option value="" disabled selected>Buscar y seleccionar un alumno...</option>
-                        <option value="12345678">García López, Ana (12345678)</option>
-                        <option value="23456789">Martínez Fernández, Luis (23456789)</option>
-                        <option value="34567890">Sánchez Ruiz, Carla (34567890)</option>
+                        @if(isset($alumnos) && count($alumnos) > 0)
+                            @foreach($alumnos as $alumno)
+                                <option value="{{ $alumno->id ?? $alumno['id'] ?? '' }}">
+                                    {{ $alumno->apellido ?? ($alumno['apellido'] ?? '') }}, {{ $alumno->nombre ?? ($alumno['nombre'] ?? '') }} ({{ $alumno->rut ?? ($alumno['rut'] ?? '') }})
+                                </option>
+                            @endforeach
+                        @else
+                            <option value="" disabled>No hay alumnos disponibles</option>
+                        @endif
                     </select>
                 </div>
                 

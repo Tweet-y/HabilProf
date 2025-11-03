@@ -1,5 +1,5 @@
 <?php
-
+use App\Http\Controllers\HabilitacionController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -30,9 +30,11 @@ Route::get('/ingreso', function () {
 });
 
 // Modifcar o Eliminar Habilitaciones Profesionales
-Route::get('/actualizar_eliminar', function () {
-    return view('actualizar_eliminar');
-});
+
+Route::get('/actualizar_eliminar', [HabilitacionController::class, 'index'])->name('habilitaciones.index');
+Route::get('/actualizar_eliminar/{alumno}/edit', [HabilitacionController::class, 'edit'])->name('habilitaciones.edit');
+Route::put('/actualizar_eliminar/{alumno}', [HabilitacionController::class, 'update'])->name('habilitaciones.update');
+Route::delete('/actualizar_eliminar/{alumno}', [HabilitacionController::class, 'destroy'])->name('habilitaciones.destroy');
 
 // Generar Listados de Habilitaciones Profesionales
 Route::get('/listados', function () {
@@ -50,4 +52,3 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-require __DIR__.'/auth.php';
