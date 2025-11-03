@@ -61,7 +61,7 @@
             font-size: 0.9em;
             color: #333333;
         }
-        .form-group input[type="text"], 
+        .form-group input[type="text"],
         .form-group input[type="email"],
         .form-group input[type="password"] {
             width: 100%;
@@ -107,6 +107,14 @@
         .login-link a:hover {
             text-decoration: underline;
         }
+
+        /*mostrar mensajes de error de validación */
+        .error-message {
+            color: #E60026; 
+            font-size: 0.875em;
+            font-weight: 500;
+            margin-top: 5px;
+        }
     </style>
 </head>
 <body>
@@ -119,6 +127,7 @@
 
         <main class="form-container">
             <h2>Crear Nueva Cuenta</h2>
+ 
             <form method="POST" action="{{ route('register') }}">
                 @csrf
 
@@ -126,24 +135,36 @@
                     <label for="name">Nombre Completo</label>
                     <input type="text" id="name" name="name" required 
                            placeholder="Ingrese su nombre y apellido">
+                    @error('name')
+                        <span class="error-message">{{ $message }}</span>
+                    @enderror
                 </div>
 
                 <div class="form-group">
                     <label for="email">Correo Electrónico</label>
                     <input type="email" id="email" name="email" required 
                            placeholder="ejemplo@ucsc.cl">
+                    @error('email')
+                        <span class="error-message">{{ $message }}</span>
+                    @enderror
                 </div>
 
                 <div class="form-group">
                     <label for="password">Contraseña</label>
                     <input type="password" id="password" name="password" required 
                            placeholder="Mínimo 8 caracteres">
+                    @error('password')
+                        <span class="error-message">{{ $message }}</span>
+                    @enderror
                 </div>
 
                 <div class="form-group">
                     <label for="password_confirmation">Confirmar Contraseña</label>
                     <input type="password" id="password_confirmation" name="password_confirmation" required 
                            placeholder="Vuelva a escribir la contraseña">
+                    @error('password_confirmation')
+                        <span class="error-message">{{ $message }}</span>
+                    @enderror
                 </div>
 
                 <div class="button-container">
