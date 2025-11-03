@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ingreso de Habilitación Profesional</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #F8F9FA;
+            color: #222222;
+        }
+        .container {
+            max-width: 900px;
+            margin: 20px auto;
+            background-color: #FFFFFF;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+            border: 1px solid #CED4DA;
+        }
+        header {
+            padding: 20px 30px;
+            background-color: #FFFFFF;
+            border-bottom: 1px solid #CED4DA;
+            border-radius: 8px 8px 0 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        header h1 {
+            margin: 0;
+            color: #222222;
+            font-size: 1.8em;
+        }
+        header img {
+            max-height: 50px;
+            width: auto;
+            margin-left: 20px;
+        }
+        form {
+            padding: 30px;
+        }
+        fieldset {
+            border: 1px solid #CED4DA;
+            border-radius: 6px;
+            padding: 20px;
+            margin-bottom: 25px;
+            background-color: #F8F9FA;
+        }
+        legend {
+            font-size: 1.2em;
+            font-weight: 600;
+            padding: 0 10px;
+            color: #E60026;
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        .form-group-full {
+            grid-column: 1 / -1;
+        }
+        label {
+            font-weight: 600;
+            margin-bottom: 6px;
+            font-size: 0.9em;
+            color: #333333;
+        }
+        label.required::after {
+            content: ' *';
+            color: #E60026;
+            font-weight: bold;
+        }
+        input[type="text"],
+        input[type="number"],
+        input[type="date"],
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #CED4DA;
+            border-radius: 4px;
+            box-sizing: border-box;
+            font-size: 1em;
+            background-color: #fff;
+        }
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        input:read-only {
+            background-color: #E9ECEF;
+            color: #6C757D;
+            border-color: #CED4DA;
+            cursor: not-allowed;
+        }
+        .help-text {
+            font-size: 0.85em;
+            color: #555555;
+            margin-top: 4px;
+        }
+        .seccion-condicional {
+            border-top: 2px dashed #0056A8;
+            margin-top: 20px;
+            padding-top: 20px;
+        }
+        .error-message {
+            color: #721C24;
+            background-color: #F8D7DA;
+            border: 1px solid #F5C6CB;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .success-message {
+            color: #155724;
+            background-color: #d4edda;
+            border: 1px solid #c3e6cb;
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+        .button-container {
+            text-align: right;
+            border-top: 1px solid #CED4DA;
+            padding-top: 20px;
+            margin-top: 20px;
+        }
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: background-color 0.2s ease;
+            margin-left: 10px;
+        }
+        button[type="submit"] {
+            background-color: #E60026;
+            color: white;
+        }
+        button[type="submit"]:hover {
+            background-color: #C00020;
+        }
+        button[type="button"] {
+            background-color: #0056A8;
+            color: white;
+        }
+        button[type="button"]:hover {
+            background-color: #004180;
+        }
+        .field-error {
+            border-color: #E60026 !important;
+        }
+        .error-text {
+            color: #E60026;
+            font-size: 0.8em;
+            margin-top: 4px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <header>
+            <h1>Ingreso de Habilitación Profesional</h1>
+            <img src="{{ asset('imagenes/ucsc.png') }}" alt="Logo UCSC">
+        </header>
+
+        <!-- Mensajes de éxito -->
+        @if(session('success'))
+            <div class="success-message">
+                {{ session('success') }}
+            </div>
+        @endif
+
+        <!-- Mensajes de error -->
+        @if($errors->any())
+            <div class="error-message">
+                <strong>Complete todos los campos destacados(*) o los campos no están bien escritos(*).</strong>
+                <ul style="margin: 10px 0 0 0; padding-left: 20px;">
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+        <!-- Mensajes de error de sesión -->
+        @if(session('error'))
+            <div class="error-message">
+                {{ session('error') }}
+            </div>
+        @endif
+
+        <form action="{{ route('habilitaciones.store') }}" method="POST">
+            @csrf
+
+            <fieldset>
+                <legend>Datos Principales</legend>
+                <div class="form-grid">
+                    <div class="form-group form-group-full">
+                        <label for="selector_alumno_rut" class="required">Seleccionar Alumno Habilitado</label>
+                        <select id="selector_alumno_rut" name="selector_alumno_rut" required
+                                class="{{ $errors->has('selector_alumno_rut') ? 'field-error' : '' }}"
+                                {{ $alumnos->count() == 0 ? 'disabled' : '' }}>
+                            @if($alumnos->count() > 0)
+                                <option value="" disabled selected>Buscar y seleccionar un alumno habilitado...</option>
+                                @foreach($alumnos as $alumno)
+                                    <option value="{{ $alumno->rut_alumno }}"
+                                        {{ old('selector_alumno_rut') == $alumno->rut_alumno ? 'selected' : '' }}>
+                                        {{ $alumno->apellido_alumno }}, {{ $alumno->nombre_alumno }} ({{ $alumno->rut_alumno }})
+                                    </option>
+                                @endforeach
+                            @else
+                                <option value="" disabled selected>No hay alumnos disponibles</option>
+                            @endif
+                        </select>
+                        @if($errors->has('selector_alumno_rut'))
+                            <div class="error-text">{{ $errors->first('selector_alumno_rut') }}</div>
+                        @endif
+                    </div>
+
+                    <div class="form-group">
+                        <label for="tipo_habilitacion" class="required">Tipo de Habilitación</label>
+                        <select id="tipo_habilitacion" name="tipo_habilitacion" required
+                                class="{{ $errors->has('tipo_habilitacion') ? 'field-error' : '' }}">
+                            <option value="" disabled selected>Seleccione un tipo...</option>
+                            <option value="PrIng" {{ old('tipo_habilitacion') == 'PrIng' ? 'selected' : '' }}>PrIng (Proyecto de Ingeniería)</option>
+                            <option value="PrInv" {{ old('tipo_habilitacion') == 'PrInv' ? 'selected' : '' }}>PrInv (Proyecto de Innovación)</option>
+                            <option value="PrTut" {{ old('tipo_habilitacion') == 'PrTut' ? 'selected' : '' }}>PrTut (Práctica Tutelada)</option>
+                        </select>
+                        @if($errors->has('tipo_habilitacion'))
+                            <div class="error-text">{{ $errors->first('tipo_habilitacion') }}</div>
+                        @endif
+                    </div>
+
+                    <div class="form-group">
+                        <label for="semestre_inicio" class="required">Semestre de Inicio</label>
+                        <select id="semestre_inicio" name="semestre_inicio" required
+                                class="{{ $errors->has('semestre_inicio') ? 'field-error' : '' }}">
+                            <option value="" disabled selected>Seleccione semestre...</option>
+                            <option value="2025-2" {{ old('semestre_inicio') == '2025-2' ? 'selected' : '' }}>2025-2</option>
+                            <option value="2026-1" {{ old('semestre_inicio') == '2026-1' ? 'selected' : '' }}>2026-1</option>
+                            <option value="2026-2" {{ old('semestre_inicio') == '2026-2' ? 'selected' : '' }}>2026-2</option>
+                            <option value="2027-1" {{ old('semestre_inicio') == '2027-1' ? 'selected' : '' }}>2027-1</option>
+                        </select>
+                        <small class="help-text">Solo se muestran semestres futuros.</small>
+                        @if($errors->has('semestre_inicio'))
+                            <div class="error-text">{{ $errors->first('semestre_inicio') }}</div>
+                        @endif
+                    </div>
+
+                    <div class="form-group">
+                        <label for="nota_final">Nota Final</label>
+                        <input type="number" id="nota_final" name="nota_final"
+                               min="1.0" max="7.0" step="0.1"
+                               placeholder="Se actualizará desde R1" readonly
+                               value="{{ old('nota_final') }}">
+                        <small class="help-text">Este campo no se puede modificar.</small>
+                    </div>
+                    @if($alumnos->count() == 0)
+                        <div class="button-container">
+                            <button type="button" onclick="window.location.href='/menu'">Volver al Menú</button>
+                        </div>
+                    @endif
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend>Descripción del Trabajo</legend>
+                <div class="form-grid">
+                    <div class="form-group form-group-full">
+                        <label for="titulo" class="required">Título del Trabajo</label>
+                        <input type="text" id="titulo" name="titulo" required 
+                               minlength="6" maxlength="80"
+                               pattern="[a-zA-Z0-9\s.,;:''&quot;&quot;-_()]+" 
+                               title="Solo alfanumérico y algunos símbolos."
+                               value="{{ old('titulo') }}"
+                               class="{{ $errors->has('titulo') ? 'field-error' : '' }}">
+                        <small class="help-text">Entre 6 y 80 caracteres. Símbolos permitidos: . , ; : ' " - _ ( )</small>
+                        @if($errors->has('titulo'))
+                            <div class="error-text">{{ $errors->first('titulo') }}</div>
+                        @endif
+                    </div>
+                    <div class="form-group form-group-full">
+                        <label for="descripcion" class="required">Descripción / Resumen</label>
+                        <textarea id="descripcion" name="descripcion" required 
+                                  minlength="30" maxlength="500"
+                                  class="{{ $errors->has('descripcion') ? 'field-error' : '' }}">{{ old('descripcion') }}</textarea>
+                        <small class="help-text">Entre 30 y 500 caracteres. Símbolos permitidos: . , ; : ' " - _ ( )</small>
+                        @if($errors->has('descripcion'))
+                            <div class="error-text">{{ $errors->first('descripcion') }}</div>
+                        @endif
+                    </div>
+                </div>
+            </fieldset>
+
+            <div id="seccion-pring-prinv" class="seccion-condicional" style="display: none;">
+                <fieldset>
+                    <legend>Equipo Docente (PrIng / PrInv)</legend>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="seleccion_guia_rut" class="required">Profesor Guía (DINF)</label>
+                            <select id="seleccion_guia_rut" name="seleccion_guia_rut"
+                                    class="{{ $errors->has('seleccion_guia_rut') ? 'field-error' : '' }}">
+                                <option value="" disabled selected>Seleccione un guía...</option>
+                                @foreach($profesores as $profesor)
+                                    <option value="{{ $profesor->rut_profesor }}"
+                                        {{ old('seleccion_guia_rut') == $profesor->rut_profesor ? 'selected' : '' }}>
+                                        {{ $profesor->nombre_profesor }} {{ $profesor->apellido_profesor }} ({{ $profesor->rut_profesor }})
+                                    </option>
+                                @endforeach
+                            </select>
+                            @if($errors->has('seleccion_guia_rut'))
+                                <div class="error-text">{{ $errors->first('seleccion_guia_rut') }}</div>
+                            @endif
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="seleccion_co_guia_rut">Profesor Co-Guía (UCSC)</label>
+                            <select id="seleccion_co_guia_rut" name="seleccion_co_guia_rut"
+                                    class="{{ $errors->has('seleccion_co_guia_rut') ? 'field-error' : '' }}">
+                                <option value="" selected>Ninguno (Opcional)</option>
+                                @foreach($profesores as $profesor)
+                                    <option value="{{ $profesor->rut_profesor }}"
+                                        {{ old('seleccion_co_guia_rut') == $profesor->rut_profesor ? 'selected' : '' }}>
+                                        {{ $profesor->nombre_profesor }} {{ $profesor->apellido_profesor }} ({{ $profesor->rut_profesor }})
+                                    </option>
+                                @endforeach
+                            </select>
+                            @if($errors->has('seleccion_co_guia_rut'))
+                                <div class="error-text">{{ $errors->first('seleccion_co_guia_rut') }}</div>
+                            @endif
+                        </div>
+
+                        <div class="form-group">
+                            <label for="seleccion_comision_rut" class="required">Profesor Comisión (DINF)</label>
+                            <select id="seleccion_comision_rut" name="seleccion_comision_rut"
+                                    class="{{ $errors->has('seleccion_comision_rut') ? 'field-error' : '' }}">
+                                <option value="" disabled selected>Seleccione comisión...</option>
+                                @foreach($profesores as $profesor)
+                                    <option value="{{ $profesor->rut_profesor }}"
+                                        {{ old('seleccion_comision_rut') == $profesor->rut_profesor ? 'selected' : '' }}>
+                                        {{ $profesor->nombre_profesor }} {{ $profesor->apellido_profesor }} ({{ $profesor->rut_profesor }})
+                                    </option>
+                                @endforeach
+                            </select>
+                            @if($errors->has('seleccion_comision_rut'))
+                                <div class="error-text">{{ $errors->first('seleccion_comision_rut') }}</div>
+                            @endif
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+
+            <div id="seccion-prtut" class="seccion-condicional" style="display: none;">
+                <fieldset>
+                    <legend>Datos Práctica Tutelada (PrTut)</legend>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="nombre_empresa" class="required">Nombre Empresa</label>
+                            <input type="text" id="nombre_empresa" name="nombre_empresa" 
+                                   maxlength="50" pattern="[a-zA-Z0-9\s]+" 
+                                   value="{{ old('nombre_empresa') }}"
+                                   class="{{ $errors->has('nombre_empresa') ? 'field-error' : '' }}">
+                            <small class="help-text">Alfanumérico, máx 50 caracteres.</small>
+                            @if($errors->has('nombre_empresa'))
+                                <div class="error-text">{{ $errors->first('nombre_empresa') }}</div>
+                            @endif
+                        </div>
+
+                        <div class="form-group">
+                            <label for="nombre_supervisor" class="required">Nombre Supervisor (Empresa)</label>
+                            <input type="text" id="nombre_supervisor" name="nombre_supervisor" 
+                                   maxlength="50" pattern="[a-zA-Z\sñÑáéíóúÁÉÍÓÚ]+"
+                                   value="{{ old('nombre_supervisor') }}"
+                                   class="{{ $errors->has('nombre_supervisor') ? 'field-error' : '' }}">
+                            <small class="help-text">Alfabético, máx 50 caracteres.</small>
+                            @if($errors->has('nombre_supervisor'))
+                                <div class="error-text">{{ $errors->first('nombre_supervisor') }}</div>
+                            @endif
+                        </div>
+
+                        <div class="form-group">
+                            <label for="seleccion_tutor_rut" class="required">Profesor Tutor (DINF)</label>
+                            <select id="seleccion_tutor_rut" name="seleccion_tutor_rut"
+                                    class="{{ $errors->has('seleccion_tutor_rut') ? 'field-error' : '' }}">
+                                <option value="" disabled selected>Seleccione un tutor...</option>
+                                @foreach($profesores as $profesor)
+                                    <option value="{{ $profesor->rut_profesor }}"
+                                        {{ old('seleccion_tutor_rut') == $profesor->rut_profesor ? 'selected' : '' }}>
+                                        {{ $profesor->nombre_profesor }} {{ $profesor->apellido_profesor }} ({{ $profesor->rut_profesor }})
+                                    </option>
+                                @endforeach
+                            </select>
+                            @if($errors->has('seleccion_tutor_rut'))
+                                <div class="error-text">{{ $errors->first('seleccion_tutor_rut') }}</div>
+                            @endif
+                        </div>
+                    </div>
+                </fieldset>
+            </div>
+
+            <div class="button-container">
+                <button type="button" onclick="window.location.href='/'">Cancelar</button>
+                <button type="submit">Confirmar Ingreso</button>
+            </div>
+
+        </form>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const tipoHabilitacion = document.getElementById('tipo_habilitacion');
+            const seccionProyecto = document.getElementById('seccion-pring-prinv');
+            const seccionPractica = document.getElementById('seccion-prtut');
+
+            function toggleSections() {
+                const valor = tipoHabilitacion.value;
+                
+                // Ocultar ambas secciones primero
+                seccionProyecto.style.display = 'none';
+                seccionPractica.style.display = 'none';
+
+                // Quitar requerido de todos los campos condicionales
+                document.querySelectorAll('#seccion-pring-prinv [required]').forEach(el => {
+                    el.required = false;
+                });
+                document.querySelectorAll('#seccion-prtut [required]').forEach(el => {
+                    el.required = false;
+                });
+
+                // Mostrar y hacer requeridos según el tipo
+                if (valor === 'PrTut') {
+                    seccionPractica.style.display = 'block';
+                    document.querySelectorAll('#seccion-prtut [required]').forEach(el => {
+                        el.required = true;
+                    });
+                } else if (valor === 'PrIng' || valor === 'PrInv') {
+                    seccionProyecto.style.display = 'block';
+                    document.querySelectorAll('#seccion-pring-prinv [required]').forEach(el => {
+                        el.required = true;
+                    });
+                }
+            }
+
+            // Ejecutar al cambiar y al cargar la página
+            tipoHabilitacion.addEventListener('change', toggleSections);
+            
+            // Ejecutar al cargar para mostrar sección según valor antiguo (si hay error)
+            const oldValue = "{{ old('tipo_habilitacion') }}";
+            if (oldValue) {
+                toggleSections();
+            }
+        });
+    </script>
+
+</body>
+</html>
