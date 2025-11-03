@@ -25,9 +25,8 @@ Route::get('/menu', function () {
 });
 
 // Ingreso de Habilitaciones Profesionales
-Route::get('/ingreso', function () {
-    return view('ingreso');
-});
+Route::get('/habilitaciones/ingreso', [HabilitacionController::class, 'create'])->name('habilitaciones.create');
+Route::post('/habilitaciones/ingreso', [HabilitacionController::class, 'store'])->name('habilitaciones.store');
 
 // Modifcar o Eliminar Habilitaciones Profesionales
 

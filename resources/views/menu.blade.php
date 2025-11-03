@@ -103,7 +103,7 @@
             <h2>Sistema de Gestión de Habilitaciones HabilProf</h2>
             <p class="intro">Seleccione la operación que desea realizar:</p>
 
-            <a href="ingreso" class="menu-item">
+            <a href="habilitaciones/ingreso" class="menu-item">
                 <h3>1. Ingresar Nueva Habilitación</h3>
                 <p>Registrar una nueva Habilitación Profesional (PrIng, PrInv o PrTut) para un alumno.</p>
             </a>
