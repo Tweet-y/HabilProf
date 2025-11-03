@@ -129,10 +129,16 @@
             margin-bottom: 20px;
         }
         .button-container {
-            text-align: right;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             border-top: 1px solid #CED4DA;
             padding-top: 20px;
             margin-top: 20px;
+        }
+        .right-buttons {
+            display: flex;
+            gap: 10px;
         }
         button {
             padding: 12px 20px;
@@ -268,11 +274,7 @@
                                value="{{ old('nota_final') }}">
                         <small class="help-text">Este campo no se puede modificar.</small>
                     </div>
-                    @if($alumnos->count() == 0)
-                        <div class="button-container">
-                            <button type="button" onclick="window.location.href='/menu'">Volver al Menú</button>
-                        </div>
-                    @endif
+
                 </div>
             </fieldset>
 
@@ -412,8 +414,13 @@
             </div>
 
             <div class="button-container">
-                <button type="button" onclick="window.location.href='/'">Cancelar</button>
-                <button type="submit">Confirmar Ingreso</button>
+                @if($alumnos->count() == 0)
+                    <button type="button" onclick="window.location.href='/menu'">Volver al Menú</button>
+                @endif
+                <div class="right-buttons">
+                    <button type="button" onclick="window.location.href='/'">Cancelar</button>
+                    <button type="submit">Confirmar Ingreso</button>
+                </div>
             </div>
 
         </form>

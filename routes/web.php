@@ -40,6 +40,13 @@ Route::get('/listados', function () {
     return view('listados');
 });
 
+// Login y autenticación
+require __DIR__.'/auth.php';
+
+Route::get('/auth/login', function () {
+    return view('login');
+});
+
 // Dashboard (post-login)
 Route::get('/dashboard', function () {
     return view('dashboard');

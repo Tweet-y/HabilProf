@@ -15,7 +15,10 @@ class HabilitacionController extends Controller
      */
     public function index()
     {
-
+        // Obtener alumnos que tienen habilitación
+        $alumnos = Alumno::whereHas('habilitacion')->get();
+        $profesores = Profesor::all();
+        return view('actualizar_eliminar', compact('alumnos', 'profesores'));
     }
 
     /**
