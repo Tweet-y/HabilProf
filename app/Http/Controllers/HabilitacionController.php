@@ -14,7 +14,7 @@ class HabilitacionController extends Controller
          // Datos de ejemplo (temporal)
     $alumnos = [
         (object)['id' => 1, 'nombre' => 'Ana', 'apellido' => 'García López', 'rut' => '12345678'],
-        (object)['id' => 2, 'nombre' => 'Juan', 'apellido' => 'Pérez', 'rut' => '87654321'],
+        (object)['id' => 2, 'nombre' => 'Brandon', 'apellido' => 'Pérez', 'rut' => '87654321'],
     ];
 
     // Retorna la vista existente y le pasa los alumnos
