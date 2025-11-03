@@ -3,32 +3,26 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Facades\DB; // Necesario para inyectar sentencias SQL crudas si fuera necesario
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-        Schema::create('alumno', function (Blueprint $table) {
-            // PK: rut_alumno (INTEGER)
-            // Usamos 'integer' para el tipo de dato y 'primary()' para definir la clave.
+        Schema::create('carga_academica', function (Blueprint $table) {
+            // PK: rut_alumno
             $table->integer('rut_alumno')->primary(); 
             
-            // Atributos (VARCHAR(50), NOT NULL)
+            // Atributos
             $table->string('nombre_alumno', 50)->nullable(false);
             $table->string('apellido_alumno', 50)->nullable(false);
             
+            // Listado de asignaturas (se asume JSONB para almacenar el array de códigos)
+            $table->jsonb('asignaturas')->nullable(false); 
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::dropIfExists('alumno');
+        Schema::dropIfExists('carga_academica');
     }
 };

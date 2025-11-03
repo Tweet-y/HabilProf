@@ -12,7 +12,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('alumnos', function (Blueprint $table) {
+        Schema::create('alumno', function (Blueprint $table) {
             // PK: rut_alumno (INTEGER)
             // Usamos 'integer' para el tipo de dato y 'primary()' para definir la clave.
             $table->integer('rut_alumno')->primary(); 
@@ -35,6 +35,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('alumnos');
+        Schema::dropIfExists('alumno');
     }
 };

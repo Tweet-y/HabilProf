@@ -11,12 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('pr_tuts', function (Blueprint $table) {
+        Schema::create('pr_tut', function (Blueprint $table) {
             
             // PK y FK a Habilitacion (Subclase Mapping)
             // Usamos unsignedInteger porque la PK de Habilitacion es SERIAL/auto-incremento (INTEGER)
             $table->integer('id_habilitacion')->primary(); 
-            $table->foreign('id_habilitacion')->references('id_habilitacion')->on('habilitacions')->onDelete('cascade'); 
+            $table->foreign('id_habilitacion')->references('id_habilitacion')->on('habilitacion')->onDelete('cascade'); 
             
             // Atributos Exclusivos (NOT NULL)
             $table->string('nombre_supervisor', 50)->nullable(false);
@@ -24,7 +24,7 @@ return new class extends Migration
             
             // FK de Rol de Profesor (Tutor) - NOT NULL
             $table->integer('rut_profesor_tutor')->nullable(false);
-            $table->foreign('rut_profesor_tutor')->references('rut_profesor')->on('profesors')->onDelete('restrict');
+            $table->foreign('rut_profesor_tutor')->references('rut_profesor')->on('profesor')->onDelete('restrict');
             
             // Nota: Se omiten $table->id() y $table->timestamps() para ser fiel al SQL y al modelo de subclase.
         });
@@ -35,6 +35,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('pr_tuts');
+        Schema::dropIfExists('pr_tut');
     }
 };

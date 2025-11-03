@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('habilitacions', function (Blueprint $table) {
+        Schema::create('habilitacion', function (Blueprint $table) {
             
             // PK: id_habilitacion (SERIAL/Autoincremento)
             // Usamos 'id' y luego lo renombramos a id_habilitacion para ser más fiel a la columna.
@@ -20,7 +20,7 @@ return new class extends Migration
             // FK a Alumno (Relación 1:1)
             // La columna debe ser INTEGER (como rut_alumno) y UNIQUE para forzar el 1:1.
             $table->integer('rut_alumno')->unique()->nullable(false); 
-            $table->foreign('rut_alumno')->references('rut_alumno')->on('alumnos')->onDelete('cascade'); 
+            $table->foreign('rut_alumno')->references('rut_alumno')->on('alumno')->onDelete('cascade'); 
             
             // Atributos Comunes
             $table->float('nota_final')->nullable(true); // NULL permitido
@@ -41,6 +41,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('habilitacions');
+        Schema::dropIfExists('habilitacion');
     }
 };

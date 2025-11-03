@@ -6,25 +6,23 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
-        Schema::create('profesor', function (Blueprint $table) {
-            // PK: rut_profesor (INTEGER) [cite: 173]
+        Schema::create('gestion_academica', function (Blueprint $table) {
+            // PK: rut_profesor
             $table->integer('rut_profesor')->primary(); 
-            // Atributos (VARCHAR(50), NOT NULL) [cite: 173]
+            
+            // Atributos
             $table->string('nombre_profesor', 50)->nullable(false);
             $table->string('apellido_profesor', 50)->nullable(false);
+            
+            // Campo clave para la filtración DINF
+            $table->string('departamento', 50)->nullable(false); 
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
-        Schema::dropIfExists('profesor');
+        Schema::dropIfExists('gestion_academica');
     }
 };

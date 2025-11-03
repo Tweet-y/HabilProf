@@ -9,7 +9,8 @@ class Profesor extends Model
 {
     use HasFactory;
     
-    protected $table = 'profesors';
+    public $timestamps = false;
+    protected $table = 'profesor';
     protected $primaryKey = 'rut_profesor';
     public $incrementing = false;
     protected $keyType = 'integer';
