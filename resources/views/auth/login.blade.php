@@ -56,7 +56,7 @@
             color: #333333;
         }
         .form-group input[type="text"],
-        .form-group input[type="email"], /* Añadido por si acaso */
+        .form-group input[type="email"], 
         .form-group input[type="password"] {
             width: 100%;
             padding: 12px;
@@ -84,7 +84,7 @@
         button:hover {
             background-color: #C00020;
         }
-        /* Estilo para el enlace de registro */
+        
         .login-link {
             text-align: center;
             margin-top: 20px;

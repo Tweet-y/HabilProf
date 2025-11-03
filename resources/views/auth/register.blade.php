@@ -61,7 +61,7 @@
             font-size: 0.9em;
             color: #333333;
         }
-        .form-group input[type="text"], /* Añadido */
+        .form-group input[type="text"], 
         .form-group input[type="email"],
         .form-group input[type="password"] {
             width: 100%;
