@@ -26,7 +26,24 @@ class HabilitacionController extends Controller
         // Obtener alumnos que no tienen habilitación
         $alumnos = Alumno::whereDoesntHave('habilitacion')->get();
         $profesores = Profesor::all();
-        return view('habilitacion_create', compact('alumnos', 'profesores'));
+
+        // Generar semestres: actual y siguiente
+        $currentYear = date('Y');
+        $currentMonth = date('n');
+
+        // Determinar semestre actual
+        $currentSemester = ($currentMonth <= 6) ? '1-' . $currentYear : '2-' . $currentYear;
+
+        // Determinar semestre siguiente
+        if ($currentMonth <= 6) {
+            $nextSemester = '2-' . $currentYear;
+        } else {
+            $nextSemester = '1-' . ($currentYear + 1);
+        }
+
+        $semestres = [$currentSemester, $nextSemester];
+
+        return view('habilitacion_create', compact('alumnos', 'profesores', 'semestres'));
     }
 
     /**

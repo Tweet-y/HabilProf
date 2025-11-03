@@ -249,12 +249,10 @@
                         <select id="semestre_inicio" name="semestre_inicio" required
                                 class="{{ $errors->has('semestre_inicio') ? 'field-error' : '' }}">
                             <option value="" disabled selected>Seleccione semestre...</option>
-                            <option value="2025-2" {{ old('semestre_inicio') == '2025-2' ? 'selected' : '' }}>2025-2</option>
-                            <option value="2026-1" {{ old('semestre_inicio') == '2026-1' ? 'selected' : '' }}>2026-1</option>
-                            <option value="2026-2" {{ old('semestre_inicio') == '2026-2' ? 'selected' : '' }}>2026-2</option>
-                            <option value="2027-1" {{ old('semestre_inicio') == '2027-1' ? 'selected' : '' }}>2027-1</option>
+                            @foreach($semestres as $semestre)
+                                <option value="{{ $semestre }}" {{ old('semestre_inicio') == $semestre ? 'selected' : '' }}>{{ $semestre }}</option>
+                            @endforeach
                         </select>
-                        <small class="help-text">Solo se muestran semestres futuros.</small>
                         @if($errors->has('semestre_inicio'))
                             <div class="error-text">{{ $errors->first('semestre_inicio') }}</div>
                         @endif
