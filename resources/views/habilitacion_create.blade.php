@@ -250,7 +250,7 @@
                     <button type="button" onclick="window.location.href='/menu'">Volver al Menú</button>
                 @endif
                 <div class="right-buttons">
-                    <button type="button" onclick="window.location.href='/'">Cancelar</button>
+                    <button type="button" onclick="window.location.href='/dashboard'">Cancelar</button>
                     <button type="submit">Confirmar Ingreso</button>
                 </div>
             </div>

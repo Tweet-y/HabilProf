@@ -219,6 +219,7 @@
             <div class="button-container">
                 <button type="reset" class="btn-secondary" onclick="cancelarEdicion()">Cancelar Edición</button>
                 <button type="button" class="btn-primary" onclick="guardarCambios()">Guardar Cambios</button>
+                <button type="button" class="btn-secondary" onclick="window.location.href='/dashboard'">Volver al Menú</button>
             </div>
         </form>
         @endif

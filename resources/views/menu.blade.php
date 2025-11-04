@@ -89,6 +89,24 @@
             line-height: 1.5;
         }
 
+        /* Estilo para el botón de logout en el header */
+        .logout-button {
+            padding: 8px 12px;
+            background-color: #F8F9FA;
+            color: #E60026; /* Color rojo de "peligro" o "salida" */
+            border: 1px solid #CED4DA;
+            border-radius: 4px;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9em;
+            transition: all 0.2s ease;
+        }
+        .logout-button:hover {
+            background-color: #E60026;
+            color: #FFFFFF;
+            border-color: #E60026;
+        }
+
     </style>
 </head>
 <body>
@@ -96,7 +114,18 @@
     <div class="container">
         <header>
             <h1>Menú Principal</h1>
-            <img src="imagenes/ucsc2.png" alt="Logo UCSC">
+
+            <div style="display: flex; align-items: center; gap: 20px;">
+                <img src="imagenes/ucsc2.png" alt="Logo UCSC">
+
+                <form method="POST" action="{{ route('logout') }}" style="margin: 0;">
+                    @csrf
+                    <a href="{{ route('logout') }}" class="logout-button"
+                       onclick="event.preventDefault(); this.closest('form').submit();">
+                        Cerrar Sesión
+                    </a>
+                </form>
+            </div>
         </header>
 
         <main class="menu-container">

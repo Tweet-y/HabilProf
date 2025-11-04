@@ -38,7 +38,7 @@ Route::delete('/actualizar_eliminar/{alumno}', [HabilitacionController::class, '
 // Generar Listados de Habilitaciones Profesionales
 Route::get('/listados', function () {
     return view('listados');
-});
+})->name('listados');
 
 // Login y autenticación
 require __DIR__.'/auth.php';

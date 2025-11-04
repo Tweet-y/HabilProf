@@ -105,8 +105,22 @@
             <p class="intro">Sistema para la gestión de habilitaciones profesionales (PrIng, PrInv, PrTut).</p>
 
             <div class="button-container">
-                <a href="/menu" class="button-link">Ir al Menú</a>
-                <a href="/login" class="button-link primary">Iniciar Sesión</a>
+                @auth
+                    <a href="/menu" class="button-link">Ir al Menú</a>
+
+                    <form method="POST" action="{{ route('logout') }}" style="margin: 0;">
+                        @csrf
+                        <a href="{{ route('logout') }}"
+                           class="button-link"
+                           style="background-color: #6C757D;" onclick="event.preventDefault(); this.closest('form').submit();">
+                            Cerrar Sesión
+                        </a>
+                    </form>
+
+                @else
+                    <a href="/login" class="button-link primary">Iniciar Sesión</a>
+
+                @endauth
             </div>
         </main>
     </div>
