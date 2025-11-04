@@ -22,7 +22,7 @@ Route::get('/', function () {
 // Menu principal
 Route::get('/menu', function () {
     return view('menu');
-});
+})->middleware(['auth', 'verified'])->name('menu');
 
 // Ingreso de Habilitaciones Profesionales
 Route::get('/habilitaciones/ingreso', [HabilitacionController::class, 'create'])->name('habilitaciones.create');

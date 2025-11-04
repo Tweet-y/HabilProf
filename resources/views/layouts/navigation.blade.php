@@ -12,21 +12,9 @@
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                        {{ __('Dashboard') }}
-                    </x-nav-link>
-
-                    <x-nav-link :href="route('habilitaciones.create')" :active="request()->routeIs('habilitaciones.create')">
-                        Ingresar Habilitación
-                    </x-nav-link>
-
-                    <x-nav-link :href="route('habilitaciones.index')" :active="request()->routeIs('habilitaciones.index')">
-                        Actualizar / Eliminar
-                    </x-nav-link>
-
-                    <x-nav-link href="/listados" :active="request()->is('listados')">
-                        Generar Listados
-                    </x-nav-link>
+<x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
+    Menú Principal
+</x-nav-link>
                 </div>
             </div>
 
@@ -79,20 +67,8 @@
         <!-- Responsive Navigation Menu -->
         <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
             <div class="pt-2 pb-3 space-y-1">
-                <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
-                    {{ __('Dashboard') }}
-                </x-responsive-nav-link>
-
-                <x-responsive-nav-link :href="route('habilitaciones.create')" :active="request()->routeIs('habilitaciones.create')">
-                    Ingresar Habilitación
-                </x-responsive-nav-link>
-
-                <x-responsive-nav-link :href="route('habilitaciones.index')" :active="request()->routeIs('habilitaciones.index')">
-                    Actualizar / Eliminar
-                </x-responsive-nav-link>
-
-                <x-responsive-nav-link href="/listados" :active="request()->is('listados')">
-                    Generar Listados
+                <x-responsive-nav-link :href="route('menu')" :active="request()->routeIs('menu')">
+                    Menú Principal
                 </x-responsive-nav-link>
             </div>
 

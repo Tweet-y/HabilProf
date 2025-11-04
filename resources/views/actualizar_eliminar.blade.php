@@ -5,6 +5,43 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Actualizar o Eliminar Habilitación</title>
     <link rel="stylesheet" href="{{ asset('css/form.css') }}">
+    <style>
+        /* Ensure buttons look like buttons */
+        button.btn-primary, button.btn-secondary, button.btn-danger {
+            display: inline-block;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: background-color 0.2s ease;
+            text-decoration: none;
+            text-align: center;
+            user-select: none;
+        }
+        button.btn-primary {
+            background-color: #0056A8;
+            color: white;
+        }
+        button.btn-primary:hover {
+            background-color: #004180;
+        }
+        button.btn-secondary {
+            background-color: #6C757D;
+            color: white;
+        }
+        button.btn-secondary:hover {
+            background-color: #5A6268;
+        }
+        button.btn-danger {
+            background-color: #E60026;
+            color: white;
+        }
+        button.btn-danger:hover {
+            background-color: #C00020;
+        }
+    </style>
 </head>
 <body>
 
@@ -56,7 +93,7 @@
         </div>
         @endif
 
-        
+
         <div class="error-message" id="form-error" style="display: none;"></div>
 
         <!-- Mensajes de error -->
@@ -72,13 +109,13 @@
         @endif
 
         @if($habilitacion)
-        <form action="#" method="POST" onsubmit="return false;" id="form-modificar">
+        <form action="#" method="POST" onsubmit="return false;" id="form-modificar" style="display: none;">
             @csrf
             @method('PUT')
             <fieldset>
                 <legend>Datos Principales (Editando)</legend>
                 <div class="form-grid">
-                    
+
                     <div class="form-group">
                         <label for="tipo_habilitacion" class="required">Tipo de Habilitación</label>
                         <select id="tipo_habilitacion" name="tipo_habilitacion" required>
@@ -136,7 +173,7 @@
                 </div>
             </fieldset>
 
-            
+
             <div id="seccion-pring-prinv" class="seccion-condicional">
                 <fieldset>
                     <legend>Equipo Docente (PrIng / PrInv)</legend>
@@ -180,7 +217,7 @@
                 </fieldset>
             </div>
 
-            
+
             <div id="seccion-prtut" class="seccion-condicional">
                 <fieldset>
                     <legend>Datos Práctica Tutelada (PrTut)</legend>
@@ -224,7 +261,7 @@
         </form>
         @endif
 
-        <div class="seccion-accion hidden" id="confirmar-eliminacion">
+        <div class="seccion-accion" id="confirmar-eliminacion" style="display: none;">
             <hr style="border: 0; border-top: 1px dashed #CED4DA; margin: 0 30px 30px;">
             <h2>Confirmar Eliminación</h2>
             <p>¿Desea eliminar la habilitación del Alumno <strong id="alumno-eliminar">Nombre Apellido</strong>?</p>
@@ -247,9 +284,9 @@
 
         // Función para mostrar sección de modificar
         function mostrarModificar() {
-            document.getElementById('seleccion-accion').classList.add('hidden');
-            document.getElementById('form-modificar').classList.remove('hidden');
-            document.getElementById('confirmar-eliminacion').classList.add('hidden');
+            document.getElementById('seleccion-accion').style.display = 'none';
+            document.getElementById('form-modificar').style.display = 'block';
+            document.getElementById('confirmar-eliminacion').style.display = 'none';
             // Trigger change event for tipo_habilitacion to show/hide sections
             const tipoHabilitacion = document.getElementById('tipo_habilitacion');
             if (tipoHabilitacion) {
@@ -260,15 +297,15 @@
         // Función para mostrar sección de eliminar
         function mostrarEliminar(alumnoNombre) {
             document.getElementById('alumno-eliminar').textContent = alumnoNombre;
-            document.getElementById('seleccion-accion').classList.add('hidden');
-            document.getElementById('form-modificar').classList.add('hidden');
-            document.getElementById('confirmar-eliminacion').classList.remove('hidden');
+            document.getElementById('seleccion-accion').style.display = 'none';
+            document.getElementById('form-modificar').style.display = 'none';
+            document.getElementById('confirmar-eliminacion').style.display = 'block';
         }
 
         // Función para cancelar eliminación
         function cancelarEliminar() {
-            document.getElementById('confirmar-eliminacion').classList.add('hidden');
-            document.getElementById('seleccion-accion').classList.remove('hidden');
+            document.getElementById('confirmar-eliminacion').style.display = 'none';
+            document.getElementById('seleccion-accion').style.display = 'block';
         }
 
         // Función para confirmar eliminación
@@ -285,8 +322,8 @@
 
         // Función para cancelar edición
         function cancelarEdicion() {
-            document.getElementById('form-modificar').classList.add('hidden');
-            document.getElementById('seleccion-accion').classList.remove('hidden');
+            document.getElementById('form-modificar').style.display = 'none';
+            document.getElementById('seleccion-accion').style.display = 'block';
         }
 
         // Función para guardar cambios
@@ -307,7 +344,7 @@
                 for (var i = 0; i < elementsToHide.length; i++) {
                     var element = document.getElementById(elementsToHide[i]);
                     if (element) {
-                        element.classList.add('hidden');
+                        element.style.display = 'none';
                     }
                 }
             }
