@@ -13,12 +13,21 @@ class HabilitacionController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
         // Obtener alumnos que tienen habilitación con sus datos completos
         $alumnos = Alumno::whereHas('habilitacion')->with(['habilitacion.proyecto', 'habilitacion.prTut'])->get();
         $profesores = Profesor::all();
-        return view('actualizar_eliminar', compact('alumnos', 'profesores'));
+
+        // Si se busca una habilitación específica, obtenerla
+        $habilitacion = null;
+        if ($request->has('rut_alumno') && $request->rut_alumno) {
+            $habilitacion = Habilitacion::where('rut_alumno', $request->rut_alumno)
+                ->with(['proyecto', 'prTut'])
+                ->first();
+        }
+
+        return view('actualizar_eliminar', compact('alumnos', 'profesores', 'habilitacion'));
     }
 
     /**

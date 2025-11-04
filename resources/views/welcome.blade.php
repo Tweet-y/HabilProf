@@ -85,10 +85,10 @@
             background-color: #004180;
         }
         .button-link.primary {
-            background-color: #E60026;
+            background-color: #0056A8;
         }
         .button-link.primary:hover {
-            background-color: #C00020;
+            background-color: #004180;
         }
     </style>
 </head>

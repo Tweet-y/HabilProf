@@ -4,175 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Ingreso de Habilitación Profesional</title>
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: #F8F9FA;
-            color: #222222;
-        }
-        .container {
-            max-width: 900px;
-            margin: 20px auto;
-            background-color: #FFFFFF;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            border: 1px solid #CED4DA;
-        }
-        header {
-            padding: 20px 30px;
-            background-color: #FFFFFF;
-            border-bottom: 1px solid #CED4DA;
-            border-radius: 8px 8px 0 0;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        header h1 {
-            margin: 0;
-            color: #222222;
-            font-size: 1.8em;
-        }
-        header img {
-            max-height: 50px;
-            width: auto;
-            margin-left: 20px;
-        }
-        form {
-            padding: 30px;
-        }
-        fieldset {
-            border: 1px solid #CED4DA;
-            border-radius: 6px;
-            padding: 20px;
-            margin-bottom: 25px;
-            background-color: #F8F9FA;
-        }
-        legend {
-            font-size: 1.2em;
-            font-weight: 600;
-            padding: 0 10px;
-            color: #E60026;
-        }
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-        }
-        .form-group {
-            display: flex;
-            flex-direction: column;
-        }
-        .form-group-full {
-            grid-column: 1 / -1;
-        }
-        label {
-            font-weight: 600;
-            margin-bottom: 6px;
-            font-size: 0.9em;
-            color: #333333;
-        }
-        label.required::after {
-            content: ' *';
-            color: #E60026;
-            font-weight: bold;
-        }
-        input[type="text"],
-        input[type="number"],
-        input[type="date"],
-        select,
-        textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #CED4DA;
-            border-radius: 4px;
-            box-sizing: border-box;
-            font-size: 1em;
-            background-color: #fff;
-        }
-        textarea {
-            min-height: 100px;
-            resize: vertical;
-        }
-        input:read-only {
-            background-color: #E9ECEF;
-            color: #6C757D;
-            border-color: #CED4DA;
-            cursor: not-allowed;
-        }
-        .help-text {
-            font-size: 0.85em;
-            color: #555555;
-            margin-top: 4px;
-        }
-        .seccion-condicional {
-            border-top: 2px dashed #0056A8;
-            margin-top: 20px;
-            padding-top: 20px;
-        }
-        .error-message {
-            color: #721C24;
-            background-color: #F8D7DA;
-            border: 1px solid #F5C6CB;
-            padding: 15px;
-            border-radius: 4px;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        .success-message {
-            color: #155724;
-            background-color: #d4edda;
-            border: 1px solid #c3e6cb;
-            padding: 15px;
-            border-radius: 4px;
-            margin-bottom: 20px;
-        }
-        .button-container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-top: 1px solid #CED4DA;
-            padding-top: 20px;
-            margin-top: 20px;
-        }
-        .right-buttons {
-            display: flex;
-            gap: 10px;
-        }
-        button {
-            padding: 12px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 1em;
-            font-weight: 600;
-            transition: background-color 0.2s ease;
-            margin-left: 10px;
-        }
-        button[type="submit"] {
-            background-color: #E60026;
-            color: white;
-        }
-        button[type="submit"]:hover {
-            background-color: #C00020;
-        }
-        button[type="button"] {
-            background-color: #0056A8;
-            color: white;
-        }
-        button[type="button"]:hover {
-            background-color: #004180;
-        }
-        .field-error {
-            border-color: #E60026 !important;
-        }
-        .error-text {
-            color: #E60026;
-            font-size: 0.8em;
-            margin-top: 4px;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ asset('css/form.css') }}">
 </head>
 <body>
 
@@ -208,7 +40,7 @@
             </div>
         @endif
 
-        <form action="{{ route('habilitaciones.store') }}" method="POST">
+        <form action="{{ route('habilitaciones.store') }}" method="POST" onsubmit="return validarFormulario() && confirm('¿Está seguro de que desea registrar esta habilitación?');">
             @csrf
 
             <fieldset>
@@ -282,7 +114,7 @@
                 <legend>Descripción del Trabajo</legend>
                 <div class="form-grid">
                     <div class="form-group form-group-full">
-                        <label for="titulo" class="required">Título del Trabajo</label>
+                        <label for="titulo" class="required">Título</label>
                         <input type="text" id="titulo" name="titulo" required 
                                minlength="6" maxlength="80"
                                pattern="[a-zA-Z0-9\s.,;:''&quot;&quot;-_()]+" 
@@ -295,7 +127,7 @@
                         @endif
                     </div>
                     <div class="form-group form-group-full">
-                        <label for="descripcion" class="required">Descripción / Resumen</label>
+                        <label for="descripcion" class="required">Descripción</label>
                         <textarea id="descripcion" name="descripcion" required 
                                   minlength="30" maxlength="500"
                                   class="{{ $errors->has('descripcion') ? 'field-error' : '' }}">{{ old('descripcion') }}</textarea>
@@ -426,6 +258,8 @@
         </form>
     </div>
 
+    <script src="{{ asset('js/validacion.js') }}"></script>
+    <script src="{{ asset('js/formHabilitacion.js') }}"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const tipoHabilitacion = document.getElementById('tipo_habilitacion');
@@ -434,7 +268,7 @@
 
             function toggleSections() {
                 const valor = tipoHabilitacion.value;
-                
+
                 // Ocultar ambas secciones primero
                 seccionProyecto.style.display = 'none';
                 seccionPractica.style.display = 'none';
@@ -463,7 +297,7 @@
 
             // Ejecutar al cambiar y al cargar la página
             tipoHabilitacion.addEventListener('change', toggleSections);
-            
+
             // Ejecutar al cargar para mostrar sección según valor antiguo (si hay error)
             const oldValue = "{{ old('tipo_habilitacion') }}";
             if (oldValue) {
