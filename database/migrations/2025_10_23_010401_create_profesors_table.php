@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('profesors', function (Blueprint $table) {
+        Schema::create('profesor', function (Blueprint $table) {
             // PK: rut_profesor (INTEGER) [cite: 173]
             $table->integer('rut_profesor')->primary(); 
             // Atributos (VARCHAR(50), NOT NULL) [cite: 173]
@@ -31,6 +31,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('profesors');
+        Schema::dropIfExists('profesor');
     }
 };

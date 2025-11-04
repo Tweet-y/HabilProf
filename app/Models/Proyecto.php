@@ -11,7 +11,7 @@ class Proyecto extends Model
 
     public $timestamps = false;
 
-    protected $table = 'proyectos';
+    protected $table = 'proyecto';
     protected $primaryKey = 'id_habilitacion';
     public $incrementing = false;
     protected $keyType = 'integer';

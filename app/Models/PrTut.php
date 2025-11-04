@@ -11,7 +11,7 @@ class PrTut extends Model
 
     public $timestamps = false;
 
-    protected $table = 'pr_tuts';
+    protected $table = 'pr_tut';
     protected $primaryKey = 'id_habilitacion';
     public $incrementing = false;
     protected $keyType = 'integer';
