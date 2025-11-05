@@ -108,6 +108,7 @@
             </div>
         @endif
 
+        <!-- Div para errores de validación JavaScript -->
         <div id="js-validation-error" class="error-message" style="display: none; margin-bottom: 20px;"></div>
 
         @if($habilitacion)

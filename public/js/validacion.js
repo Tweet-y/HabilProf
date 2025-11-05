@@ -28,21 +28,22 @@ function validarFormulario() {
     }
 
     // --- 1. VALIDAR DUPLICADOS (Tu Bug 3) ---
-    const guia = document.getElementById('seleccion_guia')?.value;
-    const coGuia = document.getElementById('seleccion_co_guia')?.value;
-    const comision = document.getElementById('seleccion_comision')?.value;
-    const tutor = document.getElementById('seleccion_tutor')?.value;
+    const guia = document.querySelector('[name="seleccion_guia_rut"]')?.value;
+    const coGuia = document.querySelector('[name="seleccion_co_guia_rut"]')?.value;
+    const comision = document.querySelector('[name="seleccion_comision_rut"]')?.value;
+    const tutor = document.querySelector('[name="seleccion_tutor_rut"]')?.value;
 
     // Filtra solo los campos que tienen un valor (no están vacíos)
     const profesores = [guia, coGuia, comision, tutor].filter(Boolean);
     const unicos = new Set(profesores);
 
     if (profesores.length !== unicos.size) {
-        alert('Error: Un profesor no puede tener múltiples roles (Guía, Co-Guía, Comisión) en la misma habilitación.');
-        document.getElementById('seleccion_guia')?.classList.add('input-error');
-        document.getElementById('seleccion_co_guia')?.classList.add('input-error');
-        document.getElementById('seleccion_comision')?.classList.add('input-error');
-        document.getElementById('seleccion_tutor')?.classList.add('input-error');
+        errorDiv.innerHTML = '<strong>Error de validación:</strong> Un profesor no puede tener múltiples roles (Guía, Co-Guía, Comisión) en la misma habilitación.';
+        errorDiv.style.display = 'block';
+        document.querySelector('[name="seleccion_guia_rut"]')?.classList.add('input-error');
+        document.querySelector('[name="seleccion_co_guia_rut"]')?.classList.add('input-error');
+        document.querySelector('[name="seleccion_comision_rut"]')?.classList.add('input-error');
+        document.querySelector('[name="seleccion_tutor_rut"]')?.classList.add('input-error');
         return false;
     }
 
@@ -54,8 +55,8 @@ function validarFormulario() {
         if (!guia || !comision) {
             errorDiv.innerHTML = '<strong>Error de validación:</strong> Debe seleccionar un Profesor Guía y un Profesor Comisión para esta modalidad.';
             errorDiv.style.display = 'block';
-            if (!guia) document.getElementById('seleccion_guia').classList.add('input-error');
-            if (!comision) document.getElementById('seleccion_comision').classList.add('input-error');
+            if (!guia) document.querySelector('[name="seleccion_guia_rut"]').classList.add('input-error');
+            if (!comision) document.querySelector('[name="seleccion_comision_rut"]').classList.add('input-error');
             return false;
         }
     } else if (tipo === 'PrTut') {
@@ -65,7 +66,7 @@ function validarFormulario() {
             errorDiv.style.display = 'block';
             if (!document.getElementById('nombre_empresa').value) document.getElementById('nombre_empresa').classList.add('input-error');
             if (!document.getElementById('nombre_supervisor').value) document.getElementById('nombre_supervisor').classList.add('input-error');
-            if (!tutor) document.getElementById('seleccion_tutor').classList.add('input-error');
+            if (!tutor) document.querySelector('[name="seleccion_tutor_rut"]').classList.add('input-error');
             return false;
         }
     }

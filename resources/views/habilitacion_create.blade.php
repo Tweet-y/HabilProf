@@ -42,6 +42,7 @@
             </div>
         @endif
 
+        <!-- Div para errores de validación JavaScript -->
         <div id="js-validation-error" class="error-message" style="display: none; margin-bottom: 20px;"></div>
 
         <form action="{{ route('habilitaciones.store') }}" method="POST" onsubmit="return validarFormulario() && confirm('¿Está seguro de que desea registrar esta habilitación?');">

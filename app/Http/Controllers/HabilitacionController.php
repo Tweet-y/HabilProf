@@ -51,6 +51,7 @@ class HabilitacionController extends Controller
             $semestres[] = $yearActual . '-2';
             $semestres[] = ($yearActual + 1) . '-1';
         }
+        // Eliminar las líneas redundantes que causaban 4 opciones
 
         return view('habilitacion_create', compact('alumnos', 'profesores', 'semestres'));
     }

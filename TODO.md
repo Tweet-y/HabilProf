@@ -8,3 +8,4 @@
 - [x] Convert `resources/views/listados.blade.php` to use `<x-app-layout>` with header and header_styles slots.
 - [x] Test the application to ensure pages load within the layout without navigation disappearing.
 - [x] Verify CSS and JS assets load correctly.
+- [x] Confirm schedule functionality (CargaUCSCService) is working.
