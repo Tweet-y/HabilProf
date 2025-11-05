@@ -31,17 +31,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // 3. Ingreso de Habilitaciones (AHORA PROTEGIDO)
+    // 3. Ingreso de Habilitaciones (PROTEGIDO)
     Route::get('/habilitaciones/ingreso', [HabilitacionController::class, 'create'])->name('habilitaciones.create');
     Route::post('/habilitaciones/ingreso', [HabilitacionController::class, 'store'])->name('habilitaciones.store');
 
-    // 4. Modifcar o Eliminar Habilitaciones (AHORA PROTEGIDO)
+    // 4. Modifcar o Eliminar Habilitaciones (PROTEGIDO)
     Route::get('/actualizar_eliminar', [HabilitacionController::class, 'index'])->name('habilitaciones.index');
     Route::get('/actualizar_eliminar/{alumno}/edit', [HabilitacionController::class, 'edit'])->name('habilitaciones.edit');
     Route::put('/actualizar_eliminar/{alumno}', [HabilitacionController::class, 'update'])->name('habilitaciones.update');
     Route::delete('/actualizar_eliminar/{alumno}', [HabilitacionController::class, 'destroy'])->name('habilitaciones.destroy');
 
-    // 5. Generar Listados (AHORA PROTEGIDO)
+    // 5. Generar Listados (PROTEGIDO)
     Route::get('/listados', function () {
         return view('listados');
     })->name('listados');
