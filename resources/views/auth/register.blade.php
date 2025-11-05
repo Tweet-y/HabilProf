@@ -132,9 +132,9 @@
                 @csrf
 
                 <div class="form-group">
-                    <label for="name">Nombre Completo</label>
+                    <label for="name">Nombre de Usuario</label>
                     <input type="text" id="name" name="name" required 
-                           placeholder="Ingrese su nombre y apellido">
+                           placeholder="Ingrese un nombre de usuario">
                     @error('name')
                         <span class="error-message">{{ $message }}</span>
                     @enderror

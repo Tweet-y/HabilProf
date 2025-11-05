@@ -4,6 +4,8 @@ namespace App\Console;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use Illuminate\Support\Facades\Log;
+use App\CargaUCSCService;
 
 class Kernel extends ConsoleKernel
 {
@@ -12,7 +14,15 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule): void
     {
-        // $schedule->command('inspire')->hourly();
+        $schedule->call(function () {
+            // Se usa app() para resolver la instancia del servicio desde el contenedor de Laravel
+            $cargaService = app(CargaUCSCService::class);
+            $result = $cargaService->activarCargaPeriodica();
+
+            // Registrar un mensaje en los logs de Laravel para verificar la ejecución
+            \Log::info('Carga UCSC ejecutada a las ' . now() . ' - Resultados: ' . json_encode($result));
+
+        })->everyMinute(); // <-- Frecuencia de ejecución requerida
     }
 
     /**

@@ -12,11 +12,10 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // \App\Models\User::factory(10)->create();
-
-        // \App\Models\User::factory()->create([
-        //     'name' => 'Test User',
-        //     'email' => 'test@example.com',
-        // ]);
+        $this->call([
+        // Asegúrate que la siguiente línea exista:
+            \Database\Seeders\CargaSeeder::class, 
+        // Si tienes otros seeders (como los seeders de usuarios por defecto), agrégalos también.
+        ]);
     }
 }

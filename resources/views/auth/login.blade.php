@@ -116,9 +116,9 @@
             <form method="POST" action="{{ route('login') }}">
                 @csrf
                 <div class="form-group">
-                    <label for="email">Usuario</label>
+                    <label for="email">Email</label>
                     <input type="text" id="email" name="email" required 
-                           placeholder="Ingrese su RUT o email">
+                           placeholder="Ingrese un correo electrónico">
                 </div>
 
                 <div class="form-group">
@@ -130,6 +130,16 @@
                 <div class="button-container">
                     <button type="submit">Ingresar</button>
                 </div>
+
+                @if ($errors->any())
+                    <div style="color: red; margin-top: 10px;">
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
 
             </form>
 
