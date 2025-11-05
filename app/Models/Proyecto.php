@@ -18,14 +18,12 @@ class Proyecto extends Model
 
     const Tipo_Pr_Ing ='PrIng';
     const Tipo_Pr_Inv ='PrInv';
-    const Tipo_Pr_Tut ='PrTut';
 
     public static function getTiposProyecto()
     {
         return [
             self::Tipo_Pr_Ing,
             self::Tipo_Pr_Inv,
-            self::Tipo_Pr_Tut,
         ];
     }
 
