@@ -64,7 +64,7 @@ class HabilitacionController extends Controller
         try {
             // Validar los datos requeridos
             $rules = [
-                'selector_alumno_rut' => 'required|exists:alumnos,rut_alumno',
+                'selector_alumno_rut' => 'required|exists:alumno,rut_alumno',
                 'tipo_habilitacion' => 'required|in:PrIng,PrInv,PrTut',
                 'semestre_inicio' => 'required|string',
                 'titulo' => 'required|string|max:80|min:6|regex:/^[a-zA-Z0-9\s.,;:\'"&-_()]+$/',
@@ -72,13 +72,13 @@ class HabilitacionController extends Controller
             ];
 
             if ($request->tipo_habilitacion === 'PrIng' || $request->tipo_habilitacion === 'PrInv') {
-                $rules['seleccion_guia_rut'] = 'required_if:tipo_habilitacion,PrIng,PrInv|nullable|exists:profesors,rut_profesor';
-                $rules['seleccion_co_guia_rut'] = 'nullable|exists:profesors,rut_profesor|different:seleccion_guia_rut,seleccion_comision_rut';
-                $rules['seleccion_comision_rut'] = 'required_if:tipo_habilitacion,PrIng,PrInv|nullable|exists:profesors,rut_profesor|different:seleccion_guia_rut,seleccion_co_guia_rut';
+                $rules['seleccion_guia_rut'] = 'required_if:tipo_habilitacion,PrIng,PrInv|nullable|exists:profesor,rut_profesor';
+                $rules['seleccion_co_guia_rut'] = 'nullable|exists:profesor,rut_profesor|different:seleccion_guia_rut,seleccion_comision_rut';
+                $rules['seleccion_comision_rut'] = 'required_if:tipo_habilitacion,PrIng,PrInv|nullable|exists:profesor,rut_profesor|different:seleccion_guia_rut,seleccion_co_guia_rut';
             } elseif ($request->tipo_habilitacion === 'PrTut') {
                 $rules['nombre_empresa'] = 'required_if:tipo_habilitacion,PrTut|nullable|string|max:50|regex:/^[a-zA-Z0-9\s]+$/u';
                 $rules['nombre_supervisor'] = 'required_if:tipo_habilitacion,PrTut|nullable|string|max:50|regex:/^[a-zA-Z\sñÑáéíóúÁÉÍÓÚ]+$/u';
-                $rules['seleccion_tutor_rut'] = 'required_if:tipo_habilitacion,PrTut|nullable|exists:profesors,rut_profesor';
+                $rules['seleccion_tutor_rut'] = 'required_if:tipo_habilitacion,PrTut|nullable|exists:profesor,rut_profesor';
             }
 
             // Mensajes personalizados
@@ -205,13 +205,13 @@ class HabilitacionController extends Controller
         ];
 
         if ($request->tipo_habilitacion === 'PrIng' || $request->tipo_habilitacion === 'PrInv') {
-            $rules['seleccion_guia_rut'] = 'required_if:tipo_habilitacion,PrIng,PrInv|nullable|exists:profesors,rut_profesor';
-            $rules['seleccion_co_guia_rut'] = 'nullable|exists:profesors,rut_profesor|different:seleccion_guia_rut,seleccion_comision_rut';
-            $rules['seleccion_comision_rut'] = 'required_if:tipo_habilitacion,PrIng,PrInv|nullable|exists:profesors,rut_profesor|different:seleccion_guia_rut,seleccion_co_guia_rut';
+            $rules['seleccion_guia_rut'] = 'required_if:tipo_habilitacion,PrIng,PrInv|nullable|exists:profesor,rut_profesor';
+            $rules['seleccion_co_guia_rut'] = 'nullable|exists:profesor,rut_profesor|different:seleccion_guia_rut,seleccion_comision_rut';
+            $rules['seleccion_comision_rut'] = 'required_if:tipo_habilitacion,PrIng,PrInv|nullable|exists:profesor,rut_profesor|different:seleccion_guia_rut,seleccion_co_guia_rut';
         } elseif ($request->tipo_habilitacion === 'PrTut') {
             $rules['nombre_empresa'] = 'required_if:tipo_habilitacion,PrTut|nullable|string|max:50|regex:/^[a-zA-Z0-9\s]+$/u';
             $rules['nombre_supervisor'] = 'required_if:tipo_habilitacion,PrTut|nullable|string|max:50|regex:/^[a-zA-Z\sñÑáéíóúÁÉÍÓÚ]+$/u';
-            $rules['seleccion_tutor_rut'] = 'required_if:tipo_habilitacion,PrTut|nullable|exists:profesors,rut_profesor';
+            $rules['seleccion_tutor_rut'] = 'required_if:tipo_habilitacion,PrTut|nullable|exists:profesor,rut_profesor';
         }
 
         // Mensajes personalizados

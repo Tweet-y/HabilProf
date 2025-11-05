@@ -18,7 +18,7 @@
 
         <!-- Mensajes de éxito -->
         @if(session('success'))
-            <div class="success-message">
+            <div class="message success">
                 {{ session('success') }}
             </div>
         @endif
@@ -306,6 +306,15 @@
             const oldValue = "{{ old('tipo_habilitacion') }}";
             if (oldValue) {
                 toggleSections();
+            }
+
+            // Auto-scroll to error messages if they exist
+            const errorMessages = document.querySelectorAll('.error-message');
+            if (errorMessages.length > 0) {
+                errorMessages[0].scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
             }
         });
     </script>

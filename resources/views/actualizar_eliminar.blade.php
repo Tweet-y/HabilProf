@@ -108,6 +108,20 @@
             </div>
         @endif
 
+        <!-- Mensajes de error de sesión -->
+        @if(session('error'))
+            <div class="error-message">
+                {{ session('error') }}
+            </div>
+        @endif
+
+        <!-- Mensajes de éxito -->
+        @if(session('success'))
+            <div class="message success">
+                {{ session('success') }}
+            </div>
+        @endif
+
         <!-- Div para errores de validación JavaScript -->
         <div id="js-validation-error" class="error-message" style="display: none; margin-bottom: 20px;"></div>
 
