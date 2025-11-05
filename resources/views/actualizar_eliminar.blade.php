@@ -136,9 +136,9 @@
                     <div class="form-group">
                         <label for="tipo_habilitacion" class="required">Tipo de Habilitación</label>
                         <select id="tipo_habilitacion" name="tipo_habilitacion" required>
-                            <option value="PrIng" {{ (old('tipo_habilitacion', $habilitacion->proyecto->tipo_proyecto ?? 'PrIng') == 'PrIng') ? 'selected' : '' }}>PrIng (Proyecto de Ingeniería)</option>
-                            <option value="PrInv" {{ (old('tipo_habilitacion', $habilitacion->proyecto->tipo_proyecto ?? 'PrIng') == 'PrInv') ? 'selected' : '' }}>PrInv (Proyecto de Innovación)</option>
-                            <option value="PrTut" {{ (old('tipo_habilitacion', $habilitacion->proyecto ? '' : 'PrTut') == 'PrTut') ? 'selected' : '' }}>PrTut (Práctica Tutelada)</option>
+                            <option value="PrIng" {{ (old('tipo_habilitacion', $habilitacion->proyecto ? $habilitacion->proyecto->tipo_proyecto : ($habilitacion->prTut ? 'PrTut' : 'PrIng')) == 'PrIng') ? 'selected' : '' }}>PrIng (Proyecto de Ingeniería)</option>
+                            <option value="PrInv" {{ (old('tipo_habilitacion', $habilitacion->proyecto ? $habilitacion->proyecto->tipo_proyecto : ($habilitacion->prTut ? 'PrTut' : 'PrIng')) == 'PrInv') ? 'selected' : '' }}>PrInv (Proyecto de Innovación)</option>
+                            <option value="PrTut" {{ (old('tipo_habilitacion', $habilitacion->proyecto ? $habilitacion->proyecto->tipo_proyecto : ($habilitacion->prTut ? 'PrTut' : 'PrIng')) == 'PrTut') ? 'selected' : '' }}>PrTut (Práctica Tutelada)</option>
                         </select>
                     </div>
 
@@ -191,7 +191,7 @@
             </fieldset>
 
 
-            <div id="seccion-pring-prinv" class="seccion-condicional">
+            <div id="seccion-pring-prinv" class="seccion-condicional" style="display: {{ $habilitacion->proyecto ? 'block' : 'none' }};">
                 <fieldset>
                     <legend>Equipo Docente (PrIng / PrInv)</legend>
                     <div class="form-grid">
@@ -201,7 +201,7 @@
                                 <option value="" disabled>Seleccione un profesor guía...</option>
                                 @if(isset($profesores) && count($profesores) > 0)
                                     @foreach($profesores as $profesor)
-                                        <option value="{{ $profesor->rut_profesor }}" {{ (old('seleccion_guia_rut', $habilitacion->proyecto->rut_profesor_guia ?? '') == $profesor->rut_profesor) ? 'selected' : '' }}>
+                                        <option value="{{ $profesor->rut_profesor }}" {{ (old('seleccion_guia_rut', $habilitacion->proyecto ? $habilitacion->proyecto->rut_profesor_guia : '') == $profesor->rut_profesor) ? 'selected' : '' }}>
                                             {{ $profesor->apellido_profesor }}, {{ $profesor->nombre_profesor }} ({{ $profesor->rut_profesor }})
                                         </option>
                                     @endforeach
@@ -213,7 +213,13 @@
                             <label for="seleccion_co_guia">Profesor Co-Guía (UCSC) (Opcional)</label>
                             <select id="seleccion_co_guia" name="seleccion_co_guia_rut">
                                 <option value="">Ninguno (Opcional)</option>
-                                <option value="11223344" {{ (old('seleccion_co_guia_rut', $habilitacion->proyecto->rut_profesor_co_guia ?? '') == '11223344') ? 'selected' : '' }}>Profesor UCSC (No-DINF) (11223344)</option>
+                                @if(isset($profesores) && count($profesores) > 0)
+                                    @foreach($profesores as $profesor)
+                                        <option value="{{ $profesor->rut_profesor }}" {{ (old('seleccion_co_guia_rut', $habilitacion->proyecto ? $habilitacion->proyecto->rut_profesor_co_guia : '') == $profesor->rut_profesor) ? 'selected' : '' }}>
+                                            {{ $profesor->apellido_profesor }}, {{ $profesor->nombre_profesor }} ({{ $profesor->rut_profesor }})
+                                        </option>
+                                    @endforeach
+                                @endif
                             </select>
                         </div>
 
@@ -223,7 +229,7 @@
                                 <option value="" disabled>Seleccione un profesor comisión...</option>
                                 @if(isset($profesores) && count($profesores) > 0)
                                     @foreach($profesores as $profesor)
-                                        <option value="{{ $profesor->rut_profesor }}" {{ (old('seleccion_comision_rut', $habilitacion->proyecto->rut_profesor_comision ?? '') == $profesor->rut_profesor) ? 'selected' : '' }}>
+                                        <option value="{{ $profesor->rut_profesor }}" {{ (old('seleccion_comision_rut', $habilitacion->proyecto ? $habilitacion->proyecto->rut_profesor_comision : '') == $profesor->rut_profesor) ? 'selected' : '' }}>
                                             {{ $profesor->apellido_profesor }}, {{ $profesor->nombre_profesor }} ({{ $profesor->rut_profesor }})
                                         </option>
                                     @endforeach
@@ -235,7 +241,7 @@
             </div>
 
 
-            <div id="seccion-prtut" class="seccion-condicional">
+            <div id="seccion-prtut" class="seccion-condicional" style="display: {{ $habilitacion->prTut ? 'block' : 'none' }};">
                 <fieldset>
                     <legend>Datos Práctica Tutelada (PrTut)</legend>
                     <div class="form-grid">
@@ -243,14 +249,14 @@
                             <label for="nombre_empresa" class="required">Nombre Empresa</label>
                             <input type="text" id="nombre_empresa" name="nombre_empresa"
                                    maxlength="50" pattern="[a-zA-Z0-9\s]+"
-                                   value="{{ old('nombre_empresa', $habilitacion->prTut->nombre_empresa ?? '') }}">
+                                   value="{{ old('nombre_empresa', $habilitacion->prTut ? $habilitacion->prTut->nombre_empresa : '') }}">
                         </div>
 
                         <div class="form-group">
                             <label for="nombre_supervisor" class="required">Nombre Supervisor (Empresa)</label>
                             <input type="text" id="nombre_supervisor" name="nombre_supervisor"
                                    maxlength="50" pattern="[a-zA-Z\sñÑáéíóúÁÉÍÓÚ]+"
-                                   value="{{ old('nombre_supervisor', $habilitacion->prTut->nombre_supervisor ?? '') }}">
+                                   value="{{ old('nombre_supervisor', $habilitacion->prTut ? $habilitacion->prTut->nombre_supervisor : '') }}">
                         </div>
 
                         <div class="form-group">
@@ -259,7 +265,7 @@
                                 <option value="" disabled>Seleccione un tutor...</option>
                                 @if(isset($profesores) && count($profesores) > 0)
                                     @foreach($profesores as $profesor)
-                                        <option value="{{ $profesor->rut_profesor }}" {{ (old('seleccion_tutor_rut', $habilitacion->prTut->rut_profesor_tutor ?? '') == $profesor->rut_profesor) ? 'selected' : '' }}>
+                                        <option value="{{ $profesor->rut_profesor }}" {{ (old('seleccion_tutor_rut', $habilitacion->prTut ? $habilitacion->prTut->rut_profesor_tutor : '') == $profesor->rut_profesor) ? 'selected' : '' }}>
                                             {{ $profesor->apellido_profesor }}, {{ $profesor->nombre_profesor }} ({{ $profesor->rut_profesor }})
                                         </option>
                                     @endforeach
@@ -308,6 +314,42 @@
             const tipoHabilitacion = document.getElementById('tipo_habilitacion');
             if (tipoHabilitacion) {
                 tipoHabilitacion.dispatchEvent(new Event('change'));
+            }
+        }
+
+        // Función para manejar cambio de tipo de habilitación
+        function toggleSections() {
+            const tipoHabilitacion = document.getElementById('tipo_habilitacion');
+            const seccionProyecto = document.getElementById('seccion-pring-prinv');
+            const seccionPractica = document.getElementById('seccion-prtut');
+
+            if (tipoHabilitacion && seccionProyecto && seccionPractica) {
+                const valor = tipoHabilitacion.value;
+
+                // Ocultar ambas secciones primero
+                seccionProyecto.style.display = 'none';
+                seccionPractica.style.display = 'none';
+
+                // Quitar requerido de todos los campos condicionales
+                document.querySelectorAll('#seccion-pring-prinv [required]').forEach(el => {
+                    el.required = false;
+                });
+                document.querySelectorAll('#seccion-prtut [required]').forEach(el => {
+                    el.required = false;
+                });
+
+                // Mostrar y hacer requeridos según el tipo
+                if (valor === 'PrTut') {
+                    seccionPractica.style.display = 'block';
+                    document.querySelectorAll('#seccion-prtut [required]').forEach(el => {
+                        el.required = true;
+                    });
+                } else if (valor === 'PrIng' || valor === 'PrInv') {
+                    seccionProyecto.style.display = 'block';
+                    document.querySelectorAll('#seccion-pring-prinv [required]').forEach(el => {
+                        el.required = true;
+                    });
+                }
             }
         }
 
@@ -364,6 +406,21 @@
                         element.style.display = 'none';
                     }
                 }
+            }
+
+            // Add event listener for tipo_habilitacion change
+            const tipoHabilitacion = document.getElementById('tipo_habilitacion');
+            if (tipoHabilitacion) {
+                tipoHabilitacion.addEventListener('change', toggleSections);
+            }
+
+            // Auto-scroll to error messages if they exist
+            const errorMessages = document.querySelectorAll('.error-message, .message.success');
+            if (errorMessages.length > 0) {
+                errorMessages[0].scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
             }
         });
     </script>
