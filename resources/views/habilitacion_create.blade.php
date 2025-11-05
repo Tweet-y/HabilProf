@@ -249,7 +249,7 @@
 
             <div class="button-container">
                 @if($alumnos->count() == 0)
-                    <button type="button" onclick="window.location.href='/menu'">Volver al Menú</button>
+                    <button type="button" onclick="window.location.href='/dashboard'">Volver al Menú</button>
                 @endif
                 <div class="right-buttons">
                     <button type="button" onclick="window.location.href='/dashboard'">Cancelar</button>

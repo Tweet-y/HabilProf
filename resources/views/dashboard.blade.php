@@ -79,17 +79,17 @@
 
             <a href="{{ route('habilitaciones.create') }}" class="menu-item">
                 <h3>1. Ingresar Nueva Habilitación</h3>
-                <p>Registrar una nueva Habilitación Profesional (PrIng, PrInv o PrTut) para un alumno.</p>
+                <p>Registrar una nueva Habilitación Profesional para un alumno.</p>
             </a>
 
             <a href="{{ route('habilitaciones.index') }}" class="menu-item">
                 <h3>2. Actualizar o Eliminar Habilitación</h3>
-                <p>Buscar una habilitación existente por alumno para modificar sus datos o eliminar el registro.</p>
+                <p>Buscar una habilitación existente para modificar sus datos o eliminar.</p>
             </a>
 
             <a href="{{ route('listados') }}" class="menu-item">
                 <h3>3. Generar Listado de Habilitaciones</h3>
-                <p>Consultar y generar un reporte de todas las habilitaciones, filtrado por semestre o historial completo.</p>
+                <p>Generar un reporte de todas las habilitaciones, filtrado por semestre o historial completo.</p>
             </a>
 
         </main>
