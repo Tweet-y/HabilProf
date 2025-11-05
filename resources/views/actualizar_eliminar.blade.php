@@ -108,6 +108,8 @@
             </div>
         @endif
 
+        <div id="js-validation-error" class="error-message" style="display: none; margin-bottom: 20px;"></div>
+
         @if($habilitacion)
         <form action="#" method="POST" onsubmit="return false;" id="form-modificar" style="display: none;">
             @csrf

@@ -38,7 +38,21 @@ class HabilitacionController extends Controller
         // Obtener alumnos que no tienen habilitación
         $alumnos = Alumno::whereDoesntHave('habilitacion')->get();
         $profesores = Profesor::all();
-        return view('habilitacion_create', compact('alumnos', 'profesores'));
+
+        // Generar semestres disponibles (solo los 2 próximos)
+        $mesActual = date('n');
+        $yearActual = date('Y');
+        $semestres = [];
+
+        if ($mesActual <= 6) { // Primer semestre
+            $semestres[] = $yearActual . '-1';
+            $semestres[] = $yearActual . '-2';
+        } else { // Segundo semestre
+            $semestres[] = $yearActual . '-2';
+            $semestres[] = ($yearActual + 1) . '-1';
+        }
+
+        return view('habilitacion_create', compact('alumnos', 'profesores', 'semestres'));
     }
 
     /**
@@ -51,22 +65,37 @@ class HabilitacionController extends Controller
             $rules = [
                 'selector_alumno_rut' => 'required|exists:alumnos,rut_alumno',
                 'tipo_habilitacion' => 'required|in:PrIng,PrInv,PrTut',
-                'semestre_inicio' => 'required',
+                'semestre_inicio' => 'required|string',
                 'titulo' => 'required|string|max:80|min:6|regex:/^[a-zA-Z0-9\s.,;:\'"&-_()]+$/',
                 'descripcion' => 'required|string|max:500|min:30',
             ];
 
             if ($request->tipo_habilitacion === 'PrIng' || $request->tipo_habilitacion === 'PrInv') {
-                $rules['seleccion_guia_rut'] = 'required|exists:profesors,rut_profesor';
-                $rules['seleccion_co_guia_rut'] = 'nullable|exists:profesors,rut_profesor';
-                $rules['seleccion_comision_rut'] = 'required|exists:profesors,rut_profesor';
+                $rules['seleccion_guia_rut'] = 'required_if:tipo_habilitacion,PrIng,PrInv|nullable|exists:profesors,rut_profesor';
+                $rules['seleccion_co_guia_rut'] = 'nullable|exists:profesors,rut_profesor|different:seleccion_guia_rut,seleccion_comision_rut';
+                $rules['seleccion_comision_rut'] = 'required_if:tipo_habilitacion,PrIng,PrInv|nullable|exists:profesors,rut_profesor|different:seleccion_guia_rut,seleccion_co_guia_rut';
             } elseif ($request->tipo_habilitacion === 'PrTut') {
-                $rules['nombre_empresa'] = 'required|string|max:50|regex:/^[a-zA-Z0-9\s]+$/';
-                $rules['nombre_supervisor'] = 'required|string|max:50|regex:/^[a-zA-Z\sñÑáéíóúÁÉÍÓÚ]+$/';
-                $rules['seleccion_tutor_rut'] = 'required|exists:profesors,rut_profesor';
+                $rules['nombre_empresa'] = 'required_if:tipo_habilitacion,PrTut|nullable|string|max:50|regex:/^[a-zA-Z0-9\s]+$/u';
+                $rules['nombre_supervisor'] = 'required_if:tipo_habilitacion,PrTut|nullable|string|max:50|regex:/^[a-zA-Z\sñÑáéíóúÁÉÍÓÚ]+$/u';
+                $rules['seleccion_tutor_rut'] = 'required_if:tipo_habilitacion,PrTut|nullable|exists:profesors,rut_profesor';
             }
 
-            $request->validate($rules);
+            // Mensajes personalizados
+            $messages = [
+                '*.required' => 'El campo es obligatorio.',
+                '*.required_if' => 'Este campo es obligatorio para la modalidad seleccionada.',
+                '*.exists' => 'El valor seleccionado no es válido.',
+
+                // Mensajes específicos para profesores
+                'seleccion_guia_rut.required_if' => 'Debe seleccionar un Profesor Guía.',
+                'seleccion_comision_rut.required_if' => 'Debe seleccionar un Profesor Comisión.',
+                'seleccion_tutor_rut.required_if' => 'Debe seleccionar un Profesor Tutor.',
+
+                // Mensajes para duplicados
+                '*.different' => 'Un profesor no puede tener múltiples roles (Guía, Co-Guía, Comisión).',
+            ];
+
+            $request->validate($rules, $messages);
 
             // Validaciones de negocio
             $semestre = $request->semestre_inicio;
@@ -169,22 +198,37 @@ class HabilitacionController extends Controller
         // Validar los datos requeridos
         $rules = [
             'tipo_habilitacion' => 'required|in:PrIng,PrInv,PrTut',
-            'semestre_inicio' => 'required',
+            'semestre_inicio' => 'required|string',
             'titulo' => 'required|string|max:80|min:6|regex:/^[a-zA-Z0-9\s.,;:\'"&-_()]+$/',
             'descripcion' => 'required|string|max:500|min:30',
         ];
 
         if ($request->tipo_habilitacion === 'PrIng' || $request->tipo_habilitacion === 'PrInv') {
-            $rules['seleccion_guia_rut'] = 'required|exists:profesors,rut_profesor';
-            $rules['seleccion_co_guia_rut'] = 'nullable|exists:profesors,rut_profesor';
-            $rules['seleccion_comision_rut'] = 'required|exists:profesors,rut_profesor';
+            $rules['seleccion_guia_rut'] = 'required_if:tipo_habilitacion,PrIng,PrInv|nullable|exists:profesors,rut_profesor';
+            $rules['seleccion_co_guia_rut'] = 'nullable|exists:profesors,rut_profesor|different:seleccion_guia_rut,seleccion_comision_rut';
+            $rules['seleccion_comision_rut'] = 'required_if:tipo_habilitacion,PrIng,PrInv|nullable|exists:profesors,rut_profesor|different:seleccion_guia_rut,seleccion_co_guia_rut';
         } elseif ($request->tipo_habilitacion === 'PrTut') {
-            $rules['nombre_empresa'] = 'required|string|max:50|regex:/^[a-zA-Z0-9\s]+$/';
-            $rules['nombre_supervisor'] = 'required|string|max:50|regex:/^[a-zA-Z\sñÑáéíóúÁÉÍÓÚ]+$/';
-            $rules['seleccion_tutor_rut'] = 'required|exists:profesors,rut_profesor';
+            $rules['nombre_empresa'] = 'required_if:tipo_habilitacion,PrTut|nullable|string|max:50|regex:/^[a-zA-Z0-9\s]+$/u';
+            $rules['nombre_supervisor'] = 'required_if:tipo_habilitacion,PrTut|nullable|string|max:50|regex:/^[a-zA-Z\sñÑáéíóúÁÉÍÓÚ]+$/u';
+            $rules['seleccion_tutor_rut'] = 'required_if:tipo_habilitacion,PrTut|nullable|exists:profesors,rut_profesor';
         }
 
-        $request->validate($rules);
+        // Mensajes personalizados
+        $messages = [
+            '*.required' => 'El campo es obligatorio.',
+            '*.required_if' => 'Este campo es obligatorio para la modalidad seleccionada.',
+            '*.exists' => 'El valor seleccionado no es válido.',
+
+            // Mensajes específicos para profesores
+            'seleccion_guia_rut.required_if' => 'Debe seleccionar un Profesor Guía.',
+            'seleccion_comision_rut.required_if' => 'Debe seleccionar un Profesor Comisión.',
+            'seleccion_tutor_rut.required_if' => 'Debe seleccionar un Profesor Tutor.',
+
+            // Mensajes para duplicados
+            '*.different' => 'Un profesor no puede tener múltiples roles (Guía, Co-Guía, Comisión).',
+        ];
+
+        $request->validate($rules, $messages);
 
         // Validaciones de negocio para actualización
         $semestre = $request->semestre_inicio;
