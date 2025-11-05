@@ -1,11 +1,13 @@
 # TODO: Unify Breeze Layout with HabilProf Pages
 
-## Steps to Complete
+## Tasks
+- [x] Fix broken link in habilitacion_create.blade.php: Change button onclick from '/menu' to route('dashboard')
+- [x] Fix broken link in welcome.blade.php: Change link href from '/menu' to route('dashboard')
+- [x] Verify navigation works seamlessly after changes
 
-- [x] Edit `resources/views/layouts/app.blade.php` to add `{{ $header_styles ?? '' }}` before `</head>`.
-- [x] Convert `resources/views/habilitacion_create.blade.php` to use `<x-app-layout>` with header and header_styles slots.
-- [x] Convert `resources/views/actualizar_eliminar.blade.php` to use `<x-app-layout>` with header and header_styles slots.
-- [x] Convert `resources/views/listados.blade.php` to use `<x-app-layout>` with header and header_styles slots.
-- [x] Test the application to ensure pages load within the layout without navigation disappearing.
-- [x] Verify CSS and JS assets load correctly.
-- [x] Confirm schedule functionality (CargaUCSCService) is working.
+## Dependent Files
+- resources/views/habilitacion_create.blade.php
+- resources/views/welcome.blade.php
+
+## Followup Steps
+- Test the application to ensure navigation from HabilProf pages back to dashboard works without breaking the layout.

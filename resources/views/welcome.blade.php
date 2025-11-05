@@ -106,7 +106,7 @@
 
             <div class="button-container">
                 @auth
-                    <a href="/dashboard" class="button-link">Ir al Menú</a>
+                    <a href="{{ route('dashboard') }}" class="button-link">Ir al Menú</a>
 
                     <form method="POST" action="{{ route('logout') }}" style="margin: 0;">
                         @csrf
