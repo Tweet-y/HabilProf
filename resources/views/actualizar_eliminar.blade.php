@@ -191,7 +191,11 @@
             </fieldset>
 
 
-            <div id="seccion-pring-prinv" class="seccion-condicional" style="display: {{ $habilitacion->proyecto ? 'block' : 'none' }};">
+            @if($habilitacion && $habilitacion->proyecto)
+            <div id="seccion-pring-prinv" class="seccion-condicional" style="display: block;">
+            @else
+            <div id="seccion-pring-prinv" class="seccion-condicional" style="display: none;">
+            @endif
                 <fieldset>
                     <legend>Equipo Docente (PrIng / PrInv)</legend>
                     <div class="form-grid">
@@ -237,11 +241,15 @@
                             </select>
                         </div>
                     </div>
-                </fieldset>
+            @if($habilitacion && $habilitacion->prTut)
+            <div id="seccion-prtut" class="seccion-condicional" style="display: block;">
+            @else
+            <div id="seccion-prtut" class="seccion-condicional" style="display: none;">
+            @endif
             </div>
 
 
-            <div id="seccion-prtut" class="seccion-condicional" style="display: {{ $habilitacion->prTut ? 'block' : 'none' }};">
+            <div id="seccion-prtut" class="seccion-condicional" style="display: '{{ $habilitacion->prTut ? 'block' : 'none' }}';">
                 <fieldset>
                     <legend>Datos Práctica Tutelada (PrTut)</legend>
                     <div class="form-grid">
