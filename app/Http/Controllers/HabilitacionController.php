@@ -192,9 +192,9 @@ class HabilitacionController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, $rut_alumno)
+    public function update(Request $request, $alumno)
     {
-        $habilitacion = Habilitacion::where('rut_alumno', $rut_alumno)->firstOrFail();
+        $habilitacion = Habilitacion::where('rut_alumno', $alumno)->firstOrFail();
 
         // Validar los datos requeridos
         $rules = [
@@ -247,7 +247,7 @@ class HabilitacionController extends Controller
 
         // Verificar límite de 5 habilitaciones por semestre por profesor (excluyendo la actual)
         foreach ($profesores as $rut) {
-            $count = Habilitacion::where('rut_alumno', '!=', $rut_alumno)
+            $count = Habilitacion::where('rut_alumno', '!=', $alumno)
                 ->where('semestre_inicio', $semestre)
                 ->where(function($q) use ($rut) {
                     $q->whereHas('proyecto', function($subQ) use ($rut) {
@@ -326,9 +326,9 @@ class HabilitacionController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($rut_alumno)
+    public function destroy($alumno)
     {
-        $habilitacion = Habilitacion::where('rut_alumno', $rut_alumno)->firstOrFail();
+        $habilitacion = Habilitacion::where('rut_alumno', $alumno)->firstOrFail();
 
         // Eliminar registros relacionados
         if ($habilitacion->proyecto) {
