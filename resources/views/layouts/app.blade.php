@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
         <meta charset="utf-8">
@@ -13,6 +12,8 @@
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+        {{ $header_styles ?? '' }}
     </head>
     <body class="font-sans antialiased">
         <div class="min-h-screen bg-gray-100">

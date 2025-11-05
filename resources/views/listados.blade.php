@@ -1,156 +1,158 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Listado de Habilitaciones</title>
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            margin: 0;
-            padding: 20px;
-            background-color: #F8F9FA; /* Gris Claro (Fondo) */
-            color: #222222;
-        }
-        .container {
-            /* Mantenido en 1100px como en la corrección anterior */
-            max-width: 1100px;
-            margin: 20px auto;
-            background-color: #FFFFFF; /* Blanco (Contenedor) */
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            border: 1px solid #CED4DA; /* Gris (Borde) */
-            overflow: hidden;
-        }
-        header {
-            padding: 20px 30px;
-            background-color: #FFFFFF;
-            border-bottom: 1px solid #CED4DA;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        header h1 {
-            margin: 0;
-            color: #222222; /* Gris Oscuro (Texto) */
-            font-size: 1.8em;
-        }
-        header img {
-            max-height: 50px;
-            width: auto;
-            margin-left: 20px;
-        }
-        form, .seccion-tabla {
-            padding: 30px;
-        }
-        fieldset {
-            border: 1px solid #CED4DA; /* Gris (Borde) */
-            border-radius: 6px;
-            padding: 20px;
-            margin-bottom: 25px;
-            background-color: #F8F9FA; /* Gris Claro (Fondo Fieldset) */
-        }
-        legend {
-            font-size: 1.2em;
-            font-weight: 600;
-            padding: 0 10px;
-            color: #E60026; /* Rojo Primario (UCSC) */
-        }
-        .form-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            align-items: flex-end;
-        }
-        .form-group {
-            display: flex;
-            flex-direction: column;
-        }
-        label {
-            font-weight: 600;
-            margin-bottom: 6px;
-            font-size: 0.9em;
-            color: #333333;
-        }
-        label.required::after {
-            content: ' *';
-            color: #E60026; /* Rojo Primario (UCSC) */
-            font-weight: bold;
-        }
-        select {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #CED4DA;
-            border-radius: 4px;
-            box-sizing: border-box;
-            font-size: 1em;
-            background-color: #fff;
-        }
-        
-        /* --- ESTILOS PARA LA TABLA --- */
-        
-        .tabla-container {
-            width: 100%;
-            overflow-x: auto;
-            /* Scroll vertical para tablas largas */
-            max-height: 450px;
-            overflow-y: auto;
-            border: 1px solid #CED4DA;
-            border-radius: 4px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 0.9em;
-        }
-        table th, table td {
-            border-bottom: 1px solid #CED4DA; /* Borde solo horizontal */
-            padding: 12px 14px;
-            text-align: left;
-        }
-        table thead {
-            background-color: #0056A8; /* Azul Secundario (UCSC) */
-            position: sticky; /* Cabecera fija */
-            top: 0;
-            z-index: 1;
-        }
-        table thead th {
-            color: #FFFFFF; /* Texto Blanco */
-            font-weight: 600;
-            border-bottom: 0;
-        }
-        table tbody tr:nth-child(even) {
-            background-color: #F8F9FA; /* Gris Claro (Fila Par) */
-        }
-        table tbody tr:hover {
-            background-color: #E9ECEF; /* Gris Hover */
-        }
-        
-        .button-container {
-            text-align: left;
-        }
-        button {
-            padding: 10px 18px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 1em;
-            font-weight: 600;
-            transition: background-color 0.2s ease;
-            background-color: #E60026; /* Rojo Primario (UCSC) */
-            color: white;
-        }
-        button:hover {
-            background-color: #C00020;
-        }
-    </style>
-</head>
-<body>
+<x-app-layout>
+
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            Listado de Habilitaciones
+        </h2>
+    </x-slot>
+
+    <x-slot name="header_styles">
+        <style>
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+                margin: 0;
+                padding: 20px;
+                background-color: #F8F9FA; /* Gris Claro (Fondo) */
+                color: #222222;
+            }
+            .container {
+                /* Mantenido en 1100px como en la corrección anterior */
+                max-width: 1100px;
+                margin: 20px auto;
+                background-color: #FFFFFF; /* Blanco (Contenedor) */
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+                border: 1px solid #CED4DA; /* Gris (Borde) */
+                overflow: hidden;
+            }
+            header {
+                padding: 20px 30px;
+                background-color: #FFFFFF;
+                border-bottom: 1px solid #CED4DA;
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+            }
+            header h1 {
+                margin: 0;
+                color: #222222; /* Gris Oscuro (Texto) */
+                font-size: 1.8em;
+            }
+            header img {
+                max-height: 50px;
+                width: auto;
+                margin-left: 20px;
+            }
+            form, .seccion-tabla {
+                padding: 30px;
+            }
+            fieldset {
+                border: 1px solid #CED4DA; /* Gris (Borde) */
+                border-radius: 6px;
+                padding: 20px;
+                margin-bottom: 25px;
+                background-color: #F8F9FA; /* Gris Claro (Fondo Fieldset) */
+            }
+            legend {
+                font-size: 1.2em;
+                font-weight: 600;
+                padding: 0 10px;
+                color: #E60026; /* Rojo Primario (UCSC) */
+            }
+            .form-grid {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                gap: 20px;
+                align-items: flex-end;
+            }
+            .form-group {
+                display: flex;
+                flex-direction: column;
+            }
+            label {
+                font-weight: 600;
+                margin-bottom: 6px;
+                font-size: 0.9em;
+                color: #333333;
+            }
+            label.required::after {
+                content: ' *';
+                color: #E60026; /* Rojo Primario (UCSC) */
+                font-weight: bold;
+            }
+            select {
+                width: 100%;
+                padding: 10px;
+                border: 1px solid #CED4DA;
+                border-radius: 4px;
+                box-sizing: border-box;
+                font-size: 1em;
+                background-color: #fff;
+            }
+
+            /* --- ESTILOS PARA LA TABLA --- */
+
+            .tabla-container {
+                width: 100%;
+                overflow-x: auto;
+                /* Scroll vertical para tablas largas */
+                max-height: 450px;
+                overflow-y: auto;
+                border: 1px solid #CED4DA;
+                border-radius: 4px;
+            }
+            table {
+                width: 100%;
+                border-collapse: collapse;
+                font-size: 0.9em;
+            }
+            table th, table td {
+                border-bottom: 1px solid #CED4DA; /* Borde solo horizontal */
+                padding: 12px 14px;
+                text-align: left;
+            }
+            table thead {
+                background-color: #0056A8; /* Azul Secundario (UCSC) */
+                position: sticky; /* Cabecera fija */
+                top: 0;
+                z-index: 1;
+            }
+            table thead th {
+                color: #FFFFFF; /* Texto Blanco */
+                font-weight: 600;
+                border-bottom: 0;
+            }
+            table tbody tr:nth-child(even) {
+                background-color: #F8F9FA; /* Gris Claro (Fila Par) */
+            }
+            table tbody tr:hover {
+                background-color: #E9ECEF; /* Gris Hover */
+            }
+
+            .button-container {
+                text-align: left;
+            }
+            button {
+                padding: 10px 18px;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: 1em;
+                font-weight: 600;
+                transition: background-color 0.2s ease;
+                background-color: #E60026; /* Rojo Primario (UCSC) */
+                color: white;
+            }
+            button:hover {
+                background-color: #C00020;
+            }
+        </style>
+    </x-slot>
 
     <div class="container">
         <header>
             <h1>Listado de Habilitaciones</h1>
-            <img src="imagenes/ucsc.png" alt="Logo UCSC">
+            <img src="{{ asset('imagenes/ucsc.png') }}" alt="Logo UCSC">
             <div style="position: absolute; top: 20px; right: 30px;">
                 <button type="button" onclick="window.location.href='/dashboard'" style="padding: 8px 12px; background-color: #F8F9FA; color: #E60026; border: 1px solid #CED4DA; border-radius: 4px; text-decoration: none; font-weight: 600; font-size: 0.9em; transition: all 0.2s ease; cursor: pointer;">
                     Volver al Menú
@@ -279,5 +281,4 @@
 
     </div>
 
-</body>
-</html>
+</x-app-layout>

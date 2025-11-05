@@ -1,18 +1,20 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ingreso de Habilitación Profesional</title>
-    <link rel="stylesheet" href="{{ asset('css/form.css') }}">
-</head>
-<body>
+<x-app-layout>
+
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            Ingreso de Habilitación Profesional
+        </h2>
+    </x-slot>
+
+    <x-slot name="header_styles">
+        <link rel="stylesheet" href="{{ asset('css/form.css') }}">
+        <style>
+            /* Añade un margen para que el contenedor no choque con la barra de nav */
+            .container { margin-top: 20px; }
+        </style>
+    </x-slot>
 
     <div class="container">
-        <header>
-            <h1>Ingreso de Habilitación Profesional</h1>
-            <img src="{{ asset('imagenes/ucsc.png') }}" alt="Logo UCSC">
-        </header>
 
         <!-- Mensajes de éxito -->
         @if(session('success'))
@@ -306,5 +308,4 @@
         });
     </script>
 
-</body>
-</html>
+</x-app-layout>

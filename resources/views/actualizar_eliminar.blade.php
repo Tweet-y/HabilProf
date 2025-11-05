@@ -1,55 +1,55 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Actualizar o Eliminar Habilitación</title>
-    <link rel="stylesheet" href="{{ asset('css/form.css') }}">
-    <style>
-        /* Ensure buttons look like buttons */
-        button.btn-primary, button.btn-secondary, button.btn-danger {
-            display: inline-block;
-            padding: 12px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 1em;
-            font-weight: 600;
-            transition: background-color 0.2s ease;
-            text-decoration: none;
-            text-align: center;
-            user-select: none;
-        }
-        button.btn-primary {
-            background-color: #0056A8;
-            color: white;
-        }
-        button.btn-primary:hover {
-            background-color: #004180;
-        }
-        button.btn-secondary {
-            background-color: #6C757D;
-            color: white;
-        }
-        button.btn-secondary:hover {
-            background-color: #5A6268;
-        }
-        button.btn-danger {
-            background-color: #E60026;
-            color: white;
-        }
-        button.btn-danger:hover {
-            background-color: #C00020;
-        }
-    </style>
-</head>
-<body>
+<x-app-layout>
+
+    <x-slot name="header">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            Actualizar o Eliminar Habilitación
+        </h2>
+    </x-slot>
+
+    <x-slot name="header_styles">
+        <link rel="stylesheet" href="{{ asset('css/form.css') }}">
+        <style>
+            /* Añade un margen para que el contenedor no choque con la barra de nav */
+            .container { margin-top: 20px; }
+            /* Ensure buttons look like buttons */
+            button.btn-primary, button.btn-secondary, button.btn-danger {
+                display: inline-block;
+                padding: 12px 20px;
+                border: none;
+                border-radius: 4px;
+                cursor: pointer;
+                font-size: 1em;
+                font-weight: 600;
+                transition: background-color 0.2s ease;
+                text-decoration: none;
+                text-align: center;
+                user-select: none;
+            }
+            button.btn-primary {
+                background-color: #0056A8;
+                color: white;
+            }
+            button.btn-primary:hover {
+                background-color: #004180;
+            }
+            button.btn-secondary {
+                background-color: #6C757D;
+                color: white;
+            }
+            button.btn-secondary:hover {
+                background-color: #5A6268;
+            }
+            button.btn-danger {
+                background-color: #E60026;
+                color: white;
+            }
+            button.btn-danger:hover {
+                background-color: #C00020;
+            }
+        </style>
+    </x-slot>
 
     <div class="container">
-        <header>
-            <h1>Actualizar o Eliminar Habilitación</h1>
-            <img src="imagenes/ucsc.png" alt="Logo UCSC">
-        </header>
 
         <form action="{{ route('habilitaciones.index') }}" method="GET" class="seccion-accion">
             <fieldset>
@@ -351,5 +351,4 @@
         });
     </script>
 
-</body>
-</html>
+</x-app-layout>
