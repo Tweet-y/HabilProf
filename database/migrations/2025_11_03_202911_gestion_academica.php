@@ -9,16 +9,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('gestion_academica', function (Blueprint $table) {
-            // PK: rut_profesor
             $table->integer('rut_profesor')->primary(); 
             
-            // Atributos
             $table->string('nombre_profesor', 50)->nullable(false);
             $table->string('apellido_profesor', 50)->nullable(false);
             
-            // Campo clave para la filtración DINF
             $table->string('departamento', 50)->nullable(false); 
         });
+        DB::statement('ALTER TABLE profesor ADD CONSTRAINT rut_valido CHECK (rut_profesor > 999999 AND rut_profesor <= 99999999)');
     }
 
     public function down(): void
