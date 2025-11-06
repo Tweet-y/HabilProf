@@ -7,47 +7,45 @@ use Illuminate\Support\Facades\Route;
 |--------------------------------------------------------------------------
 | Web Routes
 |--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider and all of them will
-| be assigned to the "web" middleware group. Make something great!
-|
 */
 
-// Página de bienvenida
+// Página de bienvenida (Pública)
 Route::get('/', function () {
     return view('welcome');
 });
 
-// Menu principal
-Route::get('/menu', function () {
-    return view('menu');
-});
+// Login y autenticación (Públicas)
+require __DIR__.'/auth.php';
 
-// Ingreso de Habilitaciones Profesionales
-Route::get('/habilitaciones/ingreso', [HabilitacionController::class, 'create'])->name('habilitaciones.create');
-Route::post('/habilitaciones/ingreso', [HabilitacionController::class, 'store'])->name('habilitaciones.store');
 
-// Modifcar o Eliminar Habilitaciones Profesionales
+// --- INICIO DE LA ZONA SEGURA (SOLO USUARIOS LOGUEADOS) ---
+Route::middleware(['auth', 'verified'])->group(function () {
 
-Route::get('/actualizar_eliminar', [HabilitacionController::class, 'index'])->name('habilitaciones.index');
-Route::get('/actualizar_eliminar/{alumno}/edit', [HabilitacionController::class, 'edit'])->name('habilitaciones.edit');
-Route::put('/actualizar_eliminar/{alumno}', [HabilitacionController::class, 'update'])->name('habilitaciones.update');
-Route::delete('/actualizar_eliminar/{alumno}', [HabilitacionController::class, 'destroy'])->name('habilitaciones.destroy');
+    // 1. Dashboard (Tu menú principal)
+    Route::get('/dashboard', function () {
+        return view('dashboard');
+    })->name('dashboard');
 
-// Generar Listados de Habilitaciones Profesionales
-Route::get('/listados', function () {
-    return view('listados');
-});
-
-// Dashboard (post-login)
-Route::get('/dashboard', function () {
-    return view('dashboard');
-    
-})->middleware(['auth', 'verified'])->name('dashboard');
-Route::middleware('auth')->group(function () {
+    // 2. Perfil de Usuario
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // 3. Ingreso de Habilitaciones (PROTEGIDO)
+    Route::get('/habilitaciones/ingreso', [HabilitacionController::class, 'create'])->name('habilitaciones.create');
+    Route::post('/habilitaciones/ingreso', [HabilitacionController::class, 'store'])->name('habilitaciones.store');
+
+    // 4. Modifcar o Eliminar Habilitaciones (PROTEGIDO)
+    Route::get('/actualizar_eliminar', [HabilitacionController::class, 'index'])->name('habilitaciones.index');
+    Route::get('/actualizar_eliminar/{alumno}/edit', [HabilitacionController::class, 'edit'])->name('habilitaciones.edit');
+    Route::put('/actualizar_eliminar/{alumno}', [HabilitacionController::class, 'update'])->name('habilitaciones.update');
+    Route::delete('/actualizar_eliminar/{alumno}', [HabilitacionController::class, 'destroy'])->name('habilitaciones.destroy');
+
+    // 5. Generar Listados (PROTEGIDO)
+    Route::get('/listados', function () {
+        return view('listados');
+    })->name('listados');
+
 });
+// --- FIN DE LA ZONA SEGURA ---
 

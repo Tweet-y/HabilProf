@@ -11,19 +11,19 @@ class Proyecto extends Model
 
     public $timestamps = false;
 
-    protected $table = 'proyectos';
+    protected $table = 'proyecto';
     protected $primaryKey = 'id_habilitacion';
     public $incrementing = false;
     protected $keyType = 'integer';
 
-    const Tipo_Pr_Ing ='Pr_Ing';
-    const Tipo_Pr_Tut ='Pr_Tut';
+    const Tipo_Pr_Ing ='PrIng';
+    const Tipo_Pr_Inv ='PrInv';
 
     public static function getTiposProyecto()
     {
         return [
             self::Tipo_Pr_Ing,
-            self::Tipo_Pr_Tut,
+            self::Tipo_Pr_Inv,
         ];
     }
 

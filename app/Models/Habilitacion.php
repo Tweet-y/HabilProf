@@ -11,7 +11,7 @@ class Habilitacion extends Model
 
     public $timestamps = false;
 
-    protected $table = 'habilitacions';
+    protected $table = 'habilitacion';
     protected $primaryKey = 'id_habilitacion';
 
     protected $fillable = [

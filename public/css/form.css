@@ -1,0 +1,219 @@
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #F8F9FA;
+    color: #222222;
+}
+.container {
+    max-width: 900px;
+    margin: 20px auto;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    border: 1px solid #CED4DA;
+    overflow: hidden;
+}
+header {
+    padding: 20px 30px;
+    background-color: #FFFFFF;
+    border-bottom: 1px solid #CED4DA;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+header h1 {
+    margin: 0;
+    color: #222222;
+    font-size: 1.8em;
+}
+header img {
+    max-height: 50px;
+    width: auto;
+    margin-left: 20px;
+}
+form, .seccion-accion {
+    padding: 30px;
+}
+fieldset {
+    border: 1px solid #CED4DA;
+    border-radius: 6px;
+    padding: 20px;
+    margin-bottom: 25px;
+    background-color: #F8F9FA;
+}
+legend {
+    font-size: 1.2em;
+    font-weight: 600;
+    padding: 0 10px;
+    color: #E60026;
+}
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+}
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+.form-group-full {
+    grid-column: 1 / -1;
+}
+label {
+    font-weight: 600;
+    margin-bottom: 6px;
+    font-size: 0.9em;
+    color: #333333;
+}
+.error-message {
+    color: #721C24;
+    background-color: #F8D7DA;
+    border: 1px solid #F5C6CB;
+    padding: 15px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    text-align: center;
+    display: none;
+}
+.field-error {
+    border-color: #E60026 !important;
+}
+.error-text {
+    color: #E60026;
+    font-size: 0.8em;
+    margin-top: 4px;
+}
+.input-error {
+    border-color: #dc3545;
+}
+label.required::after {
+    content: ' *';
+    color: #E60026;
+    font-weight: bold;
+}
+input[type="text"],
+input[type="number"],
+input[type="date"],
+select,
+textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #CED4DA;
+    border-radius: 4px;
+    box-sizing: border-box;
+    font-size: 1em;
+    background-color: #fff;
+}
+input:read-only {
+    background-color: #E9ECEF;
+    color: #6C757D;
+    border-color: #CED4DA;
+    cursor: not-allowed;
+}
+.help-text {
+    font-size: 0.85em;
+    color: #555555;
+    margin-top: 4px;
+}
+.seccion-condicional {
+    border-top: 2px dashed #0056A8;
+    margin-top: 20px;
+    padding-top: 20px;
+}
+
+/* --- ESTILOS PARA MENSAJES Y ACCIONES --- */
+
+.message {
+    padding: 15px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    text-align: center;
+    font-weight: 500;
+}
+.message.error {
+    color: #721C24;
+    background-color: #F8D7DA;
+    border: 1px solid #F5C6CB;
+}
+.message.success {
+    color: #155724;
+    background-color: #D4EDDA;
+    border: 1px solid #C3E6CB;
+}
+.message.info {
+    color: #0C5460;
+    background-color: #D1ECF1;
+    border: 1px solid #BEE5EB;
+}
+
+/* Botones de acción */
+.button-container {
+    text-align: right;
+    border-top: 1px solid #CED4DA;
+    padding-top: 20px;
+    margin-top: 20px;
+}
+button {
+    padding: 12px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1em;
+    font-weight: 600;
+    transition: background-color 0.2s ease;
+}
+
+/* --- Paleta de Botones UCSC --- */
+
+/* Botón Primario (Acción Segura - Modificar, Guardar, Buscar) */
+button.btn-primary {
+    background-color: #0056A8;
+    color: white;
+}
+button.btn-primary:hover {
+    background-color: #004180;
+}
+
+/* Botón Secundario (Cancelar) */
+button.btn-secondary {
+    background-color: #6C757D;
+    color: white;
+    margin-right: 10px;
+    border: none;
+}
+button.btn-secondary:hover {
+    background-color: #5A6268;
+}
+
+/* Botón de Peligro (Eliminar) */
+button.btn-danger {
+    background-color: #E60026;
+    color: white;
+    margin-right: 10px;
+}
+button.btn-danger:hover {
+    background-color: #C00020;
+}
+
+/* Estilos para el bloque de elección */
+.seccion-accion {
+    text-align: center;
+}
+.seccion-accion h2 {
+    color: #222222;
+    margin-top: 0;
+}
+.seccion-accion p {
+    font-size: 1.1em;
+    margin-bottom: 25px;
+}
+.seccion-accion .button-container {
+    text-align: center;
+    border-top: none;
+}
+
+/* Lógica de display condicional para flujo de actualización/eliminación */
+.hidden {
+    display: none;
+}

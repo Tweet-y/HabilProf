@@ -9,7 +9,8 @@ class Alumno extends Model
 {
     use HasFactory;
 
-    protected $table = 'alumnos';
+    public $timestamps = false;
+    protected $table = 'alumno';
     protected $primaryKey = 'rut_alumno';
     public $incrementing = false;
     protected $keyType = 'integer';

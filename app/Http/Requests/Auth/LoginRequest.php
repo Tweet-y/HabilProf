@@ -24,13 +24,34 @@ class LoginRequest extends FormRequest
      *
      * @return array<string, \Illuminate\Contracts\Validation\Rule|array|string>
      */
-    public function rules(): array
-    {
-        return [
-            'email' => ['required', 'string', 'email'],
-            'password' => ['required', 'string'],
-        ];
-    }
+
+/**
+ * Get the validation rules that apply to the request.
+ *
+ * @return array<string, \Illuminate\Contracts\Validation\Rule|array|string>
+ */
+public function rules(): array
+{
+    return [
+        // Requisito 'correo_user': 'X@ucsc.cl', X=4-30 chars.
+        'email' => [
+            'required',
+            'string',
+            'email',
+            'min:12',
+            'max:42',
+            'regex:/^[a-z]{4,30}@ucsc\.cl$/'
+        ],
+
+        // Requisito 'clave_user': 8-64 chars.
+        'password' => [
+            'required',
+            'string',
+            'min:8',
+            'max:64'
+        ],
+    ];
+}
 
     /**
      * Attempt to authenticate the request's credentials.
