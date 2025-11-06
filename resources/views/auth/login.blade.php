@@ -117,15 +117,22 @@
             <form method="POST" action="{{ route('login') }}">
                 @csrf
                 <div class="form-group">
-                    <label for="email">Email</label>
+                    <label for="email">Correo Electrónico</label>
                     <input type="text" id="email" name="email" required 
-                           placeholder="Ingrese un correo electrónico">
+                           placeholder="Ingrese un correo electrónico"
+                           value="{{ old('email') }}">
+                    @error('email')
+                        <div class="error-message" style="color:#E60026; margin-top:6px;">{{ $message }}</div>
+                    @enderror
                 </div>
 
                 <div class="form-group">
                     <label for="password">Contraseña</label>
                     <input type="password" id="password" name="password" required 
                            placeholder="Ingrese su contraseña">
+                    @error('password')
+                        <div class="error-message" style="color:#E60026; margin-top:6px;">{{ $message }}</div>
+                    @enderror
                 </div>
 
                 <div class="button-container">
@@ -133,7 +140,7 @@
                 </div>
 
                 @if ($errors->any())
-                    <div style="color: red; margin-top: 10px;">
+                    <div style="color: #E60026; margin-top: 10px;">
                         <ul>
                             @foreach ($errors->all() as $error)
                                 <li>{{ $error }}</li>
