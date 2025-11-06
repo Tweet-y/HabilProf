@@ -6,39 +6,22 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('habilitacion', function (Blueprint $table) {
             
-            // PK: id_habilitacion (SERIAL/Autoincremento)
-            // Usamos 'id' y luego lo renombramos a id_habilitacion para ser más fiel a la columna.
             $table->id('id_habilitacion'); 
-            
-            // FK a Alumno (Relación 1:1)
-            // La columna debe ser INTEGER (como rut_alumno) y UNIQUE para forzar el 1:1.
             $table->integer('rut_alumno')->unique()->nullable(false); 
             $table->foreign('rut_alumno')->references('rut_alumno')->on('alumno')->onDelete('cascade'); 
             
-            // Atributos Comunes
-            $table->float('nota_final')->nullable(true); // NULL permitido
-            $table->date('fecha_nota')->nullable(true); // NULL permitido
-            $table->string('semestre_inicio', 9)->nullable(false); // NOT NULL
-            $table->string('descripcion', 500)->nullable(false); // NOT NULL
-            $table->string('titulo', 50)->nullable(false); // NOT NULL
-            
-            // Nota: Se omite $table->timestamps() para ser fiel al SQL que proporcionaste.
-            
-            // Nota: La restricción CHECK para nota_final se implementaría con DB::statement 
-            // si se deseara incluir, pero se omite para seguir las instrucciones anteriores.
+            $table->float('nota_final')->nullable(false)->default(0.0);
+            $table->date('fecha_nota')->nullable(true); 
+            $table->string('semestre_inicio', 9)->nullable(false); 
+            $table->string('descripcion', 500)->nullable(false); 
+            $table->string('titulo', 50)->nullable(false); 
         });
+        DB::statement('ALTER TABLE habilitacion ADD CONSTRAINT nota_rango CHECK (nota_final = 0.0 OR (nota_final >= 1.0 AND nota_final <= 7.0))');
     }
-
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('habilitacion');
