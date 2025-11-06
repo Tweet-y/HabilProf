@@ -16,7 +16,7 @@ return new class extends Migration
             
             $table->string('departamento', 50)->nullable(false); 
         });
-        DB::statement('ALTER TABLE profesor ADD CONSTRAINT rut_valido CHECK (rut_profesor > 999999 AND rut_profesor <= 99999999)');
+        DB::statement('ALTER TABLE gestion_academica ADD CONSTRAINT rut_valido CHECK (rut_profesor > 999999 AND rut_profesor <= 99999999)');
     }
 
     public function down(): void

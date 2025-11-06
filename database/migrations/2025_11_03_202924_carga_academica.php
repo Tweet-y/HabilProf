@@ -15,7 +15,7 @@ return new class extends Migration
             $table->string('apellido_alumno', 50)->nullable(false);
             $table->jsonb('asignaturas')->nullable(false); 
         });
-        DB::statement('ALTER TABLE alumno ADD CONSTRAINT rut_valido CHECK (rut_alumno > 999999 AND rut_alumno <= 99999999)');
+        DB::statement('ALTER TABLE carga_academica ADD CONSTRAINT rut_valido CHECK (rut_alumno > 999999 AND rut_alumno <= 99999999)');
     }
 
     public function down(): void
