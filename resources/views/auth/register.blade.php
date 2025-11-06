@@ -121,7 +121,8 @@
 
     <div class="register-container">
         <header>
-            <img src="{{ asset('imagenes/ucsc.png') }}" alt="Logo UCSC">
+            <img src="{{ asset('imagenes/ucsc2.png') }}" alt="Logo UCSC">
+            <h1>Registro</h1>
             <h1>Sistema HabilProf</h1>
         </header>
 
