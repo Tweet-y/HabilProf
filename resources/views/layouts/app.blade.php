@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
     <head>
         <meta charset="utf-8">
@@ -13,10 +14,11 @@
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
 
+        <!-- Styles --> 
         {{ $header_styles ?? '' }}
     </head>
-    <body class="font-sans antialiased">
-        <div class="min-h-screen bg-gray-100">
+    <body class="font-sans antialiased" style="background-color: #F8F9FA;">
+        <div class="min-h-screen bg-gray-100" style="background-color: #F8F9FA;">
             @include('layouts.navigation')
 
             <!-- Page Heading -->
