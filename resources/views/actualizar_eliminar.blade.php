@@ -9,9 +9,8 @@
     <x-slot name="header_styles">
         <link rel="stylesheet" href="{{ asset('css/form.css') }}">
         <style>
-            /* Añade un margen para que el contenedor no choque con la barra de nav */
             .container { margin-top: 20px; }
-            /* Ensure buttons look like buttons */
+            /* Estilos de botones (movidos desde el <style> original) */
             button.btn-primary, button.btn-secondary, button.btn-danger {
                 display: inline-block;
                 padding: 12px 20px;
@@ -25,27 +24,12 @@
                 text-align: center;
                 user-select: none;
             }
-            button.btn-primary {
-                background-color: #0056A8;
-                color: white;
-            }
-            button.btn-primary:hover {
-                background-color: #004180;
-            }
-            button.btn-secondary {
-                background-color: #6C757D;
-                color: white;
-            }
-            button.btn-secondary:hover {
-                background-color: #5A6268;
-            }
-            button.btn-danger {
-                background-color: #E60026;
-                color: white;
-            }
-            button.btn-danger:hover {
-                background-color: #C00020;
-            }
+            button.btn-primary { background-color: #0056A8; color: white; }
+            button.btn-primary:hover { background-color: #004180; }
+            button.btn-secondary { background-color: #6C757D; color: white; }
+            button.btn-secondary:hover { background-color: #5A6268; }
+            button.btn-danger { background-color: #E60026; color: white; }
+            button.btn-danger:hover { background-color: #C00020; }
         </style>
     </x-slot>
 
@@ -54,11 +38,10 @@
         <form action="{{ route('habilitaciones.index') }}" method="GET" class="seccion-accion">
             <fieldset>
                 <legend>Buscar Habilitación Existente</legend>
-
                 <div class="form-group form-group-full">
                     <label for="buscar_alumno" class="required">Seleccionar Alumno</label>
                     <select id="buscar_alumno" name="rut_alumno" required>
-                        <option value="" disabled>Buscar y seleccionar un alumno...</option>
+                        <option value="" disabled {{ !request('rut_alumno') ? 'selected' : '' }}>Buscar y seleccionar un alumno...</option>
                         @if(isset($alumnos) && count($alumnos) > 0)
                             @foreach($alumnos as $alumno)
                                 <option value="{{ $alumno->rut_alumno }}" {{ (request('rut_alumno') == $alumno->rut_alumno) ? 'selected' : '' }}>
@@ -70,36 +53,25 @@
                         @endif
                     </select>
                 </div>
-
                 <div class="button-container">
                     <button type="submit" class="btn-primary">Buscar Habilitación</button>
                 </div>
             </fieldset>
         </form>
 
-        @if($habilitacion)
-        @php
-            $alumnoNombre = $habilitacion->alumno->apellido_alumno . ', ' . $habilitacion->alumno->nombre_alumno;
-        @endphp
-        <div class="seccion-accion" id="seleccion-accion">
-            <hr style="border: 0; border-top: 1px dashed #CED4DA; margin: 0 30px 30px;">
-            <h2>Alumno Seleccionado: <strong>{{ $alumnoNombre }}</strong></h2>
-            <p>¿Desea eliminar o modificar los datos de esta habilitación?</p>
-
-            <div class="button-container">
-                <button type="button" class="btn-primary" onclick="mostrarModificar()">Modificar Datos</button>
-                <button type="button" class="btn-danger" onclick="mostrarEliminar('{{ $alumnoNombre }}')">Eliminar Habilitación</button>
+        @if(session('success'))
+            <div class="success-message" role="alert">
+                {{ session('success') }}
             </div>
-        </div>
         @endif
-
-
-        <div class="error-message" id="form-error" style="display: none;"></div>
-
-        <!-- Mensajes de error -->
+        @if(session('error'))
+            <div class="error-message" role="alert">
+                {{ session('error') }}
+            </div>
+        @endif
         @if($errors->any())
-            <div class="error-message">
-                <strong>Complete todos los campos destacados(*) o los campos no están bien escritos(*).</strong>
+            <div class="error-message" role="alert">
+                <strong>Error de validación:</strong>
                 <ul style="margin: 10px 0 0 0; padding-left: 20px;">
                     @foreach($errors->all() as $error)
                         <li>{{ $error }}</li>
@@ -108,188 +80,163 @@
             </div>
         @endif
 
-        <!-- Mensajes de error de sesión -->
-        @if(session('error'))
-            <div class="error-message">
-                {{ session('error') }}
-            </div>
-        @endif
-
-        <!-- Mensajes de éxito -->
-        @if(session('success'))
-            <div class="message success">
-                {{ session('success') }}
-            </div>
-        @endif
-
-        <!-- Div para errores de validación JavaScript -->
         <div id="js-validation-error" class="error-message" style="display: none; margin-bottom: 20px;"></div>
 
         @if($habilitacion)
-        <form action="#" method="POST" onsubmit="return false;" id="form-modificar" style="display: none;">
-            @csrf
-            @method('PUT')
-            <fieldset>
-                <legend>Datos Principales (Editando)</legend>
-                <div class="form-grid">
-
-                    <div class="form-group">
-                        <label for="tipo_habilitacion" class="required">Tipo de Habilitación</label>
-                        <select id="tipo_habilitacion" name="tipo_habilitacion" required>
-                            <option value="PrIng" {{ (old('tipo_habilitacion', $habilitacion->proyecto ? $habilitacion->proyecto->tipo_proyecto : ($habilitacion->prTut ? 'PrTut' : 'PrIng')) == 'PrIng') ? 'selected' : '' }}>PrIng (Proyecto de Ingeniería)</option>
-                            <option value="PrInv" {{ (old('tipo_habilitacion', $habilitacion->proyecto ? $habilitacion->proyecto->tipo_proyecto : ($habilitacion->prTut ? 'PrTut' : 'PrIng')) == 'PrInv') ? 'selected' : '' }}>PrInv (Proyecto de Innovación)</option>
-                            <option value="PrTut" {{ (old('tipo_habilitacion', $habilitacion->proyecto ? $habilitacion->proyecto->tipo_proyecto : ($habilitacion->prTut ? 'PrTut' : 'PrIng')) == 'PrTut') ? 'selected' : '' }}>PrTut (Práctica Tutelada)</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="semestre_inicio" class="required">Semestre de Inicio</label>
-                        <select id="semestre_inicio" name="semestre_inicio" required>
-                            <option value="2025-1" {{ (old('semestre_inicio', $habilitacion->semestre_inicio ?? '2025-1') == '2025-1') ? 'selected' : '' }}>2025-1</option>
-                            <option value="2025-2" {{ (old('semestre_inicio', $habilitacion->semestre_inicio ?? '2025-1') == '2025-2') ? 'selected' : '' }}>2025-2</option>
-                            <option value="2026-1" {{ (old('semestre_inicio', $habilitacion->semestre_inicio ?? '2025-1') == '2026-1') ? 'selected' : '' }}>2026-1</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="nota_final">Nota Final</label>
-                        <input type="number" id="nota_final" name="nota_final"
-                               min="1.0" max="7.0" step="0.1" value="{{ old('nota_final', $habilitacion->nota_final ?? '') }}" readonly>
-                        <small class="help-text">La nota final se actualiza automáticamente.</small>
-                    </div>
+            @php
+                $alumnoNombre = $habilitacion->alumno->apellido_alumno . ', ' . $habilitacion->alumno->nombre_alumno;
+            @endphp
+            <div class="seccion-accion" id="seleccion-accion">
+                <hr style="border: 0; border-top: 1px dashed #CED4DA; margin: 0 30px 30px;">
+                <h2>Alumno Seleccionado: <strong>{{ $alumnoNombre }}</strong></h2>
+                <p>¿Desea eliminar o modificar los datos de esta habilitación?</p>
+                <div class="button-container">
+                    <button type="button" class="btn-primary" onclick="mostrarModificar()">Modificar Datos</button>
+                    <button type="button" class="btn-danger" onclick="mostrarEliminar('{{ $alumnoNombre }}')">Eliminar Habilitación</button>
                 </div>
-            </fieldset>
-
-
-
-            <fieldset>
-                <legend>Descripción del Trabajo (Editando)</legend>
-                <div class="form-grid">
-                    <div class="form-group form-group-full">
-                        <label for="titulo" class="required">Título</label>
-                        <input type="text" id="titulo" name="titulo"
-                               minlength="6" maxlength="80"
-                               pattern="[a-zA-Z0-9\s.,;:\'&-_()]+" title="Solo alfanumérico y algunos símbolos."
-                               value="{{ old('titulo', $habilitacion->titulo ?? '') }}"
-                               class="{{ $errors->has('titulo') ? 'field-error' : '' }}">
-                        <small class="help-text">Entre 6 y 80 caracteres. Símbolos permitidos: . , ; : ' " - _ ( )</small>
-                        @if($errors->has('titulo'))
-                            <div class="error-text">{{ $errors->first('titulo') }}</div>
-                        @endif
-                    </div>
-                    <div class="form-group form-group-full">
-                        <label for="descripcion" class="required">Descripción</label>
-                        <textarea id="descripcion" name="descripcion"
-                                  minlength="30" maxlength="500"
-                                  class="{{ $errors->has('descripcion') ? 'field-error' : '' }}">{{ old('descripcion', $habilitacion->descripcion ?? '') }}</textarea>
-                        <small class="help-text">Entre 30 y 500 caracteres. Símbolos permitidos: . , ; : ' " - _ ( )</small>
-                        @if($errors->has('descripcion'))
-                            <div class="error-text">{{ $errors->first('descripcion') }}</div>
-                        @endif
-                    </div>
-                </div>
-            </fieldset>
-
-
-            @if($habilitacion && $habilitacion->proyecto)
-            <div id="seccion-pring-prinv" class="seccion-condicional" style="display: block;">
-            @else
-            <div id="seccion-pring-prinv" class="seccion-condicional" style="display: none;">
-            @endif
-                <fieldset>
-                    <legend>Equipo Docente (PrIng / PrInv)</legend>
-                    <div class="form-grid">
-                        <div class="form-group">
-                            <label for="seleccion_guia" class="required">Profesor Guía (DINF)</label>
-                            <select id="seleccion_guia" name="seleccion_guia_rut" required>
-                                <option value="" disabled>Seleccione un profesor guía...</option>
-                                @if(isset($profesores) && count($profesores) > 0)
-                                    @foreach($profesores as $profesor)
-                                        <option value="{{ $profesor->rut_profesor }}" {{ (old('seleccion_guia_rut', $habilitacion->proyecto ? $habilitacion->proyecto->rut_profesor_guia : '') == $profesor->rut_profesor) ? 'selected' : '' }}>
-                                            {{ $profesor->apellido_profesor }}, {{ $profesor->nombre_profesor }} ({{ $profesor->rut_profesor }})
-                                        </option>
-                                    @endforeach
-                                @endif
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="seleccion_co_guia">Profesor Co-Guía (UCSC) (Opcional)</label>
-                            <select id="seleccion_co_guia" name="seleccion_co_guia_rut">
-                                <option value="">Ninguno (Opcional)</option>
-                                @if(isset($profesores) && count($profesores) > 0)
-                                    @foreach($profesores as $profesor)
-                                        <option value="{{ $profesor->rut_profesor }}" {{ (old('seleccion_co_guia_rut', $habilitacion->proyecto ? $habilitacion->proyecto->rut_profesor_co_guia : '') == $profesor->rut_profesor) ? 'selected' : '' }}>
-                                            {{ $profesor->apellido_profesor }}, {{ $profesor->nombre_profesor }} ({{ $profesor->rut_profesor }})
-                                        </option>
-                                    @endforeach
-                                @endif
-                            </select>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="seleccion_comision" class="required">Profesor Comisión (DINF)</label>
-                            <select id="seleccion_comision" name="seleccion_comision_rut" required>
-                                <option value="" disabled>Seleccione un profesor comisión...</option>
-                                @if(isset($profesores) && count($profesores) > 0)
-                                    @foreach($profesores as $profesor)
-                                        <option value="{{ $profesor->rut_profesor }}" {{ (old('seleccion_comision_rut', $habilitacion->proyecto ? $habilitacion->proyecto->rut_profesor_comision : '') == $profesor->rut_profesor) ? 'selected' : '' }}>
-                                            {{ $profesor->apellido_profesor }}, {{ $profesor->nombre_profesor }} ({{ $profesor->rut_profesor }})
-                                        </option>
-                                    @endforeach
-                                @endif
-                            </select>
-                        </div>
-                    </div>
-            @if($habilitacion && $habilitacion->prTut)
-            <div id="seccion-prtut" class="seccion-condicional" style="display: block;">
-            @else
-            <div id="seccion-prtut" class="seccion-condicional" style="display: none;">
-            @endif
             </div>
 
-
-            <div id="seccion-prtut" class="seccion-condicional" style="display: '{{ $habilitacion->prTut ? 'block' : 'none' }}';">
+            <form action="#" method="POST" onsubmit="return false;" id="form-modificar" style="display: none;">
+                @csrf
+                @method('PUT')
+                
                 <fieldset>
-                    <legend>Datos Práctica Tutelada (PrTut)</legend>
+                    <legend>Datos Principales (Editando)</legend>
                     <div class="form-grid">
                         <div class="form-group">
-                            <label for="nombre_empresa" class="required">Nombre Empresa</label>
-                            <input type="text" id="nombre_empresa" name="nombre_empresa"
-                                   maxlength="50" pattern="[a-zA-Z0-9\s]+"
-                                   value="{{ old('nombre_empresa', $habilitacion->prTut ? $habilitacion->prTut->nombre_empresa : '') }}">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="nombre_supervisor" class="required">Nombre Supervisor (Empresa)</label>
-                            <input type="text" id="nombre_supervisor" name="nombre_supervisor"
-                                   maxlength="50" pattern="[a-zA-Z\sñÑáéíóúÁÉÍÓÚ]+"
-                                   value="{{ old('nombre_supervisor', $habilitacion->prTut ? $habilitacion->prTut->nombre_supervisor : '') }}">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="seleccion_tutor" class="required">Profesor Tutor (DINF)</label>
-                            <select id="seleccion_tutor" name="seleccion_tutor_rut" required>
-                                <option value="" disabled>Seleccione un tutor...</option>
-                                @if(isset($profesores) && count($profesores) > 0)
-                                    @foreach($profesores as $profesor)
-                                        <option value="{{ $profesor->rut_profesor }}" {{ (old('seleccion_tutor_rut', $habilitacion->prTut ? $habilitacion->prTut->rut_profesor_tutor : '') == $profesor->rut_profesor) ? 'selected' : '' }}>
-                                            {{ $profesor->apellido_profesor }}, {{ $profesor->nombre_profesor }} ({{ $profesor->rut_profesor }})
-                                        </option>
-                                    @endforeach
-                                @endif
+                            <label for="tipo_habilitacion" class="required">Tipo de Habilitación</label>
+                            <select id="tipo_habilitacion" name="tipo_habilitacion" required>
+                                <option value="PrIng" {{ (old('tipo_habilitacion', $habilitacion->proyecto ? $habilitacion->proyecto->tipo_proyecto : ($habilitacion->prTut ? 'PrTut' : '')) == 'PrIng') ? 'selected' : '' }}>PrIng (Proyecto de Ingeniería)</option>
+                                <option value="PrInv" {{ (old('tipo_habilitacion', $habilitacion->proyecto ? $habilitacion->proyecto->tipo_proyecto : ($habilitacion->prTut ? 'PrTut' : '')) == 'PrInv') ? 'selected' : '' }}>PrInv (Proyecto de Innovación)</option>
+                                <option value="PrTut" {{ (old('tipo_habilitacion', $habilitacion->proyecto ? $habilitacion->proyecto->tipo_proyecto : ($habilitacion->prTut ? 'PrTut' : '')) == 'PrTut') ? 'selected' : '' }}>PrTut (Práctica Tutelada)</option>
                             </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="semestre_inicio" class="required">Semestre de Inicio</label>
+                            <select id="semestre_inicio" name="semestre_inicio" required>
+                                <option value="" disabled>Seleccione semestre...</option>
+                                @foreach($semestres as $semestre)
+                                    <option value="{{ $semestre }}" {{ (old('semestre_inicio', $habilitacion->semestre_inicio) == $semestre) ? 'selected' : '' }}>{{ $semestre }}</option>
+                                @endforeach
+                            </select>
+                            <small class="help-text">Semestre anterior, actual y siguiente.</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="nota_final">Nota Final</label>
+                            <input type="number" id="nota_final" name="nota_final"
+                                   min="1.0" max="7.0" step="0.1" value="{{ old('nota_final', $habilitacion->nota_final ?? '') }}" readonly>
+                            <small class="help-text">La nota final se actualiza automáticamente.</small>
                         </div>
                     </div>
                 </fieldset>
-            </div>
 
-            <div class="button-container">
-                <button type="reset" class="btn-secondary" onclick="cancelarEdicion()">Cancelar Edición</button>
-                <button type="button" class="btn-primary" onclick="guardarCambios()">Guardar Cambios</button>
-                <button type="button" class="btn-secondary" onclick="window.location.href='/dashboard'">Volver al Menú</button>
-            </div>
-        </form>
+                <fieldset>
+                    <legend>Descripción del Trabajo (Editando)</legend>
+                    <div class="form-grid">
+                        <div class="form-group form-group-full">
+                            <label for="titulo" class="required">Título</label>
+                            <input type="text" id="titulo" name="titulo" required
+                                   minlength="6" maxlength="80"
+                                   pattern="[a-zA-Z0-9\s.,;:\'&-_()]+" title="Solo alfanumérico y algunos símbolos."
+                                   value="{{ old('titulo', $habilitacion->titulo ?? '') }}"
+                                   class="{{ $errors->has('titulo') ? 'field-error' : '' }}">
+                            <small class="help-text">Entre 6 y 80 caracteres. Símbolos permitidos: . , ; : ' " - _ ( )</small>
+                            @if($errors->has('titulo'))
+                                <div class="error-text">{{ $errors->first('titulo') }}</div>
+                            @endif
+                        </div>
+                        <div class="form-group form-group-full">
+                            <label for="descripcion" class="required">Descripción</label>
+                            <textarea id="descripcion" name="descripcion" required
+                                      minlength="30" maxlength="500"
+                                      class="{{ $errors->has('descripcion') ? 'field-error' : '' }}">{{ old('descripcion', $habilitacion->descripcion ?? '') }}</textarea>
+                            <small class="help-text">Entre 30 y 500 caracteres. Símbolos permitidos: . , ; : ' " - _ ( )</small>
+                            @if($errors->has('descripcion'))
+                                <div class="error-text">{{ $errors->first('descripcion') }}</div>
+                            @endif
+                        </div>
+                    </div>
+                </fieldset>
+
+                <div id="seccion-pring-prinv" class="seccion-condicional" style="display: none;">
+                    <fieldset>
+                        <legend>Equipo Docente (PrIng / PrInv)</legend>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="seleccion_guia_rut" class="required">Profesor Guía (DINF)</label>
+                                <select id="seleccion_guia_rut" name="seleccion_guia_rut">
+                                    <option value="" disabled {{ !(old('seleccion_guia_rut', $habilitacion->proyecto->rut_profesor_guia ?? '')) ? 'selected' : '' }}>Seleccione un profesor guía...</option>
+                                    @foreach($profesores as $profesor)
+                                        <option value="{{ $profesor->rut_profesor }}" {{ (old('seleccion_guia_rut', $habilitacion->proyecto->rut_profesor_guia ?? '') == $profesor->rut_profesor) ? 'selected' : '' }}>
+                                            {{ $profesor->apellido_profesor }}, {{ $profesor->nombre_profesor }} ({{ $profesor->rut_profesor }})
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="seleccion_co_guia_rut">Profesor Co-Guía (UCSC) (Opcional)</label>
+                                <select id="seleccion_co_guia_rut" name="seleccion_co_guia_rut">
+                                    <option value="">Ninguno (Opcional)</option>
+                                    @foreach($profesores as $profesor)
+                                        <option value="{{ $profesor->rut_profesor }}" {{ (old('seleccion_co_guia_rut', $habilitacion->proyecto->rut_profesor_co_guia ?? '') == $profesor->rut_profesor) ? 'selected' : '' }}>
+                                            {{ $profesor->apellido_profesor }}, {{ $profesor->nombre_profesor }} ({{ $profesor->rut_profesor }})
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="seleccion_comision_rut" class="required">Profesor Comisión (DINF)</label>
+                                <select id="seleccion_comision_rut" name="seleccion_comision_rut">
+                                    <option value="" disabled {{ !(old('seleccion_comision_rut', $habilitacion->proyecto->rut_profesor_comision ?? '')) ? 'selected' : '' }}>Seleccione un profesor comisión...</option>
+                                    @foreach($profesores as $profesor)
+                                        <option value="{{ $profesor->rut_profesor }}" {{ (old('seleccion_comision_rut', $habilitacion->proyecto->rut_profesor_comision ?? '') == $profesor->rut_profesor) ? 'selected' : '' }}>
+                                            {{ $profesor->apellido_profesor }}, {{ $profesor->nombre_profesor }} ({{ $profesor->rut_profesor }})
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+
+                <div id="seccion-prtut" class="seccion-condicional" style="display: none;">
+                    <fieldset>
+                        <legend>Datos Práctica Tutelada (PrTut)</legend>
+                        <div class="form-grid">
+                            <div class="form-group">
+                                <label for="nombre_empresa" class="required">Nombre Empresa</label>
+                                <input type="text" id="nombre_empresa" name="nombre_empresa"
+                                       maxlength="50" pattern="[a-zA-Z0-9\s]+"
+                                       value="{{ old('nombre_empresa', $habilitacion->prTut->nombre_empresa ?? '') }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="nombre_supervisor" class="required">Nombre Supervisor (Empresa)</label>
+                                <input type="text" id="nombre_supervisor" name="nombre_supervisor"
+                                       maxlength="50" pattern="[a-zA-Z\sñÑáéíóúÁÉÍÓÚ]+"
+                                       value="{{ old('nombre_supervisor', $habilitacion->prTut->nombre_supervisor ?? '') }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="seleccion_tutor_rut" class="required">Profesor Tutor (DINF)</label>
+                                <select id="seleccion_tutor_rut" name="seleccion_tutor_rut">
+                                    <option value="" disabled {{ !(old('seleccion_tutor_rut', $habilitacion->prTut->rut_profesor_tutor ?? '')) ? 'selected' : '' }}>Seleccione un tutor...</option>
+                                    @foreach($profesores as $profesor)
+                                        <option value="{{ $profesor->rut_profesor }}" {{ (old('seleccion_tutor_rut', $habilitacion->prTut->rut_profesor_tutor ?? '') == $profesor->rut_profesor) ? 'selected' : '' }}>
+                                            {{ $profesor->apellido_profesor }}, {{ $profesor->nombre_profesor }} ({{ $profesor->rut_profesor }})
+                                        </option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                    </fieldset>
+                </div>
+
+                <div class="button-container">
+                    <button type="button" class="btn-secondary" onclick="cancelarEdicion()">Cancelar Edición</button>
+                    <button type="button" class="btn-primary" onclick="guardarCambios()">Guardar Cambios</button>
+                    </div>
+            </form>
         @endif
 
         <div class="seccion-accion" id="confirmar-eliminacion" style="display: none;">
@@ -297,68 +244,25 @@
             <h2>Confirmar Eliminación</h2>
             <p>¿Desea eliminar la habilitación del Alumno <strong id="alumno-eliminar">Nombre Apellido</strong>?</p>
             <p class="help-text">Esta acción no se puede deshacer.</p>
-
             <div class="button-container">
                 <button type="button" class="btn-secondary" onclick="cancelarEliminar()">Cancelar</button>
                 <button type="button" class="btn-danger" onclick="confirmarEliminar()">Sí, eliminar</button>
             </div>
         </div>
-
     </div>
 
     <script src="{{ asset('js/validacion.js') }}"></script>
     <script src="{{ asset('js/formHabilitacion.js') }}"></script>
     <script>
-        var hasHabilitacion = <?php echo $habilitacion ? 'true' : 'false'; ?>;
-
-
+        var hasHabilitacion = @json($habilitacion ? true : false);
 
         // Función para mostrar sección de modificar
         function mostrarModificar() {
             document.getElementById('seleccion-accion').style.display = 'none';
             document.getElementById('form-modificar').style.display = 'block';
             document.getElementById('confirmar-eliminacion').style.display = 'none';
-            // Trigger change event for tipo_habilitacion to show/hide sections
-            const tipoHabilitacion = document.getElementById('tipo_habilitacion');
-            if (tipoHabilitacion) {
-                tipoHabilitacion.dispatchEvent(new Event('change'));
-            }
-        }
-
-        // Función para manejar cambio de tipo de habilitación
-        function toggleSections() {
-            const tipoHabilitacion = document.getElementById('tipo_habilitacion');
-            const seccionProyecto = document.getElementById('seccion-pring-prinv');
-            const seccionPractica = document.getElementById('seccion-prtut');
-
-            if (tipoHabilitacion && seccionProyecto && seccionPractica) {
-                const valor = tipoHabilitacion.value;
-
-                // Ocultar ambas secciones primero
-                seccionProyecto.style.display = 'none';
-                seccionPractica.style.display = 'none';
-
-                // Quitar requerido de todos los campos condicionales
-                document.querySelectorAll('#seccion-pring-prinv [required]').forEach(el => {
-                    el.required = false;
-                });
-                document.querySelectorAll('#seccion-prtut [required]').forEach(el => {
-                    el.required = false;
-                });
-
-                // Mostrar y hacer requeridos según el tipo
-                if (valor === 'PrTut') {
-                    seccionPractica.style.display = 'block';
-                    document.querySelectorAll('#seccion-prtut [required]').forEach(el => {
-                        el.required = true;
-                    });
-                } else if (valor === 'PrIng' || valor === 'PrInv') {
-                    seccionProyecto.style.display = 'block';
-                    document.querySelectorAll('#seccion-pring-prinv [required]').forEach(el => {
-                        el.required = true;
-                    });
-                }
-            }
+            // Disparar evento para mostrar la sección correcta
+            document.getElementById('tipo_habilitacion').dispatchEvent(new Event('change'));
         }
 
         // Función para mostrar sección de eliminar
@@ -377,11 +281,11 @@
 
         // Función para confirmar eliminación
         function confirmarEliminar() {
-            // Crear formulario para eliminación
             const form = document.createElement('form');
             form.method = 'POST';
             const selectedRut = document.getElementById('buscar_alumno').value;
-            form.action = '{{ route("habilitaciones.destroy", ":rut") }}'.replace(':rut', selectedRut);
+            // CORRECCIÓN: El parámetro de la ruta es 'alumno', no ':rut'
+            form.action = '{{ route("habilitaciones.destroy", ["alumno" => ":rut"]) }}'.replace(':rut', selectedRut);
             form.innerHTML = '@csrf @method("DELETE")';
             document.body.appendChild(form);
             form.submit();
@@ -395,42 +299,76 @@
 
         // Función para guardar cambios
         function guardarCambios() {
+            // Llama a la validación JS antes de confirmar
             if (validarFormulario() && confirm('¿Desea guardar los cambios realizados?')) {
                 const form = document.getElementById('form-modificar');
                 const selectedRut = document.getElementById('buscar_alumno').value;
-                form.action = '{{ route("habilitaciones.update", ":rut") }}'.replace(':rut', selectedRut);
+                // CORRECCIÓN: El parámetro de la ruta es 'alumno', no ':rut'
+                form.action = '{{ route("habilitaciones.update", ["alumno" => ":rut"]) }}'.replace(':rut', selectedRut);
                 form.submit();
             }
         }
 
-        // Inicializar secciones ocultas
+        // --- MANEJO DE SECCIONES CONDICIONALES (AÑADIDO) ---
+        function toggleSections() {
+            const tipoHabilitacion = document.getElementById('tipo_habilitacion');
+            const seccionProyecto = document.getElementById('seccion-pring-prinv');
+            const seccionPractica = document.getElementById('seccion-prtut');
+
+            if (!tipoHabilitacion || !seccionProyecto || !seccionPractica) return;
+
+            const valor = tipoHabilitacion.value;
+
+            // Ocultar ambas secciones primero
+            seccionProyecto.style.display = 'none';
+            seccionPractica.style.display = 'none';
+
+            // Quitar 'required' de todos los campos condicionales
+            document.querySelectorAll('#seccion-pring-prinv [name]').forEach(el => {
+                if(el.name !== 'seleccion_co_guia_rut') el.required = false;
+            });
+            document.querySelectorAll('#seccion-prtut [name]').forEach(el => el.required = false);
+
+            // Mostrar y hacer requeridos según el tipo
+            if (valor === 'PrTut') {
+                seccionPractica.style.display = 'block';
+                // CORRECCIÓN: Hacer que los inputs y selects sean 'required'
+                document.querySelectorAll('#seccion-prtut input[name], #seccion-prtut select[name]').forEach(el => el.required = true);
+            } else if (valor === 'PrIng' || valor === 'PrInv') {
+                seccionProyecto.style.display = 'block';
+                // CORRECCIÓN: Hacer que los selects (excepto co-guía) sean 'required'
+                document.querySelectorAll('#seccion-pring-prinv select[name]').forEach(el => {
+                    if(el.name !== 'seleccion_co_guia_rut') el.required = true;
+                });
+            }
+        }
+
         document.addEventListener('DOMContentLoaded', function() {
+            // Inicializar secciones ocultas si no hay habilitación
             if (!hasHabilitacion) {
-                // Hide sections when no habilitacion is found
                 var elementsToHide = ['seleccion-accion', 'form-modificar', 'confirmar-eliminacion'];
-                for (var i = 0; i < elementsToHide.length; i++) {
-                    var element = document.getElementById(elementsToHide[i]);
-                    if (element) {
-                        element.style.display = 'none';
-                    }
-                }
+                elementsToHide.forEach(id => {
+                    const element = document.getElementById(id);
+                    if (element) element.style.display = 'none';
+                });
             }
 
-            // Add event listener for tipo_habilitacion change
+            // Añadir listener al selector de tipo
             const tipoHabilitacion = document.getElementById('tipo_habilitacion');
             if (tipoHabilitacion) {
                 tipoHabilitacion.addEventListener('change', toggleSections);
+                // Ejecutar al cargar (¡IMPORTANTE!)
+                if (hasHabilitacion) {
+                    toggleSections();
+                }
             }
 
-            // Auto-scroll to error messages if they exist
-            const errorMessages = document.querySelectorAll('.error-message, .message.success');
-            if (errorMessages.length > 0) {
-                errorMessages[0].scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
-                });
+            // --- Scroll automático a errores del servidor (SOLICITADO) ---
+            // Se mueve al primer mensaje de error O éxito que encuentre
+            const serverError = document.querySelector('.error-message, .success-message');
+            if (serverError) {
+                serverError.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
         });
     </script>
-
 </x-app-layout>
