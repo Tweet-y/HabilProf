@@ -118,13 +118,13 @@
                 <div class="form-grid">
                     <div class="form-group form-group-full">
                         <label for="titulo" class="required">Título</label>
-                        <input type="text" id="titulo" name="titulo" required 
-                               minlength="6" maxlength="80"
-                               pattern="[a-zA-Z0-9\s.,;:''&quot;&quot;-_()]+" 
-                               title="Solo alfanumérico y algunos símbolos."
-                               value="{{ old('titulo') }}"
-                               class="{{ $errors->has('titulo') ? 'field-error' : '' }}">
-                        <small class="help-text">Entre 6 y 80 caracteres. Símbolos permitidos: . , ; : ' " - _ ( )</small>
+               <input type="text" id="titulo" name="titulo" required 
+                   minlength="6" maxlength="50"
+                   pattern="[a-zA-Z0-9\s.,;:''&quot;&quot;-_()]" 
+                   title="Solo alfanumérico y algunos símbolos."
+                   value="{{ old('titulo') }}"
+                   class="{{ $errors->has('titulo') ? 'field-error' : '' }}">
+               <small class="help-text">Entre 6 y 50 caracteres. Símbolos permitidos: . , ; : ' " - _ ( )</small>
                         @if($errors->has('titulo'))
                             <div class="error-text">{{ $errors->first('titulo') }}</div>
                         @endif

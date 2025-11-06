@@ -39,21 +39,19 @@ class HabilitacionController extends Controller
         $alumnos = Alumno::whereDoesntHave('habilitacion')->get();
         $profesores = Profesor::all();
 
-        // Generar semestres: actual y siguiente
-        $currentYear = date('Y');
-        $currentMonth = date('n');
+        // Generar semestres disponibles (solo los 2 próximos)
+        $mesActual = date('n');
+        $yearActual = date('Y');
+        $semestres = [];
 
-        // Determinar semestre actual
-        $currentSemester = ($currentMonth <= 6) ? '1-' . $currentYear : '2-' . $currentYear;
-
-        // Determinar semestre siguiente
-        if ($currentMonth <= 6) {
-            $nextSemester = '2-' . $currentYear;
-        } else {
-            $nextSemester = '1-' . ($currentYear + 1);
+        if ($mesActual <= 6) { // Primer semestre
+            $semestres[] = $yearActual . '-1';
+            $semestres[] = $yearActual . '-2';
+        } else { // Segundo semestre
+            $semestres[] = $yearActual . '-2';
+            $semestres[] = ($yearActual + 1) . '-1';
         }
-
-        $semestres = [$currentSemester, $nextSemester];
+        // Eliminar las líneas redundantes que causaban 4 opciones
 
         return view('habilitacion_create', compact('alumnos', 'profesores', 'semestres'));
     }
@@ -69,7 +67,7 @@ class HabilitacionController extends Controller
                 'selector_alumno_rut' => 'required|exists:alumno,rut_alumno',
                 'tipo_habilitacion' => 'required|in:PrIng,PrInv,PrTut',
                 'semestre_inicio' => 'required|string',
-                'titulo' => 'required|string|max:80|min:6|regex:/^[a-zA-Z0-9\s.,;:\'"&-_()]+$/',
+                'titulo' => 'required|string|max:50|min:6|regex:/^[a-zA-Z0-9\s.,;:\'"&-_()]+$/',
                 'descripcion' => 'required|string|max:500|min:30',
             ];
 
@@ -142,7 +140,9 @@ class HabilitacionController extends Controller
                 'semestre_inicio' => $request->semestre_inicio,
                 'titulo' => $request->titulo,
                 'descripcion' => $request->descripcion,
-                'nota_final' => null,
+                // la columna nota_final en la migración es NOT NULL con default 0.0
+                // no enviar null explícitamente porque PostgreSQL lanza violación NOT NULL
+                'nota_final' => 0.0,
                 'fecha_nota' => null,
             ]);
 
@@ -173,8 +173,6 @@ class HabilitacionController extends Controller
         }
     }
 
-    
-
     /**
      * Display the specified resource.
      */
@@ -202,7 +200,7 @@ class HabilitacionController extends Controller
         $rules = [
             'tipo_habilitacion' => 'required|in:PrIng,PrInv,PrTut',
             'semestre_inicio' => 'required|string',
-            'titulo' => 'required|string|max:80|min:6|regex:/^[a-zA-Z0-9\s.,;:\'"&-_()]+$/',
+            'titulo' => 'required|string|max:50|min:6|regex:/^[a-zA-Z0-9\s.,;:\'"&-_()]+$/',
             'descripcion' => 'required|string|max:500|min:30',
         ];
 
