@@ -109,6 +109,7 @@
     <div class="login-container">
         <header>
             <img src="{{ asset('imagenes/ucsc2.png') }}" alt="Logo UCSC">
+            <h1>Inicio de Sesión</h1>
             <h1>Sistema HabilProf</h1>
         </header>
 
