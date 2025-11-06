@@ -39,19 +39,21 @@ class HabilitacionController extends Controller
         $alumnos = Alumno::whereDoesntHave('habilitacion')->get();
         $profesores = Profesor::all();
 
-        // Generar semestres disponibles (solo los 2 próximos)
-        $mesActual = date('n');
-        $yearActual = date('Y');
-        $semestres = [];
+        // Generar semestres: actual y siguiente
+        $currentYear = date('Y');
+        $currentMonth = date('n');
 
-        if ($mesActual <= 6) { // Primer semestre
-            $semestres[] = $yearActual . '-1';
-            $semestres[] = $yearActual . '-2';
-        } else { // Segundo semestre
-            $semestres[] = $yearActual . '-2';
-            $semestres[] = ($yearActual + 1) . '-1';
+        // Determinar semestre actual
+        $currentSemester = ($currentMonth <= 6) ? '1-' . $currentYear : '2-' . $currentYear;
+
+        // Determinar semestre siguiente
+        if ($currentMonth <= 6) {
+            $nextSemester = '2-' . $currentYear;
+        } else {
+            $nextSemester = '1-' . ($currentYear + 1);
         }
-        // Eliminar las líneas redundantes que causaban 4 opciones
+
+        $semestres = [$currentSemester, $nextSemester];
 
         return view('habilitacion_create', compact('alumnos', 'profesores', 'semestres'));
     }

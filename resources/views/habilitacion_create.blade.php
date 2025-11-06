@@ -96,7 +96,6 @@
                                 <option value="{{ $semestre }}" {{ old('semestre_inicio') == $semestre ? 'selected' : '' }}>{{ $semestre }}</option>
                             @endforeach
                         </select>
-                        <small class="help-text">Solo se muestran semestres futuros.</small>
                         @if($errors->has('semestre_inicio'))
                             <div class="error-text">{{ $errors->first('semestre_inicio') }}</div>
                         @endif
