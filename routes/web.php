@@ -47,5 +47,5 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('listados');
 
 });
-// --- FIN DE LA ZONA SEGURA ---
+
 

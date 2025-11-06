@@ -139,16 +139,6 @@
                     <button type="submit">Ingresar</button>
                 </div>
 
-                @if ($errors->any())
-                    <div style="color: #E60026; margin-top: 10px;">
-                        <ul>
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
-
             </form>
 
                 <div class="login-link">
