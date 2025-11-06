@@ -9,16 +9,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('carga_academica', function (Blueprint $table) {
-            // PK: rut_alumno
             $table->integer('rut_alumno')->primary(); 
             
-            // Atributos
             $table->string('nombre_alumno', 50)->nullable(false);
             $table->string('apellido_alumno', 50)->nullable(false);
-            
-            // Listado de asignaturas (se asume JSONB para almacenar el array de códigos)
             $table->jsonb('asignaturas')->nullable(false); 
         });
+        DB::statement('ALTER TABLE alumno ADD CONSTRAINT rut_valido CHECK (rut_alumno > 999999 AND rut_alumno <= 99999999)');
     }
 
     public function down(): void
