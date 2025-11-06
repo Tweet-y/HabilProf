@@ -63,7 +63,6 @@
             </fieldset>
         </form>
 
-        <!-- Mensajes de éxito/error del servidor -->
         @if(session('success'))
             <div class="success-message" role="alert">
                 {{ session('success') }}
@@ -85,7 +84,6 @@
             </div>
         @endif
 
-        <!-- Div de error para JS -->
         <div id="js-validation-error" class="error-message" style="display: none; margin-bottom: 20px;"></div>
 
         <!-- Acciones (si se encontró habilitación) -->
@@ -103,7 +101,6 @@
                 </div>
             </div>
 
-            <!-- Formulario de Modificación (Oculto) -->
             <form action="#" method="POST" onsubmit="return false;" id="form-modificar" style="display: none;">
                 @csrf
                 @method('PUT')
@@ -168,7 +165,6 @@
                     </div>
                 </fieldset>
 
-                <!-- Sección Condicional PrIng/PrInv -->
                 <div id="seccion-pring-prinv" class="seccion-condicional" style="display: none;">
                     <fieldset>
                         <legend>Equipo Docente (PrIng / PrInv)</legend>
@@ -176,7 +172,7 @@
                             <div class="form-group">
                                 <label for="seleccion_guia_rut" class="required">Profesor Guía (DINF)</label>
                                 <select id="seleccion_guia_rut" name="seleccion_guia_rut">
-                                    <option value="" disabled>Seleccione un profesor guía...</option>
+                                    <option value="" disabled {{ !(old('seleccion_guia_rut', $habilitacion->proyecto->rut_profesor_guia ?? '')) ? 'selected' : '' }}>Seleccione un profesor guía...</option>
                                     @foreach($profesores as $profesor)
                                         <option value="{{ $profesor->rut_profesor }}" {{ (old('seleccion_guia_rut', $habilitacion->proyecto->rut_profesor_guia ?? '') == $profesor->rut_profesor) ? 'selected' : '' }}>
                                             {{ $profesor->apellido_profesor }}, {{ $profesor->nombre_profesor }} ({{ $profesor->rut_profesor }})
@@ -198,7 +194,7 @@
                             <div class="form-group">
                                 <label for="seleccion_comision_rut" class="required">Profesor Comisión (DINF)</label>
                                 <select id="seleccion_comision_rut" name="seleccion_comision_rut">
-                                    <option value="" disabled>Seleccione un profesor comisión...</option>
+                                    <option value="" disabled {{ !(old('seleccion_comision_rut', $habilitacion->proyecto->rut_profesor_comision ?? '')) ? 'selected' : '' }}>Seleccione un profesor comisión...</option>
                                     @foreach($profesores as $profesor)
                                         <option value="{{ $profesor->rut_profesor }}" {{ (old('seleccion_comision_rut', $habilitacion->proyecto->rut_profesor_comision ?? '') == $profesor->rut_profesor) ? 'selected' : '' }}>
                                             {{ $profesor->apellido_profesor }}, {{ $profesor->nombre_profesor }} ({{ $profesor->rut_profesor }})
@@ -210,7 +206,6 @@
                     </fieldset>
                 </div>
 
-                <!-- Sección Condicional PrTut -->
                 <div id="seccion-prtut" class="seccion-condicional" style="display: none;">
                     <fieldset>
                         <legend>Datos Práctica Tutelada (PrTut)</legend>
@@ -230,7 +225,7 @@
                             <div class="form-group">
                                 <label for="seleccion_tutor_rut" class="required">Profesor Tutor (DINF)</label>
                                 <select id="seleccion_tutor_rut" name="seleccion_tutor_rut">
-                                    <option value="" disabled>Seleccione un tutor...</option>
+                                    <option value="" disabled {{ !(old('seleccion_tutor_rut', $habilitacion->prTut->rut_profesor_tutor ?? '')) ? 'selected' : '' }}>Seleccione un tutor...</option>
                                     @foreach($profesores as $profesor)
                                         <option value="{{ $profesor->rut_profesor }}" {{ (old('seleccion_tutor_rut', $habilitacion->prTut->rut_profesor_tutor ?? '') == $profesor->rut_profesor) ? 'selected' : '' }}>
                                             {{ $profesor->apellido_profesor }}, {{ $profesor->nombre_profesor }} ({{ $profesor->rut_profesor }})
@@ -245,7 +240,7 @@
                 <div class="button-container">
                     <button type="button" class="btn-secondary" onclick="cancelarEdicion()">Cancelar Edición</button>
                     <button type="button" class="btn-primary" onclick="guardarCambios()">Guardar Cambios</button>
-                </div>
+                    </div>
             </form>
         @endif
 
@@ -266,7 +261,7 @@
     <script src="{{ asset('js/validacion.js') }}"></script>
     <script src="{{ asset('js/formHabilitacion.js') }}"></script>
     <script>
-        var hasHabilitacion = {!! $habilitacion ? 'true' : 'false' !!};
+        var hasHabilitacion = @json($habilitacion ? true : false);
 
         // Función para mostrar sección de modificar
         function mostrarModificar() {
@@ -296,7 +291,8 @@
             const form = document.createElement('form');
             form.method = 'POST';
             const selectedRut = document.getElementById('buscar_alumno').value;
-            form.action = '{{ route("habilitaciones.destroy", ":rut") }}'.replace(':rut', selectedRut);
+            // CORRECCIÓN: El parámetro de la ruta es 'alumno', no ':rut'
+            form.action = '{{ route("habilitaciones.destroy", ["alumno" => ":rut"]) }}'.replace(':rut', selectedRut);
             form.innerHTML = '@csrf @method("DELETE")';
             document.body.appendChild(form);
             form.submit();
@@ -310,15 +306,17 @@
 
         // Función para guardar cambios
         function guardarCambios() {
+            // Llama a la validación JS antes de confirmar
             if (validarFormulario() && confirm('¿Desea guardar los cambios realizados?')) {
                 const form = document.getElementById('form-modificar');
                 const selectedRut = document.getElementById('buscar_alumno').value;
-                form.action = '{{ route("habilitaciones.update", ":rut") }}'.replace(':rut', selectedRut);
+                // CORRECCIÓN: El parámetro de la ruta es 'alumno', no ':rut'
+                form.action = '{{ route("habilitaciones.update", ["alumno" => ":rut"]) }}'.replace(':rut', selectedRut);
                 form.submit();
             }
         }
 
-        // --- MANEJO DE SECCIONES CONDICIONALES ---
+        // --- MANEJO DE SECCIONES CONDICIONALES (AÑADIDO) ---
         function toggleSections() {
             const tipoHabilitacion = document.getElementById('tipo_habilitacion');
             const seccionProyecto = document.getElementById('seccion-pring-prinv');
@@ -341,10 +339,12 @@
             // Mostrar y hacer requeridos según el tipo
             if (valor === 'PrTut') {
                 seccionPractica.style.display = 'block';
-                document.querySelectorAll('#seccion-prtut [name]').forEach(el => el.required = true);
+                // CORRECCIÓN: Hacer que los inputs y selects sean 'required'
+                document.querySelectorAll('#seccion-prtut input[name], #seccion-prtut select[name]').forEach(el => el.required = true);
             } else if (valor === 'PrIng' || valor === 'PrInv') {
                 seccionProyecto.style.display = 'block';
-                document.querySelectorAll('#seccion-pring-prinv [name]').forEach(el => {
+                // CORRECCIÓN: Hacer que los selects (excepto co-guía) sean 'required'
+                document.querySelectorAll('#seccion-pring-prinv select[name]').forEach(el => {
                     if(el.name !== 'seleccion_co_guia_rut') el.required = true;
                 });
             }
@@ -364,11 +364,14 @@
             const tipoHabilitacion = document.getElementById('tipo_habilitacion');
             if (tipoHabilitacion) {
                 tipoHabilitacion.addEventListener('change', toggleSections);
-                // Ejecutar al cargar por si hay datos 'old()'
-                toggleSections();
+                // Ejecutar al cargar (¡IMPORTANTE!)
+                if (hasHabilitacion) {
+                    toggleSections();
+                }
             }
 
-            // --- Scroll automático a errores del servidor ---
+            // --- Scroll automático a errores del servidor (SOLICITADO) ---
+            // Se mueve al primer mensaje de error O éxito que encuentre
             const serverError = document.querySelector('.error-message, .success-message');
             if (serverError) {
                 serverError.scrollIntoView({ behavior: 'smooth', block: 'center' });
