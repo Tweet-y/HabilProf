@@ -173,8 +173,6 @@ class HabilitacionController extends Controller
         }
     }
 
-    
-
     /**
      * Display the specified resource.
      */
@@ -196,7 +194,6 @@ class HabilitacionController extends Controller
      */
     public function update(Request $request, $alumno) // Cambiado de $rut_alumno a $alumno
     {
-        // ↑↑↑↑↑↑ AQUÍ ESTÁ EL CAMBIO ↑↑↑↑↑↑
 
         // REGLAS DE VALIDACIÓN (MEJORADAS)
         $rules = [
@@ -232,9 +229,7 @@ class HabilitacionController extends Controller
         // Validar los datos
         $validatedData = $request->validate($rules, $messages);
 
-        // ↓↓↓↓↓↓ AQUÍ ESTÁ EL CAMBIO ↓↓↓↓↓↓
         $habilitacion = Habilitacion::where('rut_alumno', $alumno)->firstOrFail();
-        // ↑↑↑↑↑↑ AQUÍ ESTÁ EL CAMBIO ↑↑↑↑↑↑
 
         try {
             DB::transaction(function () use ($habilitacion, $validatedData) {
