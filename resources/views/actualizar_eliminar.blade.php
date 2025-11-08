@@ -64,7 +64,7 @@
         </form>
 
         @if(session('success'))
-            <div class="success-message" role="alert">
+            <div class="message success">
                 {{ session('success') }}
             </div>
         @endif
@@ -238,9 +238,9 @@
                 </div>
 
                 <div class="button-container">
-                    <button type="button" class="btn-secondary" onclick="cancelarEdicion()">Cancelar Edición</button>
-                    <button type="button" class="btn-primary" onclick="guardarCambios()">Guardar Cambios</button>
-                    </div>
+                    <button type="button" onclick="cancelarEdicion()">Cancelar Edición</button>
+                    <button type="button" onclick="guardarCambios()">Guardar Cambios</button>
+                </div>
             </form>
         @endif
 
@@ -264,16 +264,16 @@
                 </h2>
 
                 <p class="mt-4 text-sm text-gray-600">
-                    ¿Desea guardar los cambios realizados en la base de datos?
+                    ¿Desea guardar los cambios realizados?
                 </p>
 
-                <div class="flex items-center justify-end mt-6">
+                <div class="flex items-center justify-between mt-6">
                     <x-secondary-button onclick="closeModal('confirm-update')">
-                        Cancelar
+                        Cancelar Edición
                     </x-secondary-button>
 
-                    <x-primary-button class="ms-3" onclick="confirmarGuardarCambios()">
-                        Confirmar
+                    <x-primary-button onclick="confirmarGuardarCambios()">
+                        Guardar Cambios
                     </x-primary-button>
                 </div>
             </div>
