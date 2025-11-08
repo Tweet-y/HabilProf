@@ -17,6 +17,8 @@ return new class extends Migration
             
         });
         DB::statement('ALTER TABLE alumno ADD CONSTRAINT rut_valido CHECK (rut_alumno > 999999 AND rut_alumno <= 99999999)');
+        DB::statement("ALTER TABLE alumno ADD CONSTRAINT nombre_solo_letras CHECK (nombre_alumno ~ '^[a-zA-ZñÑáéíóúÁÉÍÓÚ ]+$')");
+        DB::statement("ALTER TABLE alumno ADD CONSTRAINT apellido_solo_letras CHECK (apellido_alumno ~ '^[a-zA-ZñÑáéíóúÁÉÍÓÚ ]+$')");
     }
 
     public function down(): void

@@ -23,6 +23,9 @@ return new class extends Migration
             $table->foreign('rut_profesor_tutor')->references('rut_profesor')->on('profesor')->onDelete('restrict');
             
         });
+        DB::statement("ALTER TABLE pr_tut ADD CONSTRAINT supervisor_solo_letras CHECK (nombre_supervisor ~ '^[a-zA-ZñÑáéíóúÁÉÍÓÚ ]+$')");
+        DB::statement("ALTER TABLE pr_tut ADD CONSTRAINT empresa_solo_letras CHECK (nombre_empresa ~ '^[a-zA-ZñÑáéíóúÁÉÍÓÚ ]+$')");
+        DB::statement('ALTER TABLE pr_tut ADD CONSTRAINT rut_tutor_valido CHECK (rut_profesor_tutor > 999999 AND rut_profesor_tutor <= 99999999)');
     }
 
     

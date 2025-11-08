@@ -28,6 +28,11 @@ return new class extends Migration
             $table->foreign('rut_profesor_comision')->references('rut_profesor')->on('profesor')->onDelete('restrict');
             
         });
+        DB::statement('ALTER TABLE proyecto ADD CONSTRAINT rut_guia_valido CHECK (rut_profesor_guia > 999999 AND rut_profesor_guia <= 99999999)');
+        DB::statement('ALTER TABLE proyecto ADD CONSTRAINT rut_co_guia_valido CHECK (rut_profesor_co_guia IS NULL OR (rut_profesor_co_guia > 999999 AND rut_profesor_co_guia <= 99999999))');
+        DB::statement('ALTER TABLE proyecto ADD CONSTRAINT rut_comision_valido CHECK (rut_profesor_comision > 999999 AND rut_profesor_comision <= 99999999)');
+        DB::statement("ALTER TABLE proyecto ADD CONSTRAINT tipo_proyecto_valido CHECK (tipo_proyecto IN ('PrIng', 'PrInv'))");
+        
     }
 
     public function down(): void
