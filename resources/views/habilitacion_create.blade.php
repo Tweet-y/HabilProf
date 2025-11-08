@@ -45,7 +45,7 @@
         <!-- Div para errores de validación JavaScript -->
         <div id="js-validation-error" class="error-message" style="display: none; margin-bottom: 20px;"></div>
 
-        <form action="{{ route('habilitaciones.store') }}" method="POST" onsubmit="return validarFormulario() && confirm('¿Está seguro de que desea registrar esta habilitación?');">
+        <form action="{{ route('habilitaciones.store') }}" method="POST" id="habilitacion-form">
             @csrf
 
             <fieldset>
@@ -254,15 +254,53 @@
                 @endif
                 <div class="right-buttons">
                     <button type="button" onclick="window.location.href='/dashboard'">Cancelar</button>
-                    <button type="submit">Confirmar Ingreso</button>
+                    <button type="button" onclick="showConfirmationModal()">Confirmar Ingreso</button>
                 </div>
             </div>
 
         </form>
+
+        <!-- Modal de Confirmación -->
+        <x-modal name="confirm-submit" :show="false" maxWidth="md">
+            <div class="p-6">
+                <h2 class="text-lg font-medium text-gray-900">
+                    Confirmar
+                </h2>
+
+                <p class="mt-4 text-sm text-gray-600">
+                    ¿Desea guardar los datos registradosf?
+                </p>
+
+                <div class="flex items-center justify-end mt-6">
+                    <x-secondary-button onclick="closeModal()">
+                        Cancelar
+                    </x-secondary-button>
+
+                    <x-primary-button class="ms-3" onclick="submitForm()">
+                        Confirmar
+                    </x-primary-button>
+                </div>
+            </div>
+        </x-modal>
     </div>
 
     <script src="{{ asset('js/validacion.js') }}"></script>
     <script src="{{ asset('js/formHabilitacion.js') }}"></script>
+    <script>
+        function showConfirmationModal() {
+            if (validarFormulario()) {
+                window.dispatchEvent(new CustomEvent('open-modal', { detail: 'confirm-submit' }));
+            }
+        }
+
+        function submitForm() {
+            document.getElementById('habilitacion-form').submit();
+        }
+
+        function closeModal() {
+            window.dispatchEvent(new CustomEvent('close-modal', { detail: 'confirm-submit' }));
+        }
+    </script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const tipoHabilitacion = document.getElementById('tipo_habilitacion');

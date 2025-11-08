@@ -64,7 +64,7 @@
         </form>
 
         @if(session('success'))
-            <div class="success-message" role="alert">
+            <div class="message success">
                 {{ session('success') }}
             </div>
         @endif
@@ -238,9 +238,9 @@
                 </div>
 
                 <div class="button-container">
-                    <button type="button" class="btn-secondary" onclick="cancelarEdicion()">Cancelar Edición</button>
-                    <button type="button" class="btn-primary" onclick="guardarCambios()">Guardar Cambios</button>
-                    </div>
+                    <button type="button" onclick="cancelarEdicion()">Cancelar Edición</button>
+                    <button type="button" onclick="guardarCambios()">Guardar Cambios</button>
+                </div>
             </form>
         @endif
 
@@ -255,6 +255,29 @@
                 <button type="button" class="btn-danger" onclick="confirmarEliminar()">Sí, eliminar</button>
             </div>
         </div>
+
+        <!-- Modal de Confirmación para Actualizar -->
+        <x-modal name="confirm-update" :show="false" maxWidth="md">
+            <div class="p-6">
+                <h2 class="text-lg font-medium text-gray-900">
+                    Confirmar
+                </h2>
+
+                <p class="mt-4 text-sm text-gray-600">
+                    ¿Desea guardar los cambios realizados?
+                </p>
+
+                <div class="flex items-center justify-between mt-6">
+                    <x-secondary-button onclick="closeModal('confirm-update')">
+                        Cancelar Edición
+                    </x-secondary-button>
+
+                    <x-primary-button onclick="confirmarGuardarCambios()">
+                        Guardar Cambios
+                    </x-primary-button>
+                </div>
+            </div>
+        </x-modal>
     </div>
 
     <!-- 4. Scripts al final -->
@@ -306,14 +329,23 @@
 
         // Función para guardar cambios
         function guardarCambios() {
-            // Llama a la validación JS antes de confirmar
-            if (validarFormulario() && confirm('¿Desea guardar los cambios realizados?')) {
-                const form = document.getElementById('form-modificar');
-                const selectedRut = document.getElementById('buscar_alumno').value;
-                // CORRECCIÓN: El parámetro de la ruta es 'alumno', no ':rut'
-                form.action = '{{ route("habilitaciones.update", ["alumno" => ":rut"]) }}'.replace(':rut', selectedRut);
-                form.submit();
+            // Llama a la validación JS antes de mostrar el modal
+            if (validarFormulario()) {
+                window.dispatchEvent(new CustomEvent('open-modal', { detail: 'confirm-update' }));
             }
+        }
+
+        // Función para confirmar guardar cambios
+        function confirmarGuardarCambios() {
+            const form = document.getElementById('form-modificar');
+            const selectedRut = document.getElementById('buscar_alumno').value;
+            form.action = '{{ route("habilitaciones.update", ["alumno" => ":rut"]) }}'.replace(':rut', selectedRut);
+            form.submit();
+        }
+
+        // Función para cerrar modal
+        function closeModal(modalName) {
+            window.dispatchEvent(new CustomEvent('close-modal', { detail: modalName }));
         }
 
         // --- MANEJO DE SECCIONES CONDICIONALES (AÑADIDO) ---

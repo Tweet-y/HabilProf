@@ -322,7 +322,7 @@ class HabilitacionController extends Controller
             return redirect()->back()->with('error', 'Error al actualizar la habilitación. Por favor, intente nuevamente.');
         }
 
-        return redirect()->back()->with('success', 'Habilitación actualizada correctamente.');
+        return redirect()->route('habilitaciones.index')->with('success', 'Habilitación actualizada correctamente.');
     }
     /**
      * Remove the specified resource from storage.
