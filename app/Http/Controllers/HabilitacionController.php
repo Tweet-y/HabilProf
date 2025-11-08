@@ -21,6 +21,14 @@ class HabilitacionController extends Controller
         $alumnos = Alumno::whereHas('habilitacion')->with(['habilitacion.proyecto', 'habilitacion.prTut'])->get();
         $profesores = Profesor::all();
 
+        // Definir los semestres disponibles (desde 2025-2 hasta 2027-1)
+        $semestres = [
+            '2025-2' => '2025-2',
+            '2026-1' => '2026-1',
+            '2026-2' => '2026-2',
+            '2027-1' => '2027-1'
+        ];
+
         // Si se busca una habilitación específica, obtenerla
         $habilitacion = null;
         if ($request->has('rut_alumno') && $request->rut_alumno) {
@@ -29,7 +37,7 @@ class HabilitacionController extends Controller
                 ->first();
         }
 
-        return view('actualizar_eliminar', compact('alumnos', 'profesores', 'habilitacion'));
+        return view('actualizar_eliminar', compact('alumnos', 'profesores', 'habilitacion', 'semestres'));
     }
 
     /**
@@ -88,7 +96,7 @@ class HabilitacionController extends Controller
                 '*.required' => 'El campo es obligatorio.',
                 '*.required_if' => 'Este campo es obligatorio para la modalidad seleccionada.',
                 '*.exists' => 'El valor seleccionado no es válido.',
-
+ 
                 // Mensajes específicos para profesores
                 'seleccion_guia_rut.required_if' => 'Debe seleccionar un Profesor Guía.',
                 'seleccion_comision_rut.required_if' => 'Debe seleccionar un Profesor Comisión.',

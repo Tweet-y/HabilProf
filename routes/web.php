@@ -1,5 +1,6 @@
 <?php
 use App\Http\Controllers\HabilitacionController;
+use App\Http\Controllers\ListadoController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
@@ -17,6 +18,10 @@ Route::get('/', function () {
 // Login y autenticación (Públicas)
 require __DIR__.'/auth.php';
 
+// Verificación CSRF para todas las rutas POST
+Route::middleware(['web'])->group(function () {
+    // Aquí van las rutas que necesitan CSRF
+});
 
 // --- INICIO DE LA ZONA SEGURA (SOLO USUARIOS LOGUEADOS) ---
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -42,9 +47,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/actualizar_eliminar/{alumno}', [HabilitacionController::class, 'destroy'])->name('habilitaciones.destroy');
 
     // 5. Generar Listados (PROTEGIDO)
-    Route::get('/listados', function () {
-        return view('listados');
-    })->name('listados');
+    Route::get('/listados', [ListadoController::class, 'index'])->name('listados');
+    Route::any('/listados/generar', [ListadoController::class, 'generar'])->name('listados.generar');
 
 });
 
