@@ -21,6 +21,19 @@ class HabilitacionController extends Controller
         $alumnos = Alumno::whereHas('habilitacion')->with(['habilitacion.proyecto', 'habilitacion.prTut'])->get();
         $profesores = Profesor::all();
 
+        // Generar semestres disponibles (solo los 2 próximos)
+        $mesActual = date('n');
+        $yearActual = date('Y');
+        $semestres = [];
+
+        if ($mesActual <= 6) { // Primer semestre
+            $semestres[] = $yearActual . '-1';
+            $semestres[] = $yearActual . '-2';
+        } else { // Segundo semestre
+            $semestres[] = $yearActual . '-2';
+            $semestres[] = ($yearActual + 1) . '-1';
+        }
+
         // Si se busca una habilitación específica, obtenerla
         $habilitacion = null;
         if ($request->has('rut_alumno') && $request->rut_alumno) {
@@ -29,7 +42,7 @@ class HabilitacionController extends Controller
                 ->first();
         }
 
-        return view('actualizar_eliminar', compact('alumnos', 'profesores', 'habilitacion'));
+        return view('actualizar_eliminar', compact('alumnos', 'profesores', 'habilitacion', 'semestres'));
     }
 
     /**
@@ -234,15 +247,19 @@ class HabilitacionController extends Controller
 
         $habilitacion = Habilitacion::where('rut_alumno', $alumno)->firstOrFail();
 
-        try {
-            DB::transaction(function () use ($habilitacion, $validatedData) {
-                
-                // Actualizar la Habilitacion principal
-                $habilitacion->update([
-                    'semestre_inicio' => $validatedData['semestre_inicio'],
-                    'titulo' => $validatedData['titulo'],
-                    'descripcion' => $validatedData['descripcion'],
-                ]);
+        // Validaciones de negocio
+        $semestre = $validatedData['semestre_inicio'];
+        $profesores = [];
+
+        if ($validatedData['tipo_habilitacion'] === 'PrTut') {
+            $profesores = [$validatedData['seleccion_tutor_rut']];
+        } else {
+            $profesores = array_filter([$validatedData['seleccion_guia_rut'], $validatedData['seleccion_co_guia_rut'], $validatedData['seleccion_comision_rut']]);
+            // Verificar que no haya profesores con múltiples roles
+            if (count($profesores) != count(array_unique($profesores))) {
+                return redirect()->back()->with('error', 'Un profesor no puede tener múltiples roles en la misma habilitación.')->withInput();
+            }
+        }
 
         // Verificar límite de 5 habilitaciones por semestre por profesor (excluyendo la actual)
         foreach ($profesores as $rut) {
@@ -266,6 +283,16 @@ class HabilitacionController extends Controller
                 return redirect()->back()->with('error', "El profesor $nombre ya participa en 5 habilitaciones este semestre.")->withInput();
             }
         }
+
+        try {
+            DB::transaction(function () use ($habilitacion, $validatedData) {
+
+                // Actualizar la Habilitacion principal
+                $habilitacion->update([
+                    'semestre_inicio' => $validatedData['semestre_inicio'],
+                    'titulo' => $validatedData['titulo'],
+                    'descripcion' => $validatedData['descripcion'],
+                ]);
 
                 // Actualizar o Crear la modalidad específica
                 if (in_array($validatedData['tipo_habilitacion'], ['PrIng', 'PrInv'])) {
@@ -294,7 +321,9 @@ class HabilitacionController extends Controller
             Log::error('Error al actualizar habilitación: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Error al actualizar la habilitación. Por favor, intente nuevamente.');
         }
-        }
+
+        return redirect()->back()->with('success', 'Habilitación actualizada correctamente.');
+    }
     /**
      * Remove the specified resource from storage.
      */
