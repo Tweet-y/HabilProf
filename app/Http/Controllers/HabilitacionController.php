@@ -101,7 +101,7 @@ class HabilitacionController extends Controller
                 '*.required' => 'El campo es obligatorio.',
                 '*.required_if' => 'Este campo es obligatorio para la modalidad seleccionada.',
                 '*.exists' => 'El valor seleccionado no es válido.',
-
+ 
                 // Mensajes específicos para profesores
                 'seleccion_guia_rut.required_if' => 'Debe seleccionar un Profesor Guía.',
                 'seleccion_comision_rut.required_if' => 'Debe seleccionar un Profesor Comisión.',

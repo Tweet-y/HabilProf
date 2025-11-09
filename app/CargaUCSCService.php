@@ -89,7 +89,8 @@ class CargaUCSCService
                 
                 $notaData = $mockNotas[$rutAlumno] ?? null;
                 
-                $notaFinal = $notaData ? $notaData->nota_final : 0.0;
+                // Asegurar que nunca se asigne null a nota_final
+                $notaFinal = $notaData && $notaData->nota_final !== null ? $notaData->nota_final : 0.0;
                 
                 $habilitacion->nota_final = $notaFinal;
                 $habilitacion->fecha_nota = $notaData ? $notaData->fecha_nota : Carbon::now(); 
