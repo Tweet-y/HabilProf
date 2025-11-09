@@ -153,11 +153,6 @@
         <header>
             <h1>Listado de Habilitaciones</h1>
             <img src="{{ asset('imagenes/ucsc.png') }}" alt="Logo UCSC">
-            <div style="position: absolute; top: 20px; right: 30px;">
-                <button type="button" onclick="window.location.href='/dashboard'" style="padding: 8px 12px; background-color: #F8F9FA; color: #E60026; border: 1px solid #CED4DA; border-radius: 4px; text-decoration: none; font-weight: 600; font-size: 0.9em; transition: all 0.2s ease; cursor: pointer;">
-                    Volver al Menú
-                </button>
-            </div>
         </header>
 
         <form action="#" method="POST" onsubmit="return false;">
