@@ -268,7 +268,7 @@
                 </h2>
 
                 <p class="mt-4 text-sm text-gray-600">
-                    ¿Desea guardar los datos registradosf?
+                    ¿Desea guardar los datos registrados?
                 </p>
 
                 <div class="flex items-center justify-end mt-6">

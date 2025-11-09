@@ -28,30 +28,39 @@ function validarFormulario() {
     }
 
     // --- 1. VALIDAR DUPLICADOS (Tu Bug 3) ---
-    const guia = document.querySelector('[name="seleccion_guia_rut"]')?.value;
-    const coGuia = document.querySelector('[name="seleccion_co_guia_rut"]')?.value;
-    const comision = document.querySelector('[name="seleccion_comision_rut"]')?.value;
-    const tutor = document.querySelector('[name="seleccion_tutor_rut"]')?.value;
+    const tipo = document.getElementById('tipo_habilitacion').value;
+    let profesores = [];
+    let fieldsToHighlight = [];
 
-    // Filtra solo los campos que tienen un valor (no están vacíos)
-    const profesores = [guia, coGuia, comision, tutor].filter(Boolean);
+    if (tipo === 'PrIng' || tipo === 'PrInv') {
+        const guia = document.querySelector('[name="seleccion_guia_rut"]')?.value;
+        const coGuia = document.querySelector('[name="seleccion_co_guia_rut"]')?.value;
+        const comision = document.querySelector('[name="seleccion_comision_rut"]')?.value;
+        profesores = [guia, coGuia, comision].filter(Boolean);
+        fieldsToHighlight = ['seleccion_guia_rut', 'seleccion_co_guia_rut', 'seleccion_comision_rut'];
+    } else if (tipo === 'PrTut') {
+        const tutor = document.querySelector('[name="seleccion_tutor_rut"]')?.value;
+        profesores = [tutor].filter(Boolean);
+        fieldsToHighlight = ['seleccion_tutor_rut'];
+    }
+
     const unicos = new Set(profesores);
 
     if (profesores.length !== unicos.size) {
         errorDiv.innerHTML = '<strong>Error de validación:</strong> Un profesor no puede tener múltiples roles (Guía, Co-Guía, Comisión) en la misma habilitación.';
         errorDiv.style.display = 'block';
-        document.querySelector('[name="seleccion_guia_rut"]')?.classList.add('input-error');
-        document.querySelector('[name="seleccion_co_guia_rut"]')?.classList.add('input-error');
-        document.querySelector('[name="seleccion_comision_rut"]')?.classList.add('input-error');
-        document.querySelector('[name="seleccion_tutor_rut"]')?.classList.add('input-error');
+        fieldsToHighlight.forEach(name => {
+            document.querySelector(`[name="${name}"]`)?.classList.add('input-error');
+        });
         return false;
     }
 
     // --- 2. VALIDAR PROFESORES FALTANTES (Tu Bug 2) ---
-    const tipo = document.getElementById('tipo_habilitacion').value;
 
     if (tipo === 'PrIng' || tipo === 'PrInv') {
         // Revisa que los campos requeridos para Proyecto no estén vacíos
+        const guia = document.querySelector('[name="seleccion_guia_rut"]')?.value;
+        const comision = document.querySelector('[name="seleccion_comision_rut"]')?.value;
         if (!guia || !comision) {
             errorDiv.innerHTML = '<strong>Error de validación:</strong> Debe seleccionar un Profesor Guía y un Profesor Comisión para esta modalidad.';
             errorDiv.style.display = 'block';
@@ -61,6 +70,7 @@ function validarFormulario() {
         }
     } else if (tipo === 'PrTut') {
         // Revisa que los campos requeridos para Práctica no estén vacíos
+        const tutor = document.querySelector('[name="seleccion_tutor_rut"]')?.value;
         if (!document.getElementById('nombre_empresa').value || !document.getElementById('nombre_supervisor').value || !tutor) {
             errorDiv.innerHTML = '<strong>Error de validación:</strong> Debe completar todos los campos de la Práctica Tutelada (Empresa, Supervisor y Tutor).';
             errorDiv.style.display = 'block';
@@ -70,6 +80,10 @@ function validarFormulario() {
             return false;
         }
     }
+
+    // --- 3. VALIDAR LÍMITE DE 5 HABILITACIONES POR PROFESOR POR SEMESTRE ---
+    // Nota: Esta validación se realiza principalmente en el backend, pero podemos mostrar una advertencia general
+    // ya que el conteo exacto requiere consulta a la base de datos
 
     // Si todo está bien
     errorDiv.style.display = 'none';

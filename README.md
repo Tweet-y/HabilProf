@@ -30,10 +30,10 @@ Para ejecutar este proyecto en un entorno de desarrollo local, necesitarás tene
 
 ## **Instalación y Puesta en Marcha**
 
-Sigue estos pasos para configurar el proyecto localmente:
+Crea una carpeta para la aplicación, abre la terminal en la carpeta y sigue estos pasos para probarla localmente:
 
 1. **Clonar el repositorio:**  
-   git clone \[URL-DEL-REPOSITORIO\]  
+   git clone \[https://github.com/Tweet-y/HabilProf\]  
    cd HabilProf-qa
 
 2. **Instalar dependencias de PHP:**  
