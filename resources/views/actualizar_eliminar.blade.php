@@ -314,7 +314,7 @@
             const form = document.createElement('form');
             form.method = 'POST';
             const selectedRut = document.getElementById('buscar_alumno').value;
-            // CORRECCIÓN: El parámetro de la ruta es 'alumno', no ':rut'
+            // El parámetro de la ruta es 'alumno', no ':rut'
             form.action = '{{ route("habilitaciones.destroy", ["alumno" => ":rut"]) }}'.replace(':rut', selectedRut);
             form.innerHTML = '@csrf @method("DELETE")';
             document.body.appendChild(form);

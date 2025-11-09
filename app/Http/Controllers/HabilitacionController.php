@@ -294,8 +294,12 @@ class HabilitacionController extends Controller
                     'descripcion' => $validatedData['descripcion'],
                 ]);
 
-                // Actualizar o Crear la modalidad específica
+                // Eliminar el registro de la tabla opuesta si el tipo cambió
                 if (in_array($validatedData['tipo_habilitacion'], ['PrIng', 'PrInv'])) {
+                    // Si cambia a PrIng/PrInv, eliminar PrTut si existe
+                    if ($habilitacion->prTut) {
+                        $habilitacion->prTut->delete();
+                    }
                     Proyecto::updateOrCreate(
                         ['id_habilitacion' => $habilitacion->id_habilitacion],
                         [
@@ -306,6 +310,10 @@ class HabilitacionController extends Controller
                         ]
                     );
                 } elseif ($validatedData['tipo_habilitacion'] === 'PrTut') {
+                    // Si cambia a PrTut, eliminar Proyecto si existe
+                    if ($habilitacion->proyecto) {
+                        $habilitacion->proyecto->delete();
+                    }
                     PrTut::updateOrCreate(
                         ['id_habilitacion' => $habilitacion->id_habilitacion],
                         [
