@@ -42,6 +42,7 @@ class CargaUCSCService
         $profesoresDINF = $dataSets['profesores_dinf'];
         
         foreach ($profesoresDINF as $profesor) {
+
             Profesor::updateOrCreate(
                 ['rut_profesor' => $profesor->rut_profesor],
                 [
@@ -59,13 +60,13 @@ class CargaUCSCService
 
         foreach ($mockAlumnos as $mockA_object) {
     
-        // 1. Convertir el objeto stdClass a un array asociativo.
+        // 1. Convertir el objeto stdClass a un array.
         $mockA = (array) $mockA_object; 
             
         // 2. Usar la sintaxis de array para acceder a las claves
         $rutAlumno = $mockA['rut_alumno'];
             
-        // 3. Decodificar asignaturas, usando una clave segura y manejo de nulls
+        // 3. Decodificar asignaturas.
         $asignaturas = json_decode($mockA['asignaturas'] ?? '[]', true) ?: []; 
             
         if (!in_array(self::CODIGO_HABILITACION, $asignaturas)) {
@@ -91,9 +92,10 @@ class CargaUCSCService
                 
                 // Asegurar que nunca se asigne null a nota_final
                 $notaFinal = $notaData && $notaData->nota_final !== null ? $notaData->nota_final : 0.0;
+                $fechaNota = $notaData && $notaData->fecha_nota !== null ? $notaData->fecha_nota : '2050-12-31';
                 
                 $habilitacion->nota_final = $notaFinal;
-                $habilitacion->fecha_nota = $notaData ? $notaData->fecha_nota : Carbon::now(); 
+                $habilitacion->fecha_nota = $fechaNota;
                 $habilitacion->save(); 
 
                 $resultados[] = ['rut' => $rutAlumno, 'status' => 'COMPLETADO', 'nota_aplicada' => $notaFinal];

@@ -11,7 +11,6 @@ return new class extends Migration
     {
         Schema::create('alumno', function (Blueprint $table) {
             $table->integer('rut_alumno')->primary(); 
-        
             $table->string('nombre_alumno', 50)->nullable(false);
             $table->string('apellido_alumno', 50)->nullable(false);
             
