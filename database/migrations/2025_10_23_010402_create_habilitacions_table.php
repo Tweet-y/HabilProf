@@ -9,11 +9,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('habilitacion', function (Blueprint $table) {
-            
-            $table->id('id_habilitacion'); 
-            $table->integer('rut_alumno')->unique()->nullable(false); 
+
+            $table->primary(['rut_alumno', 'semestre_inicio']);
+            $table->integer('rut_alumno')->nullable(false); 
             $table->foreign('rut_alumno')->references('rut_alumno')->on('alumno')->onDelete('cascade'); 
-            
             $table->float('nota_final')->nullable(false)->default(0.0);
             $table->date('fecha_nota')->nullable(true); 
             $table->string('semestre_inicio', 9)->nullable(false); 
