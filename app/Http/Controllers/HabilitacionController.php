@@ -21,17 +21,23 @@ class HabilitacionController extends Controller
         $alumnos = Alumno::whereHas('habilitacion')->with(['habilitacion.proyecto', 'habilitacion.prTut'])->get();
         $profesores = Profesor::all();
 
-        // Generar semestres disponibles (solo los 2 próximos)
-        $mesActual = date('n');
-        $yearActual = date('Y');
-        $semestres = [];
+        // Obtener semestres que cuentan con habilitaciones
+        $semestres = Habilitacion::distinct()
+            ->orderBy('semestre_inicio', 'desc')
+            ->pluck('semestre_inicio')
+            ->toArray();
 
-        if ($mesActual <= 6) { // Primer semestre
-            $semestres[] = $yearActual . '-1';
-            $semestres[] = $yearActual . '-2';
-        } else { // Segundo semestre
-            $semestres[] = $yearActual . '-2';
-            $semestres[] = ($yearActual + 1) . '-1';
+        // Si no hay semestres con habilitaciones, agregar los 2 próximos
+        if (empty($semestres)) {
+            $mesActual = date('n');
+            $yearActual = date('Y');
+            if ($mesActual <= 6) { // Primer semestre
+                $semestres[] = $yearActual . '-1';
+                $semestres[] = $yearActual . '-2';
+            } else { // Segundo semestre
+                $semestres[] = $yearActual . '-2';
+                $semestres[] = ($yearActual + 1) . '-1';
+            }
         }
 
         // Si se busca una habilitación específica, obtenerla
@@ -54,19 +60,24 @@ class HabilitacionController extends Controller
         $alumnos = Alumno::whereDoesntHave('habilitacion')->get();
         $profesores = Profesor::all();
 
-        // Generar semestres disponibles (solo los 2 próximos)
-        $mesActual = date('n');
-        $yearActual = date('Y');
-        $semestres = [];
+        // Obtener semestres que cuentan con habilitaciones
+        $semestres = Habilitacion::distinct()
+            ->orderBy('semestre_inicio', 'desc')
+            ->pluck('semestre_inicio')
+            ->toArray();
 
-        if ($mesActual <= 6) { // Primer semestre
-            $semestres[] = $yearActual . '-1';
-            $semestres[] = $yearActual . '-2';
-        } else { // Segundo semestre
-            $semestres[] = $yearActual . '-2';
-            $semestres[] = ($yearActual + 1) . '-1';
+        // Si no hay semestres con habilitaciones, agregar los 2 próximos
+        if (empty($semestres)) {
+            $mesActual = date('n');
+            $yearActual = date('Y');
+            if ($mesActual <= 6) { // Primer semestre
+                $semestres[] = $yearActual . '-1';
+                $semestres[] = $yearActual . '-2';
+            } else { // Segundo semestre
+                $semestres[] = $yearActual . '-2';
+                $semestres[] = ($yearActual + 1) . '-1';
+            }
         }
-        // Eliminar las líneas redundantes que causaban 4 opciones
 
         return view('habilitacion_create', compact('alumnos', 'profesores', 'semestres'));
     }

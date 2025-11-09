@@ -218,17 +218,17 @@ class CargaSeeder extends Seeder
             // Grupo 3: Alumnos cursando IN2000C sin notas aún
             [
                 'rut_alumno' => 20202020, 
-                'nota_final' => 0.0, // La nota se inicia en 0.0 hasta que se asigne una nota
+                'nota_final' => null, 
                 'fecha_nota' => null
             ],
             [
                 'rut_alumno' => 21212121, 
-                'nota_final' => 0.0, // La nota se inicia en 0.0 hasta que se asigne una nota
+                'nota_final' => null, 
                 'fecha_nota' => null
             ],
             [
                 'rut_alumno' => 28282828, 
-                'nota_final' => 0.0, // La nota se inicia en 0.0 hasta que se asigne una nota
+                'nota_final' => null, 
                 'fecha_nota' => null
             ],
             
