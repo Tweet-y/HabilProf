@@ -60,23 +60,13 @@ class HabilitacionController extends Controller
         $alumnos = Alumno::whereDoesntHave('habilitacion')->get();
         $profesores = Profesor::all();
 
-        // Obtener semestres que cuentan con habilitaciones
-        $semestres = Habilitacion::distinct()
-            ->orderBy('semestre_inicio', 'desc')
-            ->pluck('semestre_inicio')
-            ->toArray();
-
-        // Si no hay semestres con habilitaciones, agregar los 2 próximos
-        if (empty($semestres)) {
-            $mesActual = date('n');
-            $yearActual = date('Y');
-            if ($mesActual <= 6) { // Primer semestre
-                $semestres[] = $yearActual . '-1';
-                $semestres[] = $yearActual . '-2';
-            } else { // Segundo semestre
-                $semestres[] = $yearActual . '-2';
-                $semestres[] = ($yearActual + 1) . '-1';
-            }
+        // Obtener los 2 próximos semestres para crear habilitaciones
+        $mesActual = date('n');
+        $yearActual = date('Y');
+        if ($mesActual <= 6) { // Primer semestre
+            $semestres = [$yearActual . '-1', $yearActual . '-2'];
+        } else { // Segundo semestre
+            $semestres = [$yearActual . '-2', ($yearActual + 1) . '-1'];
         }
 
         return view('habilitacion_create', compact('alumnos', 'profesores', 'semestres'));
@@ -99,8 +89,8 @@ class HabilitacionController extends Controller
 
             if ($request->tipo_habilitacion === 'PrIng' || $request->tipo_habilitacion === 'PrInv') {
                 $rules['seleccion_guia_rut'] = 'required_if:tipo_habilitacion,PrIng,PrInv|nullable|exists:profesor,rut_profesor';
-                $rules['seleccion_co_guia_rut'] = 'nullable|exists:profesor,rut_profesor|different:seleccion_guia_rut,seleccion_comision_rut';
-                $rules['seleccion_comision_rut'] = 'required_if:tipo_habilitacion,PrIng,PrInv|nullable|exists:profesor,rut_profesor|different:seleccion_guia_rut,seleccion_co_guia_rut';
+                $rules['seleccion_co_guia_rut'] = 'nullable|exists:profesor,rut_profesor';
+                $rules['seleccion_comision_rut'] = 'required_if:tipo_habilitacion,PrIng,PrInv|nullable|exists:profesor,rut_profesor';
             } elseif ($request->tipo_habilitacion === 'PrTut') {
                 $rules['nombre_empresa'] = 'required_if:tipo_habilitacion,PrTut|nullable|string|max:50|regex:/^[a-zA-Z0-9\s]+$/u';
                 $rules['nombre_supervisor'] = 'required_if:tipo_habilitacion,PrTut|nullable|string|max:50|regex:/^[a-zA-Z\sñÑáéíóúÁÉÍÓÚ]+$/u';
@@ -231,10 +221,8 @@ class HabilitacionController extends Controller
     
             // PrIng/PrInv Rules
             'seleccion_guia_rut' => 'required_if:tipo_habilitacion,PrIng,PrInv|nullable|exists:profesor,rut_profesor',
-            // La Comisión debe ser diferente de la Guía
-            'seleccion_comision_rut' => 'required_if:tipo_habilitacion,PrIng,PrInv|nullable|exists:profesor,rut_profesor|different:seleccion_guia_rut',
-            // El Co-Guía (si existe) debe ser diferente de los otros dos
-            'seleccion_co_guia_rut' => 'nullable|exists:profesor,rut_profesor|different:seleccion_guia_rut|different:seleccion_comision_rut',
+            'seleccion_comision_rut' => 'required_if:tipo_habilitacion,PrIng,PrInv|nullable|exists:profesor,rut_profesor',
+            'seleccion_co_guia_rut' => 'nullable|exists:profesor,rut_profesor',
     
             // PrTut Rules
             'nombre_empresa' => 'required_if:tipo_habilitacion,PrTut|nullable|string|max:50|regex:/^[a-zA-Z0-9\s]+$/u',
