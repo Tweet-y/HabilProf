@@ -53,13 +53,21 @@ async function validarFormulario() {
     }
 
     // --- 1. VALIDAR DUPLICADOS (Tu Bug 3) ---
-    const guia = document.querySelector('[name="seleccion_guia_rut"]')?.value;
-    const coGuia = document.querySelector('[name="seleccion_co_guia_rut"]')?.value;
-    const comision = document.querySelector('[name="seleccion_comision_rut"]')?.value;
-    const tutor = document.querySelector('[name="seleccion_tutor_rut"]')?.value;
+    // Solo validar duplicados entre los campos relevantes para el tipo seleccionado
+    let profesores = [];
+    const tipo = document.getElementById('tipo_habilitacion').value;
 
-    // Filtra solo los campos que tienen un valor (no están vacíos)
-    const profesores = [guia, coGuia, comision, tutor].filter(Boolean);
+    if (tipo === 'PrIng' || tipo === 'PrInv') {
+        // Para PrIng/PrInv, validar duplicados entre guia, co-guia, comision
+        const guia = document.querySelector('[name="seleccion_guia_rut"]')?.value;
+        const coGuia = document.querySelector('[name="seleccion_co_guia_rut"]')?.value;
+        const comision = document.querySelector('[name="seleccion_comision_rut"]')?.value;
+        profesores = [guia, coGuia, comision].filter(Boolean); // Excluir vacíos
+    } else if (tipo === 'PrTut') {
+        // Para PrTut, solo hay un profesor (tutor), no hay duplicados posibles
+        profesores = [];
+    }
+
     const unicos = new Set(profesores);
 
     if (profesores.length !== unicos.size) {
@@ -68,15 +76,16 @@ async function validarFormulario() {
         document.querySelector('[name="seleccion_guia_rut"]')?.classList.add('input-error');
         document.querySelector('[name="seleccion_co_guia_rut"]')?.classList.add('input-error');
         document.querySelector('[name="seleccion_comision_rut"]')?.classList.add('input-error');
-        document.querySelector('[name="seleccion_tutor_rut"]')?.classList.add('input-error');
         return false;
     }
 
     // --- 2. VALIDAR PROFESORES FALTANTES (Tu Bug 2) ---
-    const tipo = document.getElementById('tipo_habilitacion').value;
+    const tipoValidacion = document.getElementById('tipo_habilitacion').value;
 
-    if (tipo === 'PrIng' || tipo === 'PrInv') {
+    if (tipoValidacion === 'PrIng' || tipoValidacion === 'PrInv') {
         // Revisa que los campos requeridos para Proyecto no estén vacíos
+        const guia = document.querySelector('[name="seleccion_guia_rut"]')?.value;
+        const comision = document.querySelector('[name="seleccion_comision_rut"]')?.value;
         if (!guia || !comision) {
             errorDiv.innerHTML = '<strong>Error de validación:</strong> Debe seleccionar un Profesor Guía y un Profesor Comisión para esta modalidad.';
             errorDiv.style.display = 'block';
@@ -84,8 +93,9 @@ async function validarFormulario() {
             if (!comision) document.querySelector('[name="seleccion_comision_rut"]').classList.add('input-error');
             return false;
         }
-    } else if (tipo === 'PrTut') {
+    } else if (tipoValidacion === 'PrTut') {
         // Revisa que los campos requeridos para Práctica no estén vacíos
+        const tutor = document.querySelector('[name="seleccion_tutor_rut"]')?.value;
         if (!document.getElementById('nombre_empresa').value || !document.getElementById('nombre_supervisor').value || !tutor) {
             errorDiv.innerHTML = '<strong>Error de validación:</strong> Debe completar todos los campos de la Práctica Tutelada (Empresa, Supervisor y Tutor).';
             errorDiv.style.display = 'block';
@@ -100,11 +110,31 @@ async function validarFormulario() {
     // Realizar una llamada AJAX para verificar el límite de habilitaciones
     const formData = new FormData();
     formData.append('semestre_inicio', document.getElementById('semestre_inicio').value);
-    formData.append('tipo_habilitacion', tipo);
-    formData.append('seleccion_guia_rut', guia);
-    formData.append('seleccion_co_guia_rut', coGuia);
-    formData.append('seleccion_comision_rut', comision);
-    formData.append('seleccion_tutor_rut', tutor);
+    formData.append('tipo_habilitacion', tipoValidacion);
+
+    // Obtener valores actuales de los campos según el tipo
+    if (tipoValidacion === 'PrIng' || tipoValidacion === 'PrInv') {
+        const guia = document.querySelector('[name="seleccion_guia_rut"]')?.value;
+        const coGuia = document.querySelector('[name="seleccion_co_guia_rut"]')?.value;
+        const comision = document.querySelector('[name="seleccion_comision_rut"]')?.value;
+        formData.append('seleccion_guia_rut', guia);
+        formData.append('seleccion_co_guia_rut', coGuia);
+        formData.append('seleccion_comision_rut', comision);
+        formData.append('seleccion_tutor_rut', '');
+    } else if (tipoValidacion === 'PrTut') {
+        const tutor = document.querySelector('[name="seleccion_tutor_rut"]')?.value;
+        formData.append('seleccion_guia_rut', '');
+        formData.append('seleccion_co_guia_rut', '');
+        formData.append('seleccion_comision_rut', '');
+        formData.append('seleccion_tutor_rut', tutor);
+    }
+
+    // Solo agregar exclude_rut_alumno si estamos en la página de actualización
+    const buscarAlumno = document.getElementById('buscar_alumno');
+    if (buscarAlumno && buscarAlumno.value) {
+        formData.append('exclude_rut_alumno', buscarAlumno.value);
+    }
+
     formData.append('_token', document.querySelector('input[name="_token"]').value);
 
     try {

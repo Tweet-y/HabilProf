@@ -359,6 +359,7 @@ class HabilitacionController extends Controller
         $semestre = $request->semestre_inicio;
         $tipo = $request->tipo_habilitacion;
         $profesores = [];
+        $excludeRutAlumno = $request->exclude_rut_alumno; // Para excluir en updates
 
         if ($tipo === 'PrTut') {
             $profesores = [$request->seleccion_tutor_rut];
@@ -369,7 +370,7 @@ class HabilitacionController extends Controller
         $errors = [];
 
         foreach ($profesores as $rut) {
-            $count = Habilitacion::where('semestre_inicio', $semestre)
+            $query = Habilitacion::where('semestre_inicio', $semestre)
                 ->where(function($q) use ($rut) {
                     $q->whereHas('proyecto', function($subQ) use ($rut) {
                         $subQ->where('rut_profesor_guia', $rut)
@@ -379,8 +380,14 @@ class HabilitacionController extends Controller
                     ->orWhereHas('prTut', function($subQ) use ($rut) {
                         $subQ->where('rut_profesor_tutor', $rut);
                     });
-                })
-                ->count();
+                });
+
+            // Excluir la habilitación actual si estamos en update
+            if ($excludeRutAlumno) {
+                $query->where('rut_alumno', '!=', $excludeRutAlumno);
+            }
+
+            $count = $query->count();
 
             if ($count >= 5) {
                 $profesor = Profesor::find($rut);
