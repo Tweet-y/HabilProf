@@ -1,4 +1,4 @@
-function validarFormulario() {
+async function validarFormulario() {
     const errorDiv = document.getElementById('js-validation-error');
     errorDiv.style.display = 'none'; // Ocultar al empezar
     errorDiv.innerHTML = ''; // Limpiar mensaje anterior
@@ -94,6 +94,37 @@ function validarFormulario() {
             if (!tutor) document.querySelector('[name="seleccion_tutor_rut"]').classList.add('input-error');
             return false;
         }
+    }
+
+    // --- 3. VALIDAR LÍMITE DE 5 HABILITACIONES POR PROFESOR ---
+    // Realizar una llamada AJAX para verificar el límite de habilitaciones
+    const formData = new FormData();
+    formData.append('semestre_inicio', document.getElementById('semestre_inicio').value);
+    formData.append('tipo_habilitacion', tipo);
+    formData.append('seleccion_guia_rut', guia);
+    formData.append('seleccion_co_guia_rut', coGuia);
+    formData.append('seleccion_comision_rut', comision);
+    formData.append('seleccion_tutor_rut', tutor);
+    formData.append('_token', document.querySelector('input[name="_token"]').value);
+
+    try {
+        const response = await fetch('/habilitaciones/check-limit', {
+            method: 'POST',
+            body: formData
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            errorDiv.innerHTML = '<strong>Error de validación:</strong> ' + result.errors.join('<br>');
+            errorDiv.style.display = 'block';
+            return false;
+        }
+    } catch (error) {
+        console.error('Error checking limit:', error);
+        errorDiv.innerHTML = '<strong>Error:</strong> No se pudo verificar el límite de habilitaciones. Intente nuevamente.';
+        errorDiv.style.display = 'block';
+        return false;
     }
 
     // Si todo está bien

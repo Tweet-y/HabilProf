@@ -350,4 +350,49 @@ class HabilitacionController extends Controller
 
         return redirect()->back()->with('success', 'Habilitación eliminada correctamente.');
     }
+
+    /**
+     * Check if professors exceed the limit of 5 habilitations per semester.
+     */
+    public function checkLimit(Request $request)
+    {
+        $semestre = $request->semestre_inicio;
+        $tipo = $request->tipo_habilitacion;
+        $profesores = [];
+
+        if ($tipo === 'PrTut') {
+            $profesores = [$request->seleccion_tutor_rut];
+        } else {
+            $profesores = array_filter([$request->seleccion_guia_rut, $request->seleccion_co_guia_rut, $request->seleccion_comision_rut]);
+        }
+
+        $errors = [];
+
+        foreach ($profesores as $rut) {
+            $count = Habilitacion::where('semestre_inicio', $semestre)
+                ->where(function($q) use ($rut) {
+                    $q->whereHas('proyecto', function($subQ) use ($rut) {
+                        $subQ->where('rut_profesor_guia', $rut)
+                             ->orWhere('rut_profesor_co_guia', $rut)
+                             ->orWhere('rut_profesor_comision', $rut);
+                    })
+                    ->orWhereHas('prTut', function($subQ) use ($rut) {
+                        $subQ->where('rut_profesor_tutor', $rut);
+                    });
+                })
+                ->count();
+
+            if ($count >= 5) {
+                $profesor = Profesor::find($rut);
+                $nombre = $profesor ? $profesor->nombre_profesor . ' ' . $profesor->apellido_profesor : $rut;
+                $errors[] = "El profesor $nombre ya participa en 5 habilitaciones este semestre.";
+            }
+        }
+
+        if (!empty($errors)) {
+            return response()->json(['errors' => $errors], 422);
+        }
+
+        return response()->json(['message' => 'OK'], 200);
+    }
 }
