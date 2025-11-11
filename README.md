@@ -6,7 +6,7 @@
 
 Este proyecto fue desarrollado por:
 
-* Vicente Alarcón  
+* Vicente Alarcón
 * Benjamín Bizama  
 * Brandon Martínez  
 * Rodrigo Sandoval
@@ -103,3 +103,21 @@ Una vez que la aplicación esté corriendo y hayas iniciado sesión (puedes regi
 * **Actualizar/Eliminar (/actualizar\_eliminar):** Busca habilitaciones existentes para modificarlas o eliminarlas.  
 * **Generar Listados (/listados):** Crea reportes semestrales o históricos de las habilitaciones.  
 * **Sincronización Automática (RF1):** La tarea schedule:work (Terminal 3\) ejecuta cada minuto el CargaUCSCService.php para simular la carga de datos de profesores y la actualización de notas de alumnos.
+
+## Login (Vicente Alarcón).
+### Interfaz y funcionalidad del Login.
+* resources\views\auth\login.blade.php
+Interfaz líneas 1-106, Función líneas 107-148
+### Validaciones del Login
+* app\Http\Requests\Auth\LoginRequest.php
+
+## Registro (Vicente Alarcón).
+### Interfaz y funcionalidad del Registro.
+* resources\views\auth\register.blade.php
+### Validaciones.
+* resources\lang\es\validation.php
+## F4: Generación de Listados (Vicente Alarcón).
+### Interfaz y función de los Listados.
+* resources\views\listados.blade.php
+### Controlador de la función.
+* app\Http\Controllers\ListadoController.php
