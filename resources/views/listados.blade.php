@@ -17,7 +17,7 @@
             }
             .container {
                 /* Mantenido en 1100px como en la corrección anterior */
-                max-width: 1100px;
+                max-width: 1800px;
                 margin: 20px auto;
                 background-color: #FFFFFF; /* Blanco (Contenedor) */
                 border-radius: 8px;
@@ -127,7 +127,6 @@
                 border-bottom: 1px solid #CED4DA; /* Borde solo horizontal */
                 padding: 12px 14px;
                 text-align: left;
-                word-break: break-word; /* allow wrapping so long texts don't break layout */
                 vertical-align: top;
             }
             table thead {
@@ -170,7 +169,7 @@
 
     <div class="container">
         <header>
-            <h1>Listado de Habilitaciones</h1>
+            <h1>Generar Listado de Habilitaciones</h1>
             <img src="{{ asset('imagenes/ucsc.png') }}" alt="Logo UCSC">
         </header>
 
