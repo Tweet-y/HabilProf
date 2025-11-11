@@ -39,6 +39,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // 3. Ingreso de Habilitaciones (PROTEGIDO)
     Route::get('/habilitaciones/ingreso', [HabilitacionController::class, 'create'])->name('habilitaciones.create');
     Route::post('/habilitaciones/ingreso', [HabilitacionController::class, 'store'])->name('habilitaciones.store');
+    Route::post('/habilitaciones/check-limit', [HabilitacionController::class, 'checkLimit'])->name('habilitaciones.checkLimit');
 
     // 4. Modifcar o Eliminar Habilitaciones (PROTEGIDO)
     Route::get('/actualizar_eliminar', [HabilitacionController::class, 'index'])->name('habilitaciones.index');
