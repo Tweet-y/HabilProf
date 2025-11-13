@@ -24,8 +24,8 @@ class StoreHabilitacionRequest extends FormRequest
         $rules = [
             'selector_alumno_rut' => 'required|exists:alumno,rut_alumno',
             'tipo_habilitacion' => 'required|in:PrIng,PrInv,PrTut',
-            'semestre_inicio' => 'required|string|regex:/^(202[5-9]|20[3-4][0-9]|2050)-[1-2]$/',
-            'titulo' => 'required|string|max:80|min:6|regex:/^[a-zA-Z0-9\s.,;:\'\"&-_()]+$/',
+            'semestre_inicio' => 'required|string',
+            'titulo' => 'required|string|max:50|min:6|regex:/^[a-zA-Z0-9\s.,;:\'"&-_()]+$/',
             'descripcion' => 'required|string|max:500|min:30',
         ];
 
