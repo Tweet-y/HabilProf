@@ -146,7 +146,7 @@ class HabilitacionController extends Controller
                 if ($count >= 5) {
                     $profesor = Profesor::find($rut);
                     $nombre = $profesor ? $profesor->nombre_profesor . ' ' . $profesor->apellido_profesor : $rut;
-                    return redirect()->back()->with('error', "El profesor $nombre ya participa en 5 habilitaciones este semestre.")->withInput();
+                    return redirect()->back()->with('error', "$nombre ya participa en 5 habilitaciones este semestre.")->withInput();
                 }
             }
 
@@ -279,7 +279,7 @@ class HabilitacionController extends Controller
             if ($count >= 5) {
                 $profesor = Profesor::find($rut);
                 $nombre = $profesor ? $profesor->nombre_profesor . ' ' . $profesor->apellido_profesor : $rut;
-                return redirect()->back()->with('error', "El profesor $nombre ya participa en 5 habilitaciones este semestre.")->withInput();
+                return redirect()->back()->with('error', "$nombre ya participa en 5 habilitaciones este semestre.")->withInput();
             }
         }
 
@@ -392,7 +392,7 @@ class HabilitacionController extends Controller
             if ($count >= 5) {
                 $profesor = Profesor::find($rut);
                 $nombre = $profesor ? $profesor->nombre_profesor . ' ' . $profesor->apellido_profesor : $rut;
-                $errors[] = "El profesor $nombre ya participa en 5 habilitaciones este semestre.";
+                $errors[] = "$nombre ya participa en 5 habilitaciones este semestre.";
             }
         }
 
