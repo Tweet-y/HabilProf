@@ -6,6 +6,8 @@ use App\Models\Profesor;
 use App\Models\Habilitacion;
 use App\Models\Proyecto;
 use App\Models\PrTut;
+use App\Http\Requests\StoreHabilitacionRequest;
+use App\Http\Requests\UpdateHabilitacionRequest;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -73,55 +75,54 @@ class HabilitacionController extends Controller
     }
 
     /**
+     * Verifica el límite de habilitaciones (5) para un profesor en un semestre.
+     * Retorna un mensaje de error si se supera el límite, o null si es válido.
+     */
+    private function verificarLimiteProfesor($rut_profesor, $semestre, $excludeRutAlumno = null)
+    {
+        $query = Habilitacion::where('semestre_inicio', $semestre)
+            ->where(function($q) use ($rut_profesor) {
+                $q->whereHas('proyecto', function($subQ) use ($rut_profesor) {
+                    $subQ->where('rut_profesor_guia', $rut_profesor)
+                         ->orWhere('rut_profesor_co_guia', $rut_profesor)
+                         ->orWhere('rut_profesor_comision', $rut_profesor);
+                })
+                ->orWhereHas('prTut', function($subQ) use ($rut_profesor) {
+                    $subQ->where('rut_profesor_tutor', $rut_profesor);
+                });
+            });
+
+        if ($excludeRutAlumno) {
+            $query->where('rut_alumno', '!=', $excludeRutAlumno);
+        }
+
+        $count = $query->count();
+
+        if ($count >= 5) {
+            $profesor = Profesor::find($rut_profesor);
+            $nombre = $profesor ? $profesor->nombre_profesor . ' ' . $profesor->apellido_profesor : $rut_profesor;
+            return "$nombre ya participa en 5 habilitaciones este semestre.";
+        }
+
+        return null; // Límite no superado
+    }
+
+    /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreHabilitacionRequest $request)
     {
         try {
-            // Validar los datos requeridos
-            $rules = [
-                'selector_alumno_rut' => 'required|exists:alumno,rut_alumno',
-                'tipo_habilitacion' => 'required|in:PrIng,PrInv,PrTut',
-                'semestre_inicio' => 'required|string',
-                'titulo' => 'required|string|max:50|min:6|regex:/^[a-zA-Z0-9\s.,;:\'"&-_()]+$/',
-                'descripcion' => 'required|string|max:500|min:30',
-            ];
-
-            if ($request->tipo_habilitacion === 'PrIng' || $request->tipo_habilitacion === 'PrInv') {
-                $rules['seleccion_guia_rut'] = 'required_if:tipo_habilitacion,PrIng,PrInv|nullable|exists:profesor,rut_profesor';
-                $rules['seleccion_co_guia_rut'] = 'nullable|exists:profesor,rut_profesor';
-                $rules['seleccion_comision_rut'] = 'required_if:tipo_habilitacion,PrIng,PrInv|nullable|exists:profesor,rut_profesor';
-            } elseif ($request->tipo_habilitacion === 'PrTut') {
-                $rules['nombre_empresa'] = 'required_if:tipo_habilitacion,PrTut|nullable|string|max:50|regex:/^[a-zA-Z0-9\s]+$/u';
-                $rules['nombre_supervisor'] = 'required_if:tipo_habilitacion,PrTut|nullable|string|max:50|regex:/^[a-zA-Z\sñÑáéíóúÁÉÍÓÚ]+$/u';
-                $rules['seleccion_tutor_rut'] = 'required_if:tipo_habilitacion,PrTut|nullable|exists:profesor,rut_profesor';
-            }
-
-            // Mensajes personalizados
-            $messages = [
-                '*.required' => 'El campo es obligatorio.',
-                '*.required_if' => 'Este campo es obligatorio para la modalidad seleccionada.',
-                '*.exists' => 'El valor seleccionado no es válido.',
- 
-                // Mensajes específicos para profesores
-                'seleccion_guia_rut.required_if' => 'Debe seleccionar un Profesor Guía.',
-                'seleccion_comision_rut.required_if' => 'Debe seleccionar un Profesor Comisión.',
-                'seleccion_tutor_rut.required_if' => 'Debe seleccionar un Profesor Tutor.',
-
-                // Mensajes para duplicados
-                '*.different' => 'Un profesor no puede tener múltiples roles (Guía, Co-Guía, Comisión).',
-            ];
-
-            $request->validate($rules, $messages);
+            $validatedData = $request->validated();
 
             // Validaciones de negocio
-            $semestre = $request->semestre_inicio;
+            $semestre = $validatedData['semestre_inicio'];
             $profesores = [];
 
-            if ($request->tipo_habilitacion === 'PrTut') {
-                $profesores = [$request->seleccion_tutor_rut];
+            if ($validatedData['tipo_habilitacion'] === 'PrTut') {
+                $profesores = [$validatedData['seleccion_tutor_rut']];
             } else {
-                $profesores = array_filter([$request->seleccion_guia_rut, $request->seleccion_co_guia_rut, $request->seleccion_comision_rut]);
+                $profesores = array_filter([$validatedData['seleccion_guia_rut'], $validatedData['seleccion_co_guia_rut'], $validatedData['seleccion_comision_rut']]);
                 // Verificar que no haya profesores con múltiples roles
                 if (count($profesores) != count(array_unique($profesores))) {
                     return redirect()->back()->with('error', 'Un profesor no puede tener múltiples roles en la misma habilitación.')->withInput();
@@ -130,32 +131,18 @@ class HabilitacionController extends Controller
 
             // Verificar límite de 5 habilitaciones por semestre por profesor
             foreach ($profesores as $rut) {
-                $count = Habilitacion::where('semestre_inicio', $semestre)
-                    ->where(function($q) use ($rut) {
-                        $q->whereHas('proyecto', function($subQ) use ($rut) {
-                            $subQ->where('rut_profesor_guia', $rut)
-                                 ->orWhere('rut_profesor_co_guia', $rut)
-                                 ->orWhere('rut_profesor_comision', $rut);
-                        })
-                        ->orWhereHas('prTut', function($subQ) use ($rut) {
-                            $subQ->where('rut_profesor_tutor', $rut);
-                        });
-                    })
-                    ->count();
-
-                if ($count >= 5) {
-                    $profesor = Profesor::find($rut);
-                    $nombre = $profesor ? $profesor->nombre_profesor . ' ' . $profesor->apellido_profesor : $rut;
-                    return redirect()->back()->with('error', "$nombre ya participa en 5 habilitaciones este semestre.")->withInput();
+                $error = $this->verificarLimiteProfesor($rut, $semestre);
+                if ($error) {
+                    return redirect()->back()->with('error', $error)->withInput();
                 }
             }
 
             // Crear la habilitación
             $habilitacion = Habilitacion::create([
-                'rut_alumno' => $request->selector_alumno_rut,
-                'semestre_inicio' => $request->semestre_inicio,
-                'titulo' => $request->titulo,
-                'descripcion' => $request->descripcion,
+                'rut_alumno' => $validatedData['selector_alumno_rut'],
+                'semestre_inicio' => $validatedData['semestre_inicio'],
+                'titulo' => $validatedData['titulo'],
+                'descripcion' => $validatedData['descripcion'],
                 // la columna nota_final en la migración es NOT NULL con default 0.0
                 // no enviar null explícitamente porque PostgreSQL lanza violación NOT NULL
                 'nota_final' => 0.0,
@@ -163,22 +150,22 @@ class HabilitacionController extends Controller
             ]);
 
             // Crear el registro específico según el tipo
-            if ($request->tipo_habilitacion === 'PrIng' || $request->tipo_habilitacion === 'PrInv') {
+            if ($validatedData['tipo_habilitacion'] === 'PrIng' || $validatedData['tipo_habilitacion'] === 'PrInv') {
                 // Crear Proyecto
                 Proyecto::create([
                     'id_habilitacion' => $habilitacion->id_habilitacion,
-                    'tipo_proyecto' => $request->tipo_habilitacion,
-                    'rut_profesor_guia' => $request->seleccion_guia_rut,
-                    'rut_profesor_co_guia' => $request->seleccion_co_guia_rut ?: null,
-                    'rut_profesor_comision' => $request->seleccion_comision_rut,
+                    'tipo_proyecto' => $validatedData['tipo_habilitacion'],
+                    'rut_profesor_guia' => $validatedData['seleccion_guia_rut'],
+                    'rut_profesor_co_guia' => $validatedData['seleccion_co_guia_rut'] ?: null,
+                    'rut_profesor_comision' => $validatedData['seleccion_comision_rut'],
                 ]);
-            } elseif ($request->tipo_habilitacion === 'PrTut') {
+            } elseif ($validatedData['tipo_habilitacion'] === 'PrTut') {
                 // Crear PrTut
                 PrTut::create([
                     'id_habilitacion' => $habilitacion->id_habilitacion,
-                    'nombre_supervisor' => $request->nombre_supervisor,
-                    'nombre_empresa' => $request->nombre_empresa,
-                    'rut_profesor_tutor' => $request->seleccion_tutor_rut,
+                    'nombre_supervisor' => $validatedData['nombre_supervisor'],
+                    'nombre_empresa' => $validatedData['nombre_empresa'],
+                    'rut_profesor_tutor' => $validatedData['seleccion_tutor_rut'],
                 ]);
             }
 
@@ -208,43 +195,11 @@ class HabilitacionController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, $alumno)
+    public function update(UpdateHabilitacionRequest $request, $alumno)
     {
         $habilitacion = Habilitacion::where('rut_alumno', $alumno)->firstOrFail();
 
-        // REGLAS DE VALIDACIÓN (MEJORADAS)
-        $rules = [
-            'tipo_habilitacion' => 'required|in:PrIng,PrInv,PrTut',
-            'semestre_inicio' => 'required|string',
-            'titulo' => 'required|string|max:50|min:6|regex:/^[a-zA-Z0-9\s.,;:\'"&-_()]+$/',
-            'descripcion' => 'required|string|max:500|min:30',
-    
-            // PrIng/PrInv Rules
-            'seleccion_guia_rut' => 'required_if:tipo_habilitacion,PrIng,PrInv|nullable|exists:profesor,rut_profesor',
-            'seleccion_comision_rut' => 'required_if:tipo_habilitacion,PrIng,PrInv|nullable|exists:profesor,rut_profesor',
-            'seleccion_co_guia_rut' => 'nullable|exists:profesor,rut_profesor',
-    
-            // PrTut Rules
-            'nombre_empresa' => 'required_if:tipo_habilitacion,PrTut|nullable|string|max:50|regex:/^[a-zA-Z0-9\s]+$/u',
-            'nombre_supervisor' => 'required_if:tipo_habilitacion,PrTut|nullable|string|max:50|regex:/^[a-zA-Z\sñÑáéíóúÁÉÍÓÚ]+$/u',
-            'seleccion_tutor_rut' => 'required_if:tipo_habilitacion,PrTut|nullable|exists:profesor,rut_profesor',
-        ];
-
-        // MENSAJES PERSONALIZADOS
-        $messages = [
-            '*.required' => 'Este campo es obligatorio.',
-            '*.required_if' => 'Este campo es obligatorio para la modalidad seleccionada.',
-            '*.exists' => 'El valor seleccionado no es válido o no existe.',
-            
-            // Mensajes para duplicados
-            'seleccion_comision_rut.different' => 'El Profesor de Comisión no puede ser el mismo que el Guía.',
-            'seleccion_co_guia_rut.different' => 'El Co-Guía no puede ser el mismo que el Guía o el de Comisión.',
-        ];
-
-        // Validar los datos
-        $validatedData = $request->validate($rules, $messages);
-
-        $habilitacion = Habilitacion::where('rut_alumno', $alumno)->firstOrFail();
+        $validatedData = $request->validated();
 
         // Validaciones de negocio
         $semestre = $validatedData['semestre_inicio'];
@@ -262,24 +217,9 @@ class HabilitacionController extends Controller
 
         // Verificar límite de 5 habilitaciones por semestre por profesor (excluyendo la actual)
         foreach ($profesores as $rut) {
-            $count = Habilitacion::where('rut_alumno', '!=', $alumno)
-                ->where('semestre_inicio', $semestre)
-                ->where(function($q) use ($rut) {
-                    $q->whereHas('proyecto', function($subQ) use ($rut) {
-                        $subQ->where('rut_profesor_guia', $rut)
-                             ->orWhere('rut_profesor_co_guia', $rut)
-                             ->orWhere('rut_profesor_comision', $rut);
-                    })
-                    ->orWhereHas('prTut', function($subQ) use ($rut) {
-                        $subQ->where('rut_profesor_tutor', $rut);
-                    });
-                })
-                ->count();
-
-            if ($count >= 5) {
-                $profesor = Profesor::find($rut);
-                $nombre = $profesor ? $profesor->nombre_profesor . ' ' . $profesor->apellido_profesor : $rut;
-                return redirect()->back()->with('error', "$nombre ya participa en 5 habilitaciones este semestre.")->withInput();
+            $error = $this->verificarLimiteProfesor($rut, $semestre, $alumno);
+            if ($error) {
+                return redirect()->back()->with('error', $error)->withInput();
             }
         }
 
@@ -370,29 +310,9 @@ class HabilitacionController extends Controller
         $errors = [];
 
         foreach ($profesores as $rut) {
-            $query = Habilitacion::where('semestre_inicio', $semestre)
-                ->where(function($q) use ($rut) {
-                    $q->whereHas('proyecto', function($subQ) use ($rut) {
-                        $subQ->where('rut_profesor_guia', $rut)
-                             ->orWhere('rut_profesor_co_guia', $rut)
-                             ->orWhere('rut_profesor_comision', $rut);
-                    })
-                    ->orWhereHas('prTut', function($subQ) use ($rut) {
-                        $subQ->where('rut_profesor_tutor', $rut);
-                    });
-                });
-
-            // Excluir la habilitación actual si estamos en update
-            if ($excludeRutAlumno) {
-                $query->where('rut_alumno', '!=', $excludeRutAlumno);
-            }
-
-            $count = $query->count();
-
-            if ($count >= 5) {
-                $profesor = Profesor::find($rut);
-                $nombre = $profesor ? $profesor->nombre_profesor . ' ' . $profesor->apellido_profesor : $rut;
-                $errors[] = "$nombre ya participa en 5 habilitaciones este semestre.";
+            $error = $this->verificarLimiteProfesor($rut, $semestre, $excludeRutAlumno);
+            if ($error) {
+                $errors[] = $error;
             }
         }
 
