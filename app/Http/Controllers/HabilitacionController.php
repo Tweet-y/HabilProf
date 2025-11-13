@@ -122,32 +122,18 @@ class HabilitacionController extends Controller
                 $profesores = [$request->seleccion_tutor_rut];
             } else {
                 $profesores = array_filter([$request->seleccion_guia_rut, $request->seleccion_co_guia_rut, $request->seleccion_comision_rut]);
-                // Verificar que no haya profesores con múltiples roles
-                if (count($profesores) != count(array_unique($profesores))) {
-                    return redirect()->back()->with('error', 'Un profesor no puede tener múltiples roles en la misma habilitación.')->withInput();
-                }
+            }
+
+            // Verificar que no haya profesores con múltiples roles
+            $error = $this->validateMultipleRoles($request->tipo_habilitacion, $request->seleccion_guia_rut, $request->seleccion_co_guia_rut, $request->seleccion_comision_rut);
+            if ($error) {
+                return redirect()->back()->with('error', $error)->withInput();
             }
 
             // Verificar límite de 5 habilitaciones por semestre por profesor
-            foreach ($profesores as $rut) {
-                $count = Habilitacion::where('semestre_inicio', $semestre)
-                    ->where(function($q) use ($rut) {
-                        $q->whereHas('proyecto', function($subQ) use ($rut) {
-                            $subQ->where('rut_profesor_guia', $rut)
-                                 ->orWhere('rut_profesor_co_guia', $rut)
-                                 ->orWhere('rut_profesor_comision', $rut);
-                        })
-                        ->orWhereHas('prTut', function($subQ) use ($rut) {
-                            $subQ->where('rut_profesor_tutor', $rut);
-                        });
-                    })
-                    ->count();
-
-                if ($count >= 5) {
-                    $profesor = Profesor::find($rut);
-                    $nombre = $profesor ? $profesor->nombre_profesor . ' ' . $profesor->apellido_profesor : $rut;
-                    return redirect()->back()->with('error', "$nombre ya participa en 5 habilitaciones este semestre.")->withInput();
-                }
+            $error = $this->checkProfessorLimits($profesores, $semestre);
+            if ($error) {
+                return redirect()->back()->with('error', $error)->withInput();
             }
 
             // Crear la habilitación
@@ -254,33 +240,18 @@ class HabilitacionController extends Controller
             $profesores = [$validatedData['seleccion_tutor_rut']];
         } else {
             $profesores = array_filter([$validatedData['seleccion_guia_rut'], $validatedData['seleccion_co_guia_rut'], $validatedData['seleccion_comision_rut']]);
-            // Verificar que no haya profesores con múltiples roles
-            if (count($profesores) != count(array_unique($profesores))) {
-                return redirect()->back()->with('error', 'Un profesor no puede tener múltiples roles en la misma habilitación.')->withInput();
-            }
+        }
+
+        // Verificar que no haya profesores con múltiples roles
+        $error = $this->validateMultipleRoles($validatedData['tipo_habilitacion'], $validatedData['seleccion_guia_rut'], $validatedData['seleccion_co_guia_rut'], $validatedData['seleccion_comision_rut']);
+        if ($error) {
+            return redirect()->back()->with('error', $error)->withInput();
         }
 
         // Verificar límite de 5 habilitaciones por semestre por profesor (excluyendo la actual)
-        foreach ($profesores as $rut) {
-            $count = Habilitacion::where('rut_alumno', '!=', $alumno)
-                ->where('semestre_inicio', $semestre)
-                ->where(function($q) use ($rut) {
-                    $q->whereHas('proyecto', function($subQ) use ($rut) {
-                        $subQ->where('rut_profesor_guia', $rut)
-                             ->orWhere('rut_profesor_co_guia', $rut)
-                             ->orWhere('rut_profesor_comision', $rut);
-                    })
-                    ->orWhereHas('prTut', function($subQ) use ($rut) {
-                        $subQ->where('rut_profesor_tutor', $rut);
-                    });
-                })
-                ->count();
-
-            if ($count >= 5) {
-                $profesor = Profesor::find($rut);
-                $nombre = $profesor ? $profesor->nombre_profesor . ' ' . $profesor->apellido_profesor : $rut;
-                return redirect()->back()->with('error', "$nombre ya participa en 5 habilitaciones este semestre.")->withInput();
-            }
+        $error = $this->checkProfessorLimits($profesores, $semestre, $alumno);
+        if ($error) {
+            return redirect()->back()->with('error', $error)->withInput();
         }
 
         try {
@@ -349,6 +320,57 @@ class HabilitacionController extends Controller
         $habilitacion->delete();
 
         return redirect()->back()->with('success', 'Habilitación eliminada correctamente.');
+    }
+
+    /**
+     * Validate that professors do not have multiple roles.
+     */
+    private function validateMultipleRoles($tipo, $guia, $co_guia, $comision)
+    {
+        if ($tipo === 'PrTut') {
+            return null;
+        }
+
+        $profesores_roles = array_filter([$guia, $co_guia, $comision]);
+        if (count($profesores_roles) != count(array_unique($profesores_roles))) {
+            return 'Un profesor no puede tener múltiples roles en la misma habilitación.';
+        }
+
+        return null;
+    }
+
+    /**
+     * Check if professors exceed the limit of 5 habilitations per semester.
+     */
+    private function checkProfessorLimits($profesores, $semestre, $excludeRutAlumno = null)
+    {
+        foreach ($profesores as $rut) {
+            $query = Habilitacion::where('semestre_inicio', $semestre)
+                ->where(function($q) use ($rut) {
+                    $q->whereHas('proyecto', function($subQ) use ($rut) {
+                        $subQ->where('rut_profesor_guia', $rut)
+                             ->orWhere('rut_profesor_co_guia', $rut)
+                             ->orWhere('rut_profesor_comision', $rut);
+                    })
+                    ->orWhereHas('prTut', function($subQ) use ($rut) {
+                        $subQ->where('rut_profesor_tutor', $rut);
+                    });
+                });
+
+            if ($excludeRutAlumno) {
+                $query->where('rut_alumno', '!=', $excludeRutAlumno);
+            }
+
+            $count = $query->count();
+
+            if ($count >= 5) {
+                $profesor = Profesor::find($rut);
+                $nombre = $profesor ? $profesor->nombre_profesor . ' ' . $profesor->apellido_profesor : $rut;
+                return "El profesor $nombre ya participa en 5 habilitaciones este semestre.";
+            }
+        }
+
+        return null;
     }
 
     /**
