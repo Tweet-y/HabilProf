@@ -1,4 +1,4 @@
-function validarFormulario() {
+async function validarFormulario() {
     const errorDiv = document.getElementById('js-validation-error');
     errorDiv.style.display = 'none'; // Ocultar al empezar
     errorDiv.innerHTML = ''; // Limpiar mensaje anterior
@@ -9,11 +9,36 @@ function validarFormulario() {
         el.classList.remove('field-error');
     });
 
+    // Validar campos básicos requeridos
+    const selectorAlumno = document.getElementById('selector_alumno_rut');
+    if (selectorAlumno && !selectorAlumno.value) {
+        selectorAlumno.classList.add('field-error');
+        errorDiv.innerHTML = '<strong>Error de validación:</strong> Debe seleccionar un alumno.';
+        errorDiv.style.display = 'block';
+        return false;
+    }
+
+    const tipoHabilitacion = document.getElementById('tipo_habilitacion');
+    if (tipoHabilitacion && !tipoHabilitacion.value) {
+        tipoHabilitacion.classList.add('field-error');
+        errorDiv.innerHTML = '<strong>Error de validación:</strong> Debe seleccionar un tipo de habilitación.';
+        errorDiv.style.display = 'block';
+        return false;
+    }
+
+    const semestreInicio = document.getElementById('semestre_inicio');
+    if (semestreInicio && !semestreInicio.value) {
+        semestreInicio.classList.add('field-error');
+        errorDiv.innerHTML = '<strong>Error de validación:</strong> Debe seleccionar un semestre de inicio.';
+        errorDiv.style.display = 'block';
+        return false;
+    }
+
     // Validar título
     const titulo = document.getElementById('titulo');
     if (titulo && !titulo.checkValidity()) {
         titulo.classList.add('field-error');
-        errorDiv.innerHTML = '<strong>Error de validación:</strong> El título no cumple con los requisitos (6-80 caracteres, solo alfanumérico y símbolos permitidos).';
+        errorDiv.innerHTML = '<strong>Error de validación:</strong> El título no cumple con los requisitos (6-50 caracteres, solo alfanumérico y símbolos permitidos).';
         errorDiv.style.display = 'block';
         return false;
     }
@@ -28,20 +53,19 @@ function validarFormulario() {
     }
 
     // --- 1. VALIDAR DUPLICADOS (Tu Bug 3) ---
-    const tipo = document.getElementById('tipo_habilitacion').value;
+    // Solo validar duplicados entre los campos relevantes para el tipo seleccionado
     let profesores = [];
-    let fieldsToHighlight = [];
+    const tipo = document.getElementById('tipo_habilitacion').value;
 
     if (tipo === 'PrIng' || tipo === 'PrInv') {
+        // Para PrIng/PrInv, validar duplicados entre guia, co-guia, comision
         const guia = document.querySelector('[name="seleccion_guia_rut"]')?.value;
         const coGuia = document.querySelector('[name="seleccion_co_guia_rut"]')?.value;
         const comision = document.querySelector('[name="seleccion_comision_rut"]')?.value;
-        profesores = [guia, coGuia, comision].filter(Boolean);
-        fieldsToHighlight = ['seleccion_guia_rut', 'seleccion_co_guia_rut', 'seleccion_comision_rut'];
+        profesores = [guia, coGuia, comision].filter(Boolean); // Excluir vacíos
     } else if (tipo === 'PrTut') {
-        const tutor = document.querySelector('[name="seleccion_tutor_rut"]')?.value;
-        profesores = [tutor].filter(Boolean);
-        fieldsToHighlight = ['seleccion_tutor_rut'];
+        // Para PrTut, solo hay un profesor (tutor), no hay duplicados posibles
+        profesores = [];
     }
 
     const unicos = new Set(profesores);
@@ -49,15 +73,16 @@ function validarFormulario() {
     if (profesores.length !== unicos.size) {
         errorDiv.innerHTML = '<strong>Error de validación:</strong> Un profesor no puede tener múltiples roles (Guía, Co-Guía, Comisión) en la misma habilitación.';
         errorDiv.style.display = 'block';
-        fieldsToHighlight.forEach(name => {
-            document.querySelector(`[name="${name}"]`)?.classList.add('input-error');
-        });
+        document.querySelector('[name="seleccion_guia_rut"]')?.classList.add('input-error');
+        document.querySelector('[name="seleccion_co_guia_rut"]')?.classList.add('input-error');
+        document.querySelector('[name="seleccion_comision_rut"]')?.classList.add('input-error');
         return false;
     }
 
     // --- 2. VALIDAR PROFESORES FALTANTES (Tu Bug 2) ---
+    const tipoValidacion = document.getElementById('tipo_habilitacion').value;
 
-    if (tipo === 'PrIng' || tipo === 'PrInv') {
+    if (tipoValidacion === 'PrIng' || tipoValidacion === 'PrInv') {
         // Revisa que los campos requeridos para Proyecto no estén vacíos
         const guia = document.querySelector('[name="seleccion_guia_rut"]')?.value;
         const comision = document.querySelector('[name="seleccion_comision_rut"]')?.value;
@@ -68,7 +93,7 @@ function validarFormulario() {
             if (!comision) document.querySelector('[name="seleccion_comision_rut"]').classList.add('input-error');
             return false;
         }
-    } else if (tipo === 'PrTut') {
+    } else if (tipoValidacion === 'PrTut') {
         // Revisa que los campos requeridos para Práctica no estén vacíos
         const tutor = document.querySelector('[name="seleccion_tutor_rut"]')?.value;
         if (!document.getElementById('nombre_empresa').value || !document.getElementById('nombre_supervisor').value || !tutor) {
@@ -81,9 +106,56 @@ function validarFormulario() {
         }
     }
 
-    // --- 3. VALIDAR LÍMITE DE 5 HABILITACIONES POR PROFESOR POR SEMESTRE ---
-    // Nota: Esta validación se realiza principalmente en el backend, pero podemos mostrar una advertencia general
-    // ya que el conteo exacto requiere consulta a la base de datos
+    // --- 3. VALIDAR LÍMITE DE 5 HABILITACIONES POR PROFESOR ---
+    // Realizar una llamada AJAX para verificar el límite de habilitaciones
+    const formData = new FormData();
+    formData.append('semestre_inicio', document.getElementById('semestre_inicio').value);
+    formData.append('tipo_habilitacion', tipoValidacion);
+
+    // Obtener valores actuales de los campos según el tipo
+    if (tipoValidacion === 'PrIng' || tipoValidacion === 'PrInv') {
+        const guia = document.querySelector('[name="seleccion_guia_rut"]')?.value;
+        const coGuia = document.querySelector('[name="seleccion_co_guia_rut"]')?.value;
+        const comision = document.querySelector('[name="seleccion_comision_rut"]')?.value;
+        formData.append('seleccion_guia_rut', guia);
+        formData.append('seleccion_co_guia_rut', coGuia);
+        formData.append('seleccion_comision_rut', comision);
+        formData.append('seleccion_tutor_rut', '');
+    } else if (tipoValidacion === 'PrTut') {
+        const tutor = document.querySelector('[name="seleccion_tutor_rut"]')?.value;
+        formData.append('seleccion_guia_rut', '');
+        formData.append('seleccion_co_guia_rut', '');
+        formData.append('seleccion_comision_rut', '');
+        formData.append('seleccion_tutor_rut', tutor);
+    }
+
+    // Solo agregar exclude_rut_alumno si estamos en la página de actualización
+    const buscarAlumno = document.getElementById('buscar_alumno');
+    if (buscarAlumno && buscarAlumno.value) {
+        formData.append('exclude_rut_alumno', buscarAlumno.value);
+    }
+
+    formData.append('_token', document.querySelector('input[name="_token"]').value);
+
+    try {
+        const response = await fetch('/habilitaciones/check-limit', {
+            method: 'POST',
+            body: formData
+        });
+
+        const result = await response.json();
+
+        if (!response.ok) {
+            errorDiv.innerHTML = '<strong>Error de validación:</strong> ' + result.errors.join('<br>');
+            errorDiv.style.display = 'block';
+            return false;
+        }
+    } catch (error) {
+        console.error('Error checking limit:', error);
+        errorDiv.innerHTML = '<strong>Error:</strong> No se pudo verificar el límite de habilitaciones. Intente nuevamente.';
+        errorDiv.style.display = 'block';
+        return false;
+    }
 
     // Si todo está bien
     errorDiv.style.display = 'none';

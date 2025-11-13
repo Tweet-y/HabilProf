@@ -20,10 +20,10 @@ class AppServiceProvider extends ServiceProvider
 public function boot(): void
     {
         // 1. Instanciar el servicio CargaUCSCService usando el contenedor 'app()'.
-        $cargaService = app(CargaUCSCService::class); 
+        // $cargaService = app(CargaUCSCService::class); 
 
         // 2. Ejecutar la función de carga de datos.
         // NOTA: Esto se ejecutará una vez cada vez que se inicie un nuevo proceso HTTP (una solicitud web).
-        $cargaService->activarCargaPeriodica();
+        // $cargaService->activarCargaPeriodica();
     }
 }

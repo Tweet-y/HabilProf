@@ -287,8 +287,8 @@
     <script src="{{ asset('js/validacion.js') }}"></script>
     <script src="{{ asset('js/formHabilitacion.js') }}"></script>
     <script>
-        function showConfirmationModal() {
-            if (validarFormulario()) {
+        async function showConfirmationModal() {
+            if (await validarFormulario()) {
                 window.dispatchEvent(new CustomEvent('open-modal', { detail: 'confirm-submit' }));
             }
         }
