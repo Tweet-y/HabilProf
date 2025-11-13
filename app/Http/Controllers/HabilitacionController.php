@@ -19,11 +19,11 @@ class HabilitacionController extends Controller
      */
     public function index(Request $request)
     {
-        // Obtener alumnos que tienen habilitación con sus datos completos
+        // Rescatar alumnos que tienen habilitación con sus datos completos
         $alumnos = Alumno::whereHas('habilitacion')->with(['habilitacion.proyecto', 'habilitacion.prTut'])->get();
         $profesores = Profesor::all();
 
-        // Obtener semestres que cuentan con habilitaciones
+        // Rescatar semestres que cuentan con habilitaciones
         $semestres = Habilitacion::distinct()
             ->orderBy('semestre_inicio', 'desc')
             ->pluck('semestre_inicio')
@@ -42,7 +42,7 @@ class HabilitacionController extends Controller
             }
         }
 
-        // Si se busca una habilitación específica, obtenerla
+        // Si se busca una habilitación específica, Rescatarla
         $habilitacion = null;
         if ($request->has('rut_alumno') && $request->rut_alumno) {
             $habilitacion = Habilitacion::where('rut_alumno', $request->rut_alumno)
@@ -58,11 +58,11 @@ class HabilitacionController extends Controller
      */
     public function create()
     {
-        // Obtener alumnos que no tienen habilitación
+        // Rescatar alumnos que no tienen habilitación
         $alumnos = Alumno::whereDoesntHave('habilitacion')->get();
         $profesores = Profesor::all();
 
-        // Obtener los 2 próximos semestres para crear habilitaciones
+        // Rescatar los 2 próximos semestres para crear habilitaciones
         $mesActual = date('n');
         $yearActual = date('Y');
         if ($mesActual <= 6) { // Primer semestre
