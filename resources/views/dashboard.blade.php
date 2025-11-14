@@ -74,7 +74,10 @@
         </header>
 
         <main class="menu-container">
-            <h2>Sistema de Gestión de Habilitaciones HabilProf</h2>
+<h2 class="relative inline-block text-2xl md:text-3xl font-semibold tracking-tight text-gray-900">
+  <span class="bg-gradient-to-r from-[#E60026] to-[#0056A8] bg-clip-text text-transparent">Sistema de Gestión de Habilitaciones HabilProf</span>
+  <span class="absolute left-0 -bottom-1 h-[3px] w-full rounded-full bg-gradient-to-r from-[#E60026] to-[#0056A8]"></span>
+</h2>
             <p class="intro">Seleccione la operación que desea realizar:</p>
 
             <a href="{{ route('habilitaciones.create') }}" class="menu-item">

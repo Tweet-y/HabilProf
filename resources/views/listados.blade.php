@@ -1,13 +1,15 @@
 <x-app-layout>
 
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            Listado de Habilitaciones
-        </h2>
+<h2 class="relative inline-block text-2xl md:text-3xl font-semibold tracking-tight text-gray-900">
+  <span class="bg-gradient-to-r from-[#E60026] to-[#0056A8] bg-clip-text text-transparent">Listado de Habilitaciones</span>
+  <span class="absolute left-0 -bottom-1 h-[3px] w-full rounded-full bg-gradient-to-r from-[#E60026] to-[#0056A8]"></span>
+</h2>
     </x-slot>
 
     <x-slot name="header_styles">
         <style>
+             
             body {
                 font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
                 margin: 0;
@@ -16,7 +18,6 @@
                 color: #222222;
             }
             .container {
-                /* Mantenido en 1100px como en la corrección anterior */
                 max-width: 1800px;
                 margin: 20px auto;
                 background-color: #FFFFFF; /* Blanco (Contenedor) */
