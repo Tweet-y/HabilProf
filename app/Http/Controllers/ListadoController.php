@@ -190,9 +190,11 @@ class ListadoController extends Controller
             $currentItems = $sorted->forPage($page, $perPage)->values();
 
             $paginator = new LengthAwarePaginator($currentItems, $total, $perPage, $page, [
-                'path' => $request->url(),
-                'query' => $request->query()
+                'path' => request()->url()
             ]);
+
+            // Agregar los parámetros del query a la paginación
+            $paginator->appends($query_params);
 
             \Log::info('Cantidad de habilitaciones encontradas: ' . $paginator->total());
 
