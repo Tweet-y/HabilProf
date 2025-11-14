@@ -44,8 +44,9 @@
                 width: auto;
                 margin-left: 20px;
             }
-            form, .seccion-tabla {
+            .seccion-tabla {
                 padding: 30px;
+                overflow-x: auto; /* Enable horizontal scroll for the entire section */
             }
             fieldset {
                 border: 1px solid #CED4DA; /* Gris (Borde) */
@@ -53,6 +54,7 @@
                 padding: 20px;
                 margin-bottom: 25px;
                 background-color: #F8F9FA; /* Gris Claro (Fondo Fieldset) */
+                overflow-x: auto; /* Enable horizontal scroll within fieldset */
             }
             legend {
                 font-size: 1.2em;
@@ -122,13 +124,15 @@
                 width: 100%;
                 border-collapse: collapse;
                 font-size: 0.9em;
-                table-layout: auto; /* allow natural column widths */
+                table-layout: fixed; /* Fixed layout to prevent compression */
+                min-width: 1200px; /* Force horizontal scroll on small screens */
             }
             table th, table td {
                 border-bottom: 1px solid #CED4DA; /* Borde solo horizontal */
                 padding: 12px 14px;
                 text-align: left;
                 vertical-align: top;
+                min-width: 100px; /* Minimum width for each cell */
             }
             table thead {
                 background-color: #0056A8; /* Azul Secundario (UCSC) */
