@@ -2,9 +2,10 @@
 
     <!-- 1. Título para la barra de cabecera -->
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            Actualizar o Eliminar Habilitación
-        </h2>
+<h2 class="relative inline-block text-2xl md:text-3xl font-semibold tracking-tight text-gray-900">
+  <span class="bg-gradient-to-r from-[#E60026] to-[#0056A8] bg-clip-text text-transparent">Actualizar o Eliminar Habilitación</span>
+  <span class="absolute left-0 -bottom-1 h-[3px] w-full rounded-full bg-gradient-to-r from-[#E60026] to-[#0056A8]"></span>
+</h2>
     </x-slot>
 
     <!-- 2. CSS específico para esta página -->

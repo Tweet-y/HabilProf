@@ -1,13 +1,15 @@
 <x-app-layout>
 
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            Listado de Habilitaciones
-        </h2>
+<h2 class="relative inline-block text-2xl md:text-3xl font-semibold tracking-tight text-gray-900">
+  <span class="bg-gradient-to-r from-[#E60026] to-[#0056A8] bg-clip-text text-transparent">Listado de Habilitaciones</span>
+  <span class="absolute left-0 -bottom-1 h-[3px] w-full rounded-full bg-gradient-to-r from-[#E60026] to-[#0056A8]"></span>
+</h2>
     </x-slot>
 
     <x-slot name="header_styles">
         <style>
+             
             body {
                 font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
                 margin: 0;
@@ -16,8 +18,7 @@
                 color: #222222;
             }
             .container {
-                /* Mantenido en 1100px como en la corrección anterior */
-                max-width: 1100px;
+                max-width: 1800px;
                 margin: 20px auto;
                 background-color: #FFFFFF; /* Blanco (Contenedor) */
                 border-radius: 8px;
@@ -43,8 +44,9 @@
                 width: auto;
                 margin-left: 20px;
             }
-            form, .seccion-tabla {
+            .seccion-tabla {
                 padding: 30px;
+                overflow-x: auto; /* Enable horizontal scroll for the entire section */
             }
             fieldset {
                 border: 1px solid #CED4DA; /* Gris (Borde) */
@@ -52,6 +54,7 @@
                 padding: 20px;
                 margin-bottom: 25px;
                 background-color: #F8F9FA; /* Gris Claro (Fondo Fieldset) */
+                overflow-x: auto; /* Enable horizontal scroll within fieldset */
             }
             legend {
                 font-size: 1.2em;
@@ -121,14 +124,15 @@
                 width: 100%;
                 border-collapse: collapse;
                 font-size: 0.9em;
-                table-layout: auto; /* allow natural column widths */
+                table-layout: fixed; /* Fixed layout to prevent compression */
+                min-width: 1200px; /* Force horizontal scroll on small screens */
             }
             table th, table td {
                 border-bottom: 1px solid #CED4DA; /* Borde solo horizontal */
                 padding: 12px 14px;
                 text-align: left;
-                word-break: break-word; /* allow wrapping so long texts don't break layout */
                 vertical-align: top;
+                min-width: 100px; /* Minimum width for each cell */
             }
             table thead {
                 background-color: #0056A8; /* Azul Secundario (UCSC) */
@@ -170,7 +174,7 @@
 
     <div class="container">
         <header>
-            <h1>Listado de Habilitaciones</h1>
+            <h1>Generar Listado de Habilitaciones</h1>
             <img src="{{ asset('imagenes/ucsc.png') }}" alt="Logo UCSC">
         </header>
 
