@@ -26,17 +26,20 @@ class UpdateHabilitacionRequest extends FormRequest
             'semestre_inicio' => 'required|string',
             'titulo' => 'required|string|max:80|min:6|regex:/^[a-zA-Z0-9\s.,;:\'\"&-_()]+$/',
             'descripcion' => 'required|string|max:500|min:30',
-
-            // PrIng/PrInv Rules
-            'seleccion_guia_rut' => 'required_if:tipo_habilitacion,PrIng,PrInv|nullable|exists:profesor,rut_profesor',
-            'seleccion_comision_rut' => 'required_if:tipo_habilitacion,PrIng,PrInv|nullable|exists:profesor,rut_profesor',
-            'seleccion_co_guia_rut' => 'nullable|exists:profesor,rut_profesor',
-
-            // PrTut Rules
-            'nombre_empresa' => 'required_if:tipo_habilitacion,PrTut|nullable|string|max:50|regex:/^[a-zA-Z0-9\s]+$/u',
-            'nombre_supervisor' => 'required_if:tipo_habilitacion,PrTut|nullable|string|max:50|regex:/^[a-zA-Z\sñÑáéíóúÁÉÍÓÚ]+$/u',
-            'seleccion_tutor_rut' => 'required_if:tipo_habilitacion,PrTut|nullable|exists:profesor,rut_profesor',
         ];
+
+        // Reglas PrIng/PrInv
+        if ($this->tipo_habilitacion === 'PrIng' || $this->tipo_habilitacion === 'PrInv') {
+            $rules['seleccion_guia_rut'] = 'required_if:tipo_habilitacion,PrIng,PrInv|nullable|exists:profesor,rut_profesor';
+            $rules['seleccion_co_guia_rut'] = 'nullable|exists:profesor,rut_profesor';
+            $rules['seleccion_comision_rut'] = 'required_if:tipo_habilitacion,PrIng,PrInv|nullable|exists:profesor,rut_profesor';
+
+        // Reglas PrTut
+        } elseif ($this->tipo_habilitacion === 'PrTut') {
+            $rules['nombre_empresa'] = 'required_if:tipo_habilitacion,PrTut|nullable|string|max:50|regex:/^[a-zA-Z0-9\s]+$/u';
+            $rules['nombre_supervisor'] = 'required_if:tipo_habilitacion,PrTut|nullable|string|max:50|regex:/^[a-zA-Z\sñÑáéíóúÁÉÍÓÚ]+$/u';
+            $rules['seleccion_tutor_rut'] = 'required_if:tipo_habilitacion,PrTut|nullable|exists:profesor,rut_profesor';
+        }
 
         return $rules;
     }
