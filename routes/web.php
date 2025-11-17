@@ -47,7 +47,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // 4. Modificar o Eliminar Habilitaciones (PROTEGIDO)
     // Ruta principal para buscar y seleccionar habilitación a modificar/eliminar
     Route::get('/actualizar_eliminar', [HabilitacionController::class, 'index'])->name('habilitaciones.index');
-    // Ruta para mostrar formulario de edición (no implementada, se usa index)
+    // Ruta para mostrar formulario de edición de habilitación específica
     Route::get('/actualizar_eliminar/{alumno}/edit', [HabilitacionController::class, 'edit'])->name('habilitaciones.edit');
     // Ruta para actualizar habilitación existente
     Route::put('/actualizar_eliminar/{alumno}', [HabilitacionController::class, 'update'])->name('habilitaciones.update');

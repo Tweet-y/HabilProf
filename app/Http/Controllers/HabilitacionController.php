@@ -16,12 +16,127 @@ use Illuminate\Support\Facades\Log;
 /**
  * Controlador para gestionar habilitaciones académicas.
  * Maneja CRUD de habilitaciones, validaciones de negocio y límites de profesores.
- */
+*/
 class HabilitacionController extends Controller
 {
     /**
+     * Muestra el formulario para crear una nueva habilitación.
+     * Solo incluye alumnos sin habilitación activa.
+    */
+    public function create()
+    {
+        // Obtener alumnos disponibles (sin habilitación)
+        $alumnos = Alumno::whereDoesntHave('habilitacion')->get();
+        $profesores = Profesor::all();
+        
+        // Calcular próximos 2 semestres para nuevas habilitaciones
+        $mesActual = date('n');
+        $yearActual = date('Y');
+        if ($mesActual <= 6) { // Primer semestre
+            $semestres = [$yearActual . '-1', $yearActual . '-2'];
+        } else { // Segundo semestre
+            $semestres = [$yearActual . '-2', ($yearActual + 1) . '-1'];
+        }
+        
+        return view('habilitacion_create', compact('alumnos', 'profesores', 'semestres'));
+    }
+    
+    /**
+     * Crea una nueva habilitación en la base de datos.
+     * Incluye validaciones de negocio y creación de registros relacionados.
+    */
+    public function store(StoreHabilitacionRequest $request)
+    {
+        try {
+            $validatedData = $request->validated();
+            
+            // Preparar validaciones de negocio
+            $semestre = $validatedData['semestre_inicio'];
+            $profesores = [];
+            
+            // Determinar profesores según tipo de habilitación
+            if ($validatedData['tipo_habilitacion'] === 'PrTut') {
+                $profesores = [$validatedData['seleccion_tutor_rut']];
+            } else {
+                // Para PrIng/PrInv: guía, co-guía (opcional), comisión
+                $profesores = array_filter([$request->seleccion_guia_rut, $request->seleccion_co_guia_rut, $request->seleccion_comision_rut]);
+            }
+            
+            // Validar que no haya profesores con múltiples roles
+            $error = $this->validateMultipleRoles($request->tipo_habilitacion, $request->seleccion_guia_rut, $request->seleccion_co_guia_rut, $request->seleccion_comision_rut);
+            if ($error) {
+                return redirect()->back()->with('error', $error)->withInput();
+            }
+            
+            // Validar límite de 5 habilitaciones por profesor por semestre
+            $error = $this->validarLimitesProfesoresBackend($profesores, $semestre);
+            if ($error) {
+                return redirect()->back()->with('error', $error)->withInput();
+            }
+
+            // Crear la habilitación principal
+            $habilitacion = Habilitacion::create([
+                'rut_alumno' => $validatedData['selector_alumno_rut'],
+                'semestre_inicio' => $validatedData['semestre_inicio'],
+                'titulo' => $validatedData['titulo'],
+                'descripcion' => $validatedData['descripcion'],
+                // Nota inicial por defecto
+                'nota_final' => 0.0,
+                'fecha_nota' => null,
+            ]);
+            
+            // Crear registro específico según tipo
+            if ($validatedData['tipo_habilitacion'] === 'PrIng' || $validatedData['tipo_habilitacion'] === 'PrInv') {
+                // Crear registro de proyecto
+                Proyecto::create([
+                    'id_habilitacion' => $habilitacion->id_habilitacion,
+                    'tipo_proyecto' => $validatedData['tipo_habilitacion'],
+                    'rut_profesor_guia' => $validatedData['seleccion_guia_rut'],
+                    'rut_profesor_co_guia' => $validatedData['seleccion_co_guia_rut'] ?: null,
+                    'rut_profesor_comision' => $validatedData['seleccion_comision_rut'],
+                ]);
+            } elseif ($validatedData['tipo_habilitacion'] === 'PrTut') {
+                // Crear registro de práctica tutelada
+                PrTut::create([
+                    'id_habilitacion' => $habilitacion->id_habilitacion,
+                    'nombre_supervisor' => $validatedData['nombre_supervisor'],
+                    'nombre_empresa' => $validatedData['nombre_empresa'],
+                    'rut_profesor_tutor' => $validatedData['seleccion_tutor_rut'],
+                ]);
+            }
+            
+            return redirect()->back()->with('success', 'Habilitación creada correctamente');
+            
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Error al crear habilitación: ' . $e->getMessage())->withInput();
+        }
+    }
+    
+    /**
+     * Elimina una habilitación y sus registros relacionados.
+    */
+    public function destroy($alumno)
+    {
+        $habilitacion = Habilitacion::where('rut_alumno', $alumno)->firstOrFail();
+        
+        // Eliminar registros relacionados primero (por integridad referencial)
+        if ($habilitacion->proyecto) {
+            $habilitacion->proyecto->delete();
+        }
+        if ($habilitacion->prTut) {
+            $habilitacion->prTut->delete();
+        }
+        
+        // Eliminar la habilitación principal
+        $habilitacion->delete();
+        
+        return redirect()->back()->with('success', 'Habilitación eliminada correctamente.');
+    }
+    
+    /**
      * Muestra la vista de actualizar/eliminar habilitaciones.
-     * Lista alumnos con habilitaciones y permite búsqueda específica.
+     * Lista alumnos con habilitaciones disponibles para selección.
+     * Si se recibe rut_alumno, busca y muestra la habilitación específica.
      */
     public function index(Request $request)
     {
@@ -48,174 +163,63 @@ class HabilitacionController extends Controller
             }
         }
 
-        // Buscar habilitación específica si se proporciona rut_alumno
+        // Buscar habilitación si se recibió rut_alumno
         $habilitacion = null;
-        if ($request->has('rut_alumno') && $request->rut_alumno) {
+        if ($request->has('rut_alumno') && !empty($request->rut_alumno)) {
             $habilitacion = Habilitacion::where('rut_alumno', $request->rut_alumno)
                 ->with(['proyecto', 'prTut'])
                 ->first();
-        }
 
-        // Para edición, limitar semestres a anterior, actual y siguiente
-        if ($habilitacion) {
-            $semestres = $this->getSemestresForUpdate($habilitacion->semestre_inicio);
+            // Si se encontró habilitación, limitar semestres para edición
+            if ($habilitacion) {
+                $semestres = $this->getSemestresForUpdate($habilitacion->semestre_inicio);
+            }
         }
 
         return view('actualizar_eliminar', compact('alumnos', 'profesores', 'habilitacion', 'semestres'));
     }
-
+    
     /**
-     * Muestra el formulario para crear una nueva habilitación.
-     * Solo incluye alumnos sin habilitación activa.
+     * Calcula semestres disponibles para actualización: anterior, actual y siguiente.
+     * Limita opciones para evitar cambios drásticos.
      */
-    public function create()
+    private function getSemestresForUpdate($currentSemestre)
     {
-        // Obtener alumnos disponibles (sin habilitación)
-        $alumnos = Alumno::whereDoesntHave('habilitacion')->get();
-        $profesores = Profesor::all();
-
-        // Calcular próximos 2 semestres para nuevas habilitaciones
-        $mesActual = date('n');
-        $yearActual = date('Y');
-        if ($mesActual <= 6) { // Primer semestre
-            $semestres = [$yearActual . '-1', $yearActual . '-2'];
-        } else { // Segundo semestre
-            $semestres = [$yearActual . '-2', ($yearActual + 1) . '-1'];
-        }
-
-        return view('habilitacion_create', compact('alumnos', 'profesores', 'semestres'));
-    }
-
-    /**
-     * Verifica si un profesor supera el límite de 5 habilitaciones por semestre.
-     * Usado para validaciones antes de crear/actualizar.
-     *
-     * @param string $rut_profesor RUT del profesor
-     * @param string $semestre Semestre a verificar
-     * @param string|null $excludeRutAlumno Excluir esta habilitación (para updates)
-     * @return string|null Mensaje de error o null si válido
-     */
-    private function verificarLimiteProfesor($rut_profesor, $semestre, $excludeRutAlumno = null)
-    {
-        // Contar habilitaciones del profesor en el semestre
-        $query = Habilitacion::where('semestre_inicio', $semestre)
-            ->where(function($q) use ($rut_profesor) {
-                // En proyectos: guía, co-guía o comisión
-                $q->whereHas('proyecto', function($subQ) use ($rut_profesor) {
-                    $subQ->where('rut_profesor_guia', $rut_profesor)
-                         ->orWhere('rut_profesor_co_guia', $rut_profesor)
-                         ->orWhere('rut_profesor_comision', $rut_profesor);
-                })
-                // En prácticas tuteladas: tutor
-                ->orWhereHas('prTut', function($subQ) use ($rut_profesor) {
-                    $subQ->where('rut_profesor_tutor', $rut_profesor);
-                });
-            });
-
-        // Excluir habilitación actual en caso de update
-        if ($excludeRutAlumno) {
-            $query->where('rut_alumno', '!=', $excludeRutAlumno);
-        }
-
-        $count = $query->count();
-
-        // Verificar límite
-        if ($count >= 5) {
-            $profesor = Profesor::find($rut_profesor);
-            $nombre = $profesor ? $profesor->nombre_profesor . ' ' . $profesor->apellido_profesor : $rut_profesor;
-            return "$nombre ya participa en 5 habilitaciones este semestre.";
-        }
-
-        return null; // Límite no superado
-    }
-
-    /**
-     * Crea una nueva habilitación en la base de datos.
-     * Incluye validaciones de negocio y creación de registros relacionados.
-     */
-    public function store(StoreHabilitacionRequest $request)
-    {
-        try {
-            $validatedData = $request->validated();
-
-            // Preparar validaciones de negocio
-            $semestre = $validatedData['semestre_inicio'];
-            $profesores = [];
-
-            // Determinar profesores según tipo de habilitación
-            if ($validatedData['tipo_habilitacion'] === 'PrTut') {
-                $profesores = [$validatedData['seleccion_tutor_rut']];
-            } else {
-                // Para PrIng/PrInv: guía, co-guía (opcional), comisión
-                $profesores = array_filter([$request->seleccion_guia_rut, $request->seleccion_co_guia_rut, $request->seleccion_comision_rut]);
+        // Parsear semestre actual (ej: "2025-1" -> año=2025, semestre=1)
+        list($year, $semester) = explode('-', $currentSemestre);
+        $year = (int)$year;
+        $semester = (int)$semester;
+    
+        $semestres = [];
+    
+        // Semestre anterior
+        if ($semester == 1) {
+            // Si actual es 1, anterior es 2 del año previo
+            $prevYear = $year - 1;
+            if ($prevYear >= 2025) { // No ir antes de 2025
+                $semestres[] = $prevYear . '-2';
             }
-
-            // Validar que no haya profesores con múltiples roles
-            $error = $this->validateMultipleRoles($request->tipo_habilitacion, $request->seleccion_guia_rut, $request->seleccion_co_guia_rut, $request->seleccion_comision_rut);
-            if ($error) {
-                return redirect()->back()->with('error', $error)->withInput();
-            }
-
-            // Validar límite de 5 habilitaciones por profesor por semestre
-            $error = $this->checkProfessorLimits($profesores, $semestre);
-            if ($error) {
-                return redirect()->back()->with('error', $error)->withInput();
-            }
-
-            // Crear la habilitación principal
-            $habilitacion = Habilitacion::create([
-                'rut_alumno' => $validatedData['selector_alumno_rut'],
-                'semestre_inicio' => $validatedData['semestre_inicio'],
-                'titulo' => $validatedData['titulo'],
-                'descripcion' => $validatedData['descripcion'],
-                // Nota inicial por defecto
-                'nota_final' => 0.0,
-                'fecha_nota' => null,
-            ]);
-
-            // Crear registro específico según tipo
-            if ($validatedData['tipo_habilitacion'] === 'PrIng' || $validatedData['tipo_habilitacion'] === 'PrInv') {
-                // Crear registro de proyecto
-                Proyecto::create([
-                    'id_habilitacion' => $habilitacion->id_habilitacion,
-                    'tipo_proyecto' => $validatedData['tipo_habilitacion'],
-                    'rut_profesor_guia' => $validatedData['seleccion_guia_rut'],
-                    'rut_profesor_co_guia' => $validatedData['seleccion_co_guia_rut'] ?: null,
-                    'rut_profesor_comision' => $validatedData['seleccion_comision_rut'],
-                ]);
-            } elseif ($validatedData['tipo_habilitacion'] === 'PrTut') {
-                // Crear registro de práctica tutelada
-                PrTut::create([
-                    'id_habilitacion' => $habilitacion->id_habilitacion,
-                    'nombre_supervisor' => $validatedData['nombre_supervisor'],
-                    'nombre_empresa' => $validatedData['nombre_empresa'],
-                    'rut_profesor_tutor' => $validatedData['seleccion_tutor_rut'],
-                ]);
-            }
-
-            return redirect()->back()->with('success', 'Habilitación creada correctamente');
-
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Error al crear habilitación: ' . $e->getMessage())->withInput();
+        } else {
+            // Si actual es 2, anterior es 1 del mismo año
+            $semestres[] = $year . '-1';
         }
+    
+        // Semestre actual
+        $semestres[] = $currentSemestre;
+    
+        // Semestre siguiente
+        if ($semester == 1) {
+            // Si actual es 1, siguiente es 2 del mismo año
+            $semestres[] = $year . '-2';
+        } else {
+            // Si actual es 2, siguiente es 1 del año siguiente
+            $nextYear = $year + 1;
+            $semestres[] = $nextYear . '-1';
+        }
+    
+        return $semestres;
     }
-
-    /**
-     * Muestra una habilitación específica (no implementado).
-     */
-    public function show(string $id)
-    {
-        // Método no implementado en esta versión
-    }
-
-    /**
-     * Muestra el formulario de edición (no implementado, se usa index).
-     */
-    public function edit(string $id)
-    {
-        // La edición se maneja desde la vista index
-    }
-
+    
     /**
      * Actualiza una habilitación existente.
      * Maneja cambios de tipo y validaciones de negocio.
@@ -223,9 +227,9 @@ class HabilitacionController extends Controller
     public function update(UpdateHabilitacionRequest $request, $alumno)
     {
         $habilitacion = Habilitacion::where('rut_alumno', $alumno)->firstOrFail();
-
+        
         $validatedData = $request->validated();
-
+        
         // Preparar validaciones de negocio
         $semestre = $validatedData['semestre_inicio'];
         $profesores = [];
@@ -244,7 +248,7 @@ class HabilitacionController extends Controller
         }
 
         // Validar límites de profesores (excluyendo la habilitación actual)
-        $error = $this->checkProfessorLimits($profesores, $semestre, $alumno);
+        $error = $this->validarLimitesProfesoresBackend($profesores, $semestre, $alumno);
         if ($error) {
             return redirect()->back()->with('error', $error)->withInput();
         }
@@ -295,28 +299,105 @@ class HabilitacionController extends Controller
             Log::error('Error al actualizar habilitación: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Error al actualizar la habilitación. Por favor, intente nuevamente.');
         }
-
+        
         return redirect()->route('habilitaciones.index')->with('success', 'Habilitación actualizada correctamente.');
     }
+    
+
     /**
-     * Elimina una habilitación y sus registros relacionados.
+     * Muestra una habilitación específica (no implementado).
      */
-    public function destroy($alumno)
+    public function show(string $id)
     {
-        $habilitacion = Habilitacion::where('rut_alumno', $alumno)->firstOrFail();
+        // Método no implementado en esta versión
+    }
 
-        // Eliminar registros relacionados primero (por integridad referencial)
-        if ($habilitacion->proyecto) {
-            $habilitacion->proyecto->delete();
+    /**
+     * Muestra el formulario de edición para una habilitación específica.
+     * Carga la habilitación seleccionada y prepara datos para edición.
+     */
+    public function edit($rut_alumno)
+    {
+        // Obtener alumnos con habilitaciones para el selector
+        $alumnos = Alumno::whereHas('habilitacion')->with(['habilitacion.proyecto', 'habilitacion.prTut'])->get();
+        $profesores = Profesor::all();
+
+        // Buscar la habilitación específica a editar
+        $habilitacion = Habilitacion::where('rut_alumno', $rut_alumno)
+            ->with(['proyecto', 'prTut'])
+            ->firstOrFail();
+
+        // Limitar semestres a anterior, actual y siguiente para edición
+        $semestres = $this->getSemestresForUpdate($habilitacion->semestre_inicio);
+
+        return view('actualizar_eliminar', compact('alumnos', 'profesores', 'habilitacion', 'semestres'));
+    }
+
+    /**
+     * DIFERENCIAS ENTRE MÉTODOS DE VALIDACIÓN DE LÍMITES DE PROFESORES:
+     *
+     * 1. validarLimiteProfesorIndividual (UTILITARIO PRIVADO):
+     *    - Valida UN SOLO profesor específico
+     *    - Retorna string|null (mensaje error o null si válido)
+     *    - Es la función base reutilizada por los otros métodos
+     *    - Usado internamente por validarLimitesProfesoresBackend y checkLimit
+     *
+     * 2. validarLimitesProfesoresBackend (VALIDACIÓN BACKEND PRIVADA):
+     *    - Valida MÚLTIPLES profesores en una sola llamada
+     *    - Retorna string|null (primer error encontrado o null si todos OK)
+     *    - Usado en store() y update() para validaciones del lado servidor
+     *    - Internamente itera y llama validarLimiteProfesorIndividual por cada profesor
+     *
+     * 3. checkLimit (ENDPOINT AJAX PÚBLICO):
+     *    - Endpoint web accesible desde JavaScript
+     *    - Valida múltiples profesores para validación en tiempo real
+     *    - Retorna JSON Response (array de errores o mensaje OK)
+     *    - Usado por AJAX en formularios para feedback inmediato al usuario
+     *    - Internamente usa validarLimiteProfesorIndividual() para cada profesor
+     */
+
+    /**
+     * Verifica si un profesor supera el límite de 5 habilitaciones por semestre.
+     * MÉTODO UTILITARIO: valida UN SOLO profesor, retorna mensaje error o null.
+     * Base reutilizable usada por validarLimitesProfesoresBackend y checkLimit.
+     *
+     * @param string $rut_profesor RUT del profesor
+     * @param string $semestre Semestre a verificar
+     * @param string|null $excludeRutAlumno Excluir esta habilitación (para updates)
+     * @return string|null Mensaje de error o null si válido
+     */
+    private function validarLimiteProfesorIndividual($rut_profesor, $semestre, $excludeRutAlumno = null)
+    {
+        // Contar habilitaciones del profesor en el semestre
+        $query = Habilitacion::where('semestre_inicio', $semestre)
+            ->where(function($q) use ($rut_profesor) {
+                // En proyectos: guía, co-guía o comisión
+                $q->whereHas('proyecto', function($subQ) use ($rut_profesor) {
+                    $subQ->where('rut_profesor_guia', $rut_profesor)
+                         ->orWhere('rut_profesor_co_guia', $rut_profesor)
+                         ->orWhere('rut_profesor_comision', $rut_profesor);
+                })
+                // En prácticas tuteladas: tutor
+                ->orWhereHas('prTut', function($subQ) use ($rut_profesor) {
+                    $subQ->where('rut_profesor_tutor', $rut_profesor);
+                });
+            });
+
+        // Excluir habilitación actual en caso de update
+        if ($excludeRutAlumno) {
+            $query->where('rut_alumno', '!=', $excludeRutAlumno);
         }
-        if ($habilitacion->prTut) {
-            $habilitacion->prTut->delete();
+
+        $count = $query->count();
+
+        // Verificar límite
+        if ($count >= 5) {
+            $profesor = Profesor::find($rut_profesor);
+            $nombre = $profesor ? $profesor->nombre_profesor . ' ' . $profesor->apellido_profesor : $rut_profesor;
+            return "$nombre ya participa en 5 habilitaciones este semestre.";
         }
 
-        // Eliminar la habilitación principal
-        $habilitacion->delete();
-
-        return redirect()->back()->with('success', 'Habilitación eliminada correctamente.');
+        return null; // Límite no superado
     }
 
     /**
@@ -342,7 +423,7 @@ class HabilitacionController extends Controller
     /**
      * Verifica que ningún profesor exceda el límite de 5 habilitaciones por semestre.
      */
-    private function checkProfessorLimits($profesores, $semestre, $excludeRutAlumno = null)
+    private function validarLimitesProfesoresBackend($profesores, $semestre, $excludeRutAlumno = null)
     {
         foreach ($profesores as $rut) {
             // Contar habilitaciones del profesor en el semestre
@@ -400,7 +481,7 @@ class HabilitacionController extends Controller
 
         // Verificar cada profesor
         foreach ($profesores as $rut) {
-            $error = $this->verificarLimiteProfesor($rut, $semestre, $excludeRutAlumno);
+            $error = $this->validarLimiteProfesorIndividual($rut, $semestre, $excludeRutAlumno);
             if ($error) {
                 $errors[] = $error;
             }
@@ -412,46 +493,5 @@ class HabilitacionController extends Controller
         }
 
         return response()->json(['message' => 'OK'], 200);
-    }
-
-    /**
-     * Calcula semestres disponibles para actualización: anterior, actual y siguiente.
-     * Limita opciones para evitar cambios drásticos.
-     */
-    private function getSemestresForUpdate($currentSemestre)
-    {
-        // Parsear semestre actual (ej: "2025-1" -> año=2025, semestre=1)
-        list($year, $semester) = explode('-', $currentSemestre);
-        $year = (int)$year;
-        $semester = (int)$semester;
-
-        $semestres = [];
-
-        // Semestre anterior
-        if ($semester == 1) {
-            // Si actual es 1, anterior es 2 del año previo
-            $prevYear = $year - 1;
-            if ($prevYear >= 2025) { // No ir antes de 2025
-                $semestres[] = $prevYear . '-2';
-            }
-        } else {
-            // Si actual es 2, anterior es 1 del mismo año
-            $semestres[] = $year . '-1';
-        }
-
-        // Semestre actual
-        $semestres[] = $currentSemestre;
-
-        // Semestre siguiente
-        if ($semester == 1) {
-            // Si actual es 1, siguiente es 2 del mismo año
-            $semestres[] = $year . '-2';
-        } else {
-            // Si actual es 2, siguiente es 1 del año siguiente
-            $nextYear = $year + 1;
-            $semestres[] = $nextYear . '-1';
-        }
-
-        return $semestres;
     }
 }

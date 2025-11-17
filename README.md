@@ -11,21 +11,21 @@ Este proyecto fue desarrollado por:
 - **RF5: Login**: Interfaz y funcionalidad del Login
   - `routes/web.php` (Rutas de autenticación)
   - `database/migrations/2014_10_12_000000_create_users_table.php` (Migración tabla users)
-  - `resources/views/auth/login.blade.php` (Interfaz líneas 1-106, Función líneas 107-148)
+  - `resources/views/auth/login.blade.php` (Vista principal)
   - `app/Http/Requests/Auth/LoginRequest.php` (Validaciones del Login)
 - **RF6: Registro**: Interfaz y funcionalidad del Registro
-  - `resources/views/auth/register.blade.php`
+  - `resources/views/auth/register.blade.php` (Vista principal)
   - `resources/lang/es/validation.php` (Validaciones)
 - **RF4: Generación de Listados**: Interfaz y función de los Listados
   - `routes/web.php` (Rutas de listados)
-  - `resources/views/listados.blade.php`
+  - `resources/views/listados.blade.php` (Vista principal)
   - `app/Http/Controllers/ListadoController.php` (Controlador de la función)
 
 ### **Benjamín Bizama** - RF3 (Actualizar/Eliminar Habilitaciones)
 
 - **RF3: Actualizar/Eliminar Habilitaciones**: Backend y frontend de la funcionalidad
   - `routes/web.php` (Rutas relacionadas con habilitaciones)
-  - `app/Http/Controllers/HabilitacionController.php` (Métodos update, destroy, checkLimit)
+  - `app/Http/Controllers/HabilitacionController.php` (Métodos index, update, destroy, getSemestresForUpdate, líneas 25-64, 238-350)
   - `app/Http/Requests/UpdateHabilitacionRequest.php` (Validaciones de actualización)
   - `resources/views/actualizar_eliminar.blade.php` (Vista principal)
   - `public/js/validacion.js` (Validaciones frontend)
@@ -35,7 +35,7 @@ Este proyecto fue desarrollado por:
 
 - **RF2: Ingreso de Habilitaciones**: Ingreso de nuevas habilitaciones
   - `routes/web.php` (Rutas relacionadas con ingreso de habilitaciones)
-  - `app/Http/Controllers/HabilitacionController.php` (Método store)
+  - `app/Http/Controllers/HabilitacionController.php` (Métodos create, store, checkLimit, validateMultipleRoles, validarLimitesProfesoresBackend, líneas 65-199, 351-420)
   - `app/Http/Requests/StoreHabilitacionRequest.php` (Validaciones de ingreso)
   - `resources/views/habilitacion_create.blade.php` (Vista de ingreso)
   - `public/js/validacion.js` (Validaciones frontend)

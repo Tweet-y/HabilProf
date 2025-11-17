@@ -52,7 +52,7 @@
                 border: 1px solid #CED4DA; /* Gris (Borde) */
                 border-radius: 6px;
                 padding: 20px;
-                margin-bottom: 25px;
+                margin: 0 20px 25px 20px; /* Added left and right margins */
                 background-color: #F8F9FA; /* Gris Claro (Fondo Fieldset) */
                 overflow-x: auto; /* Enable horizontal scroll within fieldset */
             }
@@ -123,17 +123,32 @@
             table {
                 width: 100%;
                 border-collapse: collapse;
-                font-size: 0.9em;
+                font-size: 0.85em; /* Slightly smaller font for better fit */
                 table-layout: fixed; /* Fixed layout to prevent compression */
-                min-width: 1200px; /* Force horizontal scroll on small screens */
+                min-width: 1400px; /* Increased min-width for better column distribution */
             }
             table th, table td {
                 border-bottom: 1px solid #CED4DA; /* Borde solo horizontal */
-                padding: 12px 14px;
+                padding: 8px 10px; /* Reduced padding for more space */
                 text-align: left;
                 vertical-align: top;
-                min-width: 100px; /* Minimum width for each cell */
+                word-wrap: break-word; /* Allow text wrapping */
+                overflow-wrap: break-word;
             }
+            /* Specific column widths for better distribution */
+            table th:nth-child(1), table td:nth-child(1) { width: 80px; } /* Semestre */
+            table th:nth-child(2), table td:nth-child(2) { width: 100px; } /* RUT Alumno */
+            table th:nth-child(3), table td:nth-child(3) { width: 150px; } /* Nombre */
+            table th:nth-child(4), table td:nth-child(4) { width: 60px; } /* Tipo */
+            table th:nth-child(5), table td:nth-child(5) { width: 120px; } /* Título */
+            table th:nth-child(6), table td:nth-child(6) { width: 200px; max-width: 200px; } /* Descripción - Limited width */
+            table th:nth-child(7), table td:nth-child(7) { width: 80px; } /* Nota Final */
+            table th:nth-child(8), table td:nth-child(8) { width: 90px; } /* Fecha Nota */
+            table th:nth-child(9), table td:nth-child(9) { width: 120px; } /* Profesor Principal */
+            table th:nth-child(10), table td:nth-child(10) { width: 100px; } /* RUT Guía */
+            table th:nth-child(11), table td:nth-child(11) { width: 100px; } /* RUT Co-Guía */
+            table th:nth-child(12), table td:nth-child(12) { width: 100px; } /* RUT Comisión */
+            table th:nth-child(13), table td:nth-child(13) { width: 200px; } /* Detalles */
             table thead {
                 background-color: #0056A8; /* Azul Secundario (UCSC) */
                 position: sticky; /* Cabecera fija */
@@ -173,14 +188,8 @@
     </x-slot>
 
     <div class="container">
-        <header>
-            <h1>Generar Listado de Habilitaciones</h1>
-            <img src="{{ asset('imagenes/ucsc.png') }}" alt="Logo UCSC">
-        </header>
-
-        <form action="{{ route('listados.generar') }}" method="POST">
+        <form action="{{ route('listados.generar') }}" method="POST" id="listadoForm">
             @csrf
-            @method('POST')
             @if(session('error'))
                 <div class="alert alert-danger">
                     {{ session('error') }}
@@ -197,15 +206,15 @@
                 </div>
             @endif
 
-            <fieldset>
+            <fieldset style="margin-top: 30px;">
                 <legend>Generar Reporte</legend>
                 <div class="form-grid">
                     <div class="form-group">
                         <label for="tipo_listado" class="required">Tipo de Listado</label>
                         <select id="tipo_listado" name="tipo_listado" required onchange="mostrarFiltroSemestre(this.value)">
                             <option value="" disabled {{ !$tipo_listado ? 'selected' : '' }}>Seleccione un tipo...</option>
-                            <option value="Listado Semestral" {{ $tipo_listado == 'Listado Semestral' ? 'selected' : '' }}>Listado Semestral</option>
-                            <option value="Listado Histórico" {{ $tipo_listado == 'Listado Histórico' ? 'selected' : '' }}>Listado Histórico</option>
+                            <option value="Listado Semestral" {{ session('tipo_listado') == 'Listado Semestral' ? 'selected' : '' }}>Listado Semestral</option>
+                            <option value="Listado Histórico" {{ session('tipo_listado') == 'Listado Histórico' ? 'selected' : '' }}>Listado Histórico</option>
                         </select>
                     </div>
 
@@ -213,7 +222,7 @@
                         <label for="semestre" class="required">Filtrar por semestre</label>
                         <select id="semestre" name="semestre">
                             @foreach($semestres_disponibles as $semestre)
-                                <option value="{{ $semestre }}">{{ $semestre }}</option>
+                                <option value="{{ $semestre }}" {{ $semestre == session('semestre') ? 'selected' : '' }}>{{ $semestre }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -225,7 +234,7 @@
             </fieldset>
         </form>
 
-        <script>
+            <script>
             document.addEventListener('DOMContentLoaded', function() {
                 // Inicializar el estado del filtro de semestre si hay un valor guardado
                 const tipoListado = document.getElementById('tipo_listado').value;
@@ -234,7 +243,7 @@
                 }
 
                 // Validar el formulario antes de enviar
-                document.querySelector('form').addEventListener('submit', function(e) {
+                document.getElementById('listadoForm').addEventListener('submit', function(e) {
                     e.preventDefault();
                     const tipo = document.getElementById('tipo_listado').value;
                     const semestre = document.getElementById('semestre');
@@ -251,12 +260,17 @@
 
                     this.submit();
                 });
+
+                // Evitar confirmación de reenvío de formulario al recargar página
+                if (window.history.replaceState) {
+                    window.history.replaceState(null, null, window.location.href);
+                }
             });
 
             function mostrarFiltroSemestre(tipo) {
                 const filtroSemestre = document.getElementById('filtro_semestre_container');
                 filtroSemestre.style.display = tipo === 'Listado Semestral' ? 'block' : 'none';
-                
+
                 const semestreSelect = document.getElementById('semestre');
                 semestreSelect.required = tipo === 'Listado Semestral';
             }
@@ -346,7 +360,7 @@
                                         {{ $tipo }}
                                     </td>
                                     <td>{{ $hab->titulo }}</td>
-                                    <td>{{ Str::limit($hab->descripcion, 100) }}</td>
+                                    <td style="max-width: 200px; word-wrap: break-word; overflow-wrap: break-word;">{{ Str::limit($hab->descripcion, 50) }}</td>
                                     <td>{{ $hab->nota_final ?? 'Pendiente' }}</td>
                                     <td>{{ $hab->fecha_nota ? date('d/m/Y', strtotime($hab->fecha_nota)) : 'Pendiente' }}</td>
                                     

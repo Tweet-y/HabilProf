@@ -1,1 +1,1 @@
-cmd /k php artisan migrate:fresh --seed
+cmd /c php artisan migrate:fresh --seed
