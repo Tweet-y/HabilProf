@@ -37,14 +37,21 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // 3. Ingreso de Habilitaciones (PROTEGIDO)
-    Route::get('/habilitaciones/ingreso', [HabilitacionController::class, 'create'])->name('habilitaciones.create');
-    Route::post('/habilitaciones/ingreso', [HabilitacionController::class, 'store'])->name('habilitaciones.store');
+    // Ruta para mostrar formulario de creación de nuevas habilitaciones
+    Route::get('/ingreso', [HabilitacionController::class, 'create'])->name('habilitaciones.create');
+    // Ruta para procesar y almacenar nueva habilitación en base de datos
+    Route::post('/ingreso', [HabilitacionController::class, 'store'])->name('habilitaciones.store');
+    // Ruta AJAX para verificar límites de profesores antes de guardar
     Route::post('/habilitaciones/check-limit', [HabilitacionController::class, 'checkLimit'])->name('habilitaciones.checkLimit');
 
-    // 4. Modifcar o Eliminar Habilitaciones (PROTEGIDO)
+    // 4. Modificar o Eliminar Habilitaciones (PROTEGIDO)
+    // Ruta principal para buscar y seleccionar habilitación a modificar/eliminar
     Route::get('/actualizar_eliminar', [HabilitacionController::class, 'index'])->name('habilitaciones.index');
+    // Ruta para mostrar formulario de edición (no implementada, se usa index)
     Route::get('/actualizar_eliminar/{alumno}/edit', [HabilitacionController::class, 'edit'])->name('habilitaciones.edit');
+    // Ruta para actualizar habilitación existente
     Route::put('/actualizar_eliminar/{alumno}', [HabilitacionController::class, 'update'])->name('habilitaciones.update');
+    // Ruta para eliminar habilitación y registros relacionados
     Route::delete('/actualizar_eliminar/{alumno}', [HabilitacionController::class, 'destroy'])->name('habilitaciones.destroy');
 
     // 5. Generar Listados (PROTEGIDO)

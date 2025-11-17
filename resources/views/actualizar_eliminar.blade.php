@@ -2,18 +2,21 @@
 
     <!-- 1. Título para la barra de cabecera -->
     <x-slot name="header">
-<h2 class="relative inline-block text-2xl md:text-3xl font-semibold tracking-tight text-gray-900">
-  <span class="bg-gradient-to-r from-[#E60026] to-[#0056A8] bg-clip-text text-transparent">Actualizar o Eliminar Habilitación</span>
-  <span class="absolute left-0 -bottom-1 h-[3px] w-full rounded-full bg-gradient-to-r from-[#E60026] to-[#0056A8]"></span>
-</h2>
+        <h2 class="relative inline-block text-2xl md:text-3xl font-semibold tracking-tight text-gray-900">
+            <span class="bg-gradient-to-r from-[#E60026] to-[#0056A8] bg-clip-text text-transparent">Actualizar o Eliminar Habilitación</span>
+            <span class="absolute left-0 -bottom-1 h-[3px] w-full rounded-full bg-gradient-to-r from-[#E60026] to-[#0056A8]"></span>
+        </h2>
     </x-slot>
 
     <!-- 2. CSS específico para esta página -->
     <x-slot name="header_styles">
+        <!-- Enlace a CSS general de formularios -->
         <link rel="stylesheet" href="{{ asset('css/form.css') }}">
         <style>
+            /* Contenedor principal */
             .container { margin-top: 20px; }
-            /* Estilos de botones (movidos desde el <style> original) */
+
+            /* Estilos de botones para acciones principales */
             button.btn-primary, button.btn-secondary, button.btn-danger {
                 display: inline-block;
                 padding: 12px 20px;
@@ -27,6 +30,7 @@
                 text-align: center;
                 user-select: none;
             }
+            /* Colores de botones */
             button.btn-primary { background-color: #0056A8; color: white; }
             button.btn-primary:hover { background-color: #004180; }
             button.btn-secondary { background-color: #6C757D; color: white; }
@@ -39,7 +43,7 @@
     <!-- 3. Contenido de tu página -->
     <div class="container">
 
-        <!-- Formulario de Búsqueda -->
+        <!-- Formulario de Búsqueda de Habilitaciones -->
         <form action="{{ route('habilitaciones.index') }}" method="GET" class="seccion-accion">
             <fieldset>
                 <legend>Buscar Habilitación Existente</legend>
@@ -49,12 +53,13 @@
                         <option value="" disabled {{ !request('rut_alumno') ? 'selected' : '' }}>Buscar y seleccionar un alumno...</option>
                         @if(isset($alumnos) && count($alumnos) > 0)
                             @foreach($alumnos as $alumno)
+                                <!-- Mostrar apellido, nombre y RUT para fácil identificación -->
                                 <option value="{{ $alumno->rut_alumno }}" {{ (request('rut_alumno') == $alumno->rut_alumno) ? 'selected' : '' }}>
                                     {{ $alumno->apellido_alumno }}, {{ $alumno->nombre_alumno }} ({{ $alumno->rut_alumno }})
                                 </option>
                             @endforeach
                         @else
-                            <option value="" disabled>No hay alumnos disponibles</option>
+                            <option value="" disabled>No hay alumnos con habilitaciones disponibles</option>
                         @endif
                     </select>
                 </div>
@@ -87,9 +92,10 @@
 
         <div id="js-validation-error" class="error-message" style="display: none; margin-bottom: 20px;"></div>
 
-        <!-- Acciones (si se encontró habilitación) -->
+        <!-- Acciones disponibles para la habilitación encontrada -->
         @if($habilitacion)
             @php
+                // Preparar nombre completo del alumno para mostrar
                 $alumnoNombre = $habilitacion->alumno->apellido_alumno . ', ' . $habilitacion->alumno->nombre_alumno;
             @endphp
             <div class="seccion-accion" id="seleccion-accion">
@@ -97,7 +103,9 @@
                 <h2>Alumno Seleccionado: <strong>{{ $alumnoNombre }}</strong></h2>
                 <p>¿Desea eliminar o modificar los datos de esta habilitación?</p>
                 <div class="button-container">
+                    <!-- Botón para mostrar formulario de modificación -->
                     <button type="button" class="btn-primary" onclick="mostrarModificar()">Modificar Datos</button>
+                    <!-- Botón para mostrar confirmación de eliminación -->
                     <button type="button" class="btn-danger" onclick="mostrarEliminar('{{ $alumnoNombre }}')">Eliminar Habilitación</button>
                 </div>
             </div>
@@ -245,14 +253,17 @@
             </form>
         @endif
 
-        <!-- Diálogo de Confirmar Eliminación (Oculto) -->
+        <!-- Diálogo de Confirmación de Eliminación (Oculto por defecto) -->
         <div class="seccion-accion" id="confirmar-eliminacion" style="display: none;">
             <hr style="border: 0; border-top: 1px dashed #CED4DA; margin: 0 30px 30px;">
             <h2>Confirmar Eliminación</h2>
+            <!-- Nombre del alumno se inserta dinámicamente por JavaScript -->
             <p>¿Desea eliminar la habilitación del Alumno <strong id="alumno-eliminar">Nombre Apellido</strong>?</p>
-            <p class="help-text">Esta acción no se puede deshacer.</p>
+            <p class="help-text">Esta acción no se puede deshacer y eliminará todos los datos relacionados.</p>
             <div class="button-container">
+                <!-- Botón para cancelar y volver -->
                 <button type="button" class="btn-secondary" onclick="cancelarEliminar()">Cancelar</button>
+                <!-- Botón para confirmar eliminación -->
                 <button type="button" class="btn-danger" onclick="confirmarEliminar()">Sí, eliminar</button>
             </div>
         </div>
@@ -281,133 +292,160 @@
         </x-modal>
     </div>
 
-    <!-- 4. Scripts al final -->
+    <!-- 4. Scripts al final de la página -->
+    <!-- Script de validación general -->
     <script src="{{ asset('js/validacion.js') }}"></script>
+    <!-- Script específico para formularios de habilitación -->
     <script src="{{ asset('js/formHabilitacion.js') }}"></script>
     <script>
+        // Variable para saber si hay habilitación cargada
         var hasHabilitacion = @json($habilitacion ? true : false);
 
-        // Función para mostrar sección de modificar
+        // Función para mostrar el formulario de modificación
         function mostrarModificar() {
+            // Ocultar otras secciones
             document.getElementById('seleccion-accion').style.display = 'none';
-            document.getElementById('form-modificar').style.display = 'block';
             document.getElementById('confirmar-eliminacion').style.display = 'none';
-            // Disparar evento para mostrar la sección correcta
+            // Mostrar formulario de modificación
+            document.getElementById('form-modificar').style.display = 'block';
+            // Disparar cambio para mostrar campos condicionales correctos
             document.getElementById('tipo_habilitacion').dispatchEvent(new Event('change'));
         }
 
-        // Función para mostrar sección de eliminar
+        // Función para mostrar confirmación de eliminación
         function mostrarEliminar(alumnoNombre) {
+            // Insertar nombre del alumno en el mensaje
             document.getElementById('alumno-eliminar').textContent = alumnoNombre;
+            // Ocultar otras secciones
             document.getElementById('seleccion-accion').style.display = 'none';
             document.getElementById('form-modificar').style.display = 'none';
+            // Mostrar confirmación de eliminación
             document.getElementById('confirmar-eliminacion').style.display = 'block';
         }
 
-        // Función para cancelar eliminación
+        // Función para cancelar eliminación y volver a opciones
         function cancelarEliminar() {
+            // Ocultar confirmación
             document.getElementById('confirmar-eliminacion').style.display = 'none';
+            // Mostrar opciones principales
             document.getElementById('seleccion-accion').style.display = 'block';
         }
 
-        // Función para confirmar eliminación
+        // Función para confirmar y ejecutar eliminación
         function confirmarEliminar() {
+            // Crear formulario dinámico para envío POST con DELETE
             const form = document.createElement('form');
             form.method = 'POST';
+            // Obtener RUT del alumno seleccionado
             const selectedRut = document.getElementById('buscar_alumno').value;
-            // El parámetro de la ruta es 'alumno', no ':rut'
+            // Construir URL con el RUT del alumno
             form.action = '{{ route("habilitaciones.destroy", ["alumno" => ":rut"]) }}'.replace(':rut', selectedRut);
+            // Incluir token CSRF y método DELETE
             form.innerHTML = '@csrf @method("DELETE")';
+            // Agregar al DOM y enviar
             document.body.appendChild(form);
             form.submit();
         }
 
-        // Función para cancelar edición
+        // Función para cancelar modificación y volver a opciones
         function cancelarEdicion() {
+            // Ocultar formulario de modificación
             document.getElementById('form-modificar').style.display = 'none';
+            // Mostrar opciones principales
             document.getElementById('seleccion-accion').style.display = 'block';
         }
 
-        // Función para guardar cambios
+        // Función para guardar cambios con validación previa
         async function guardarCambios() {
-            // Llama a la validación JS antes de mostrar el modal
+            // Ejecutar validación JavaScript antes de mostrar modal
             if (await validarFormulario()) {
+                // Mostrar modal de confirmación
                 window.dispatchEvent(new CustomEvent('open-modal', { detail: 'confirm-update' }));
             }
         }
 
-        // Función para confirmar guardar cambios
+        // Función para confirmar y ejecutar guardado de cambios
         function confirmarGuardarCambios() {
+            // Obtener formulario de modificación
             const form = document.getElementById('form-modificar');
+            // Obtener RUT del alumno seleccionado
             const selectedRut = document.getElementById('buscar_alumno').value;
+            // Establecer acción del formulario con RUT del alumno
             form.action = '{{ route("habilitaciones.update", ["alumno" => ":rut"]) }}'.replace(':rut', selectedRut);
+            // Enviar formulario
             form.submit();
         }
 
-        // Función para cerrar modal
+        // Función para cerrar modal de confirmación
         function closeModal(modalName) {
+            // Disparar evento para cerrar modal específico
             window.dispatchEvent(new CustomEvent('close-modal', { detail: modalName }));
         }
 
-        // --- MANEJO DE SECCIONES CONDICIONALES (AÑADIDO) ---
+        // Función para mostrar/ocultar secciones condicionales según tipo de habilitación
         function toggleSections() {
+            // Obtener elementos del DOM
             const tipoHabilitacion = document.getElementById('tipo_habilitacion');
             const seccionProyecto = document.getElementById('seccion-pring-prinv');
             const seccionPractica = document.getElementById('seccion-prtut');
 
+            // Verificar que existan los elementos
             if (!tipoHabilitacion || !seccionProyecto || !seccionPractica) return;
 
+            // Obtener valor seleccionado
             const valor = tipoHabilitacion.value;
 
-            // Ocultar ambas secciones primero
+            // Ocultar ambas secciones inicialmente
             seccionProyecto.style.display = 'none';
             seccionPractica.style.display = 'none';
 
-            // Quitar 'required' de todos los campos condicionales
+            // Remover atributo 'required' de campos condicionales
             document.querySelectorAll('#seccion-pring-prinv [name]').forEach(el => {
                 if(el.name !== 'seleccion_co_guia_rut') el.required = false;
             });
             document.querySelectorAll('#seccion-prtut [name]').forEach(el => el.required = false);
 
-            // Mostrar y hacer requeridos según el tipo
+            // Mostrar sección correspondiente y hacer campos requeridos
             if (valor === 'PrTut') {
+                // Mostrar sección de práctica tutelada
                 seccionPractica.style.display = 'block';
-                // CORRECCIÓN: Hacer que los inputs y selects sean 'required'
+                // Hacer requeridos todos los campos de PrTut
                 document.querySelectorAll('#seccion-prtut input[name], #seccion-prtut select[name]').forEach(el => el.required = true);
             } else if (valor === 'PrIng' || valor === 'PrInv') {
+                // Mostrar sección de proyecto
                 seccionProyecto.style.display = 'block';
-                // CORRECCIÓN: Hacer que los selects (excepto co-guía) sean 'required'
+                // Hacer requeridos los campos obligatorios de proyecto (excepto co-guía)
                 document.querySelectorAll('#seccion-pring-prinv select[name]').forEach(el => {
                     if(el.name !== 'seleccion_co_guia_rut') el.required = true;
                 });
             }
         }
 
+        // Inicializar funcionalidades cuando el DOM esté listo
         document.addEventListener('DOMContentLoaded', function() {
-            // Inicializar secciones ocultas si no hay habilitación
+            // Ocultar secciones si no hay habilitación cargada
             if (!hasHabilitacion) {
-                var elementsToHide = ['seleccion-accion', 'form-modificar', 'confirmar-eliminacion'];
+                const elementsToHide = ['seleccion-accion', 'form-modificar', 'confirmar-eliminacion'];
                 elementsToHide.forEach(id => {
                     const element = document.getElementById(id);
                     if (element) element.style.display = 'none';
                 });
             }
 
-            // Añadir listener al selector de tipo
+            // Configurar listener para cambios en tipo de habilitación
             const tipoHabilitacion = document.getElementById('tipo_habilitacion');
             if (tipoHabilitacion) {
                 tipoHabilitacion.addEventListener('change', toggleSections);
-                // Ejecutar al cargar (¡IMPORTANTE!)
+                // Ejecutar toggle inicial si hay habilitación
                 if (hasHabilitacion) {
                     toggleSections();
                 }
             }
 
-            // --- Scroll automático a errores del servidor (SOLICITADO) ---
-            // Se mueve al primer mensaje de error O éxito que encuentre
-            const serverError = document.querySelector('.error-message, .success-message');
-            if (serverError) {
-                serverError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            // Scroll automático a mensajes del servidor (errores o éxito)
+            const serverMessage = document.querySelector('.error-message, .success-message');
+            if (serverMessage) {
+                serverMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
         });
     </script>

@@ -2,14 +2,54 @@
 
 **HabilProf** es una aplicación web desarrollada en Laravel 10 para la gestión, seguimiento y reporte del proceso de Habilitación Profesional (Proyectos de Título y Prácticas Profesionales) de la carrera de Ingeniería Civil Informática de la UCSC.
 
-## **Creadores**
+## **Creadores y Archivos Trabajados**
 
 Este proyecto fue desarrollado por:
 
-* Vicente Alarcón
-* Benjamín Bizama  
-* Brandon Martínez  
-* Rodrigo Sandoval
+### **Vicente Alarcón** - RF5 (Login), RF6 (Registro) y F4 (Generación de Listados)
+
+- **RF5: Login**: Interfaz y funcionalidad del Login
+  - `routes/web.php` (Rutas de autenticación)
+  - `database/migrations/2014_10_12_000000_create_users_table.php` (Migración tabla users)
+  - `resources/views/auth/login.blade.php` (Interfaz líneas 1-106, Función líneas 107-148)
+  - `app/Http/Requests/Auth/LoginRequest.php` (Validaciones del Login)
+- **RF6: Registro**: Interfaz y funcionalidad del Registro
+  - `resources/views/auth/register.blade.php`
+  - `resources/lang/es/validation.php` (Validaciones)
+- **RF4: Generación de Listados**: Interfaz y función de los Listados
+  - `routes/web.php` (Rutas de listados)
+  - `resources/views/listados.blade.php`
+  - `app/Http/Controllers/ListadoController.php` (Controlador de la función)
+
+### **Benjamín Bizama** - RF3 (Actualizar/Eliminar Habilitaciones)
+
+- **RF3: Actualizar/Eliminar Habilitaciones**: Backend y frontend de la funcionalidad
+  - `routes/web.php` (Rutas relacionadas con habilitaciones)
+  - `app/Http/Controllers/HabilitacionController.php` (Métodos update, destroy, checkLimit)
+  - `app/Http/Requests/UpdateHabilitacionRequest.php` (Validaciones de actualización)
+  - `resources/views/actualizar_eliminar.blade.php` (Vista principal)
+  - `public/js/validacion.js` (Validaciones frontend)
+  - `public/js/formHabilitacion.js` (Control de UI condicional)
+
+### **Brandon Martínez** - RF2 (Ingreso de Habilitaciones)
+
+- **RF2: Ingreso de Habilitaciones**: Ingreso de nuevas habilitaciones
+  - `routes/web.php` (Rutas relacionadas con ingreso de habilitaciones)
+  - `app/Http/Controllers/HabilitacionController.php` (Método store)
+  - `app/Http/Requests/StoreHabilitacionRequest.php` (Validaciones de ingreso)
+  - `resources/views/habilitacion_create.blade.php` (Vista de ingreso)
+  - `public/js/validacion.js` (Validaciones frontend)
+  - `public/js/formHabilitacion.js` (Control de UI condicional)
+  - Modelos relacionados: `app/Models/Habilitacion.php`, `app/Models/Proyecto.php`, `app/Models/PrTut.php`
+
+### **Rodrigo Sandoval** - RF1 (Carga de Datos) y Base de Datos
+
+- **RF1: Carga de Datos desde Sistemas UCSC**: Servicio de carga automática de datos
+  - `routes/web.php` (Rutas relacionadas con sincronización)
+  - `app/CargaUCSCService.php` (Servicio principal)
+  - `app/Console/Commands/SimulacionCarga.php` (Comando para Carga Automática)
+  - Migraciones de Base de Datos: ubicados en `database/migrations`
+  - `database/seeders/CargaSeeder.php` (Datos de simulación)
 
 ## **Índice**
 
@@ -22,7 +62,7 @@ Este proyecto fue desarrollado por:
 
 Para ejecutar este proyecto en un entorno de desarrollo local, necesitarás tener instalado el siguiente software:
 
-* **PHP:** ^8.1 (Tu composer.json especifica esto. La versión 8.2.12 mencionada es compatible).  
+* **PHP:** ^8.1.  
 * **Composer:** Gestor de dependencias de PHP.  
 * **Node.js:** Entorno de ejecución para JavaScript (v18+ recomendado).  
 * **NPM:** Gestor de paquetes de Node.  
@@ -33,18 +73,30 @@ Para ejecutar este proyecto en un entorno de desarrollo local, necesitarás tene
 Crea una carpeta para la aplicación, abre la terminal en la carpeta y sigue estos pasos para probarla localmente:
 
 1. **Clonar el repositorio:**  
-   git clone \[https://github.com/Tweet-y/HabilProf\]  
-   cd HabilProf-qa
+
+   ```ps
+   git clone https://github.com/Tweet-y/HabilProf
+   cd HabilProf
+   ```
 
 2. **Instalar dependencias de PHP:**  
+
+   ```ps
    composer install
+   ```
 
 3. **Instalar dependencias de Node.js:**  
+
+   ```ps
    npm install
+   ```
 
 4. Configurar el entorno:  
-   Copia el archivo de ejemplo .env.example para crear tu propio archivo de configuración .env.  
+   Copia el archivo de ejemplo .env.example para crear tu propio archivo de configuración .env.
+
+   ```ps
    cp .env.example .env
+   ```
 
 5. Configurar la base de datos en .env:  
    Abre el archivo .env y asegúrate de que las variables DB\_ apunten a tu base de datos PostgreSQL local:  
@@ -56,11 +108,17 @@ Crea una carpeta para la aplicación, abre la terminal en la carpeta y sigue est
    DB\_PASSWORD=tu\_contraseña\_postgres
 
 6. **Generar la clave de la aplicación:**  
+
+   ```ps
    php artisan key:generate
+   ```
 
 7. Ejecutar migraciones y seeders (¡Importante\!):  
    Este comando creará la estructura de la base de datos y la llenará con los datos de simulación (profesores, alumnos, etc.) definidos en database/seeders/CargaSeeder.php.  
-   php artisan migrate:fresh \--seed
+
+   ```ps
+   php artisan migrate:fresh --seed
+   ```
 
    *(Este es el comando contenido en seed.bat)*
 
@@ -72,17 +130,21 @@ Para que la aplicación funcione correctamente, **necesitas ejecutar tres proces
 
 Inicia el servidor de desarrollo de PHP.
 
+```ps
 php artisan serve
+```
 
 *(Comando de run.bat)*
 
-La aplicación estará disponible en http://localhost:8000.
+La aplicación estará disponible en [http://localhost:8000].
 
 ### **Terminal 2: Servidor de Vite (Frontend)**
 
 Inicia el servidor de Vite para compilar los assets de frontend (Tailwind CSS, Alpine.js).
 
+```ps
 npm run dev
+```
 
 *(Comando de login.bat)*
 
@@ -90,34 +152,19 @@ npm run dev
 
 Inicia el "scheduler" de Laravel. Este proceso es **crucial**, ya que simula la carga automática de datos (RF1) desde los sistemas UCSC (mock) cada minuto, actualizando profesores y notas de alumnos.
 
+```ps
 php artisan schedule:work
+```
 
-*(Comando de schedule.bat)*
+#### *(Comando de schedule.bat)*
 
 ## **Funcionalidades Principales**
 
 Una vez que la aplicación esté corriendo y hayas iniciado sesión (puedes registrar un nuevo usuario):
 
-* **Dashboard (/dashboard):** Menú principal.  
-* **Ingresar Habilitación (/habilitaciones/ingreso):** Registra un nuevo proyecto (PrIng, PrInv) o práctica (PrTut) para un alumno.  
-* **Actualizar/Eliminar (/actualizar\_eliminar):** Busca habilitaciones existentes para modificarlas o eliminarlas.  
-* **Generar Listados (/listados):** Crea reportes semestrales o históricos de las habilitaciones.  
-* **Sincronización Automática (RF1):** La tarea schedule:work (Terminal 3\) ejecuta cada minuto el CargaUCSCService.php para simular la carga de datos de profesores y la actualización de notas de alumnos.
-
-## Login (Vicente Alarcón).
-### Interfaz y funcionalidad del Login.
-* resources\views\auth\login.blade.php
-Interfaz líneas 1-106, Función líneas 107-148
-### Validaciones del Login
-* app\Http\Requests\Auth\LoginRequest.php
-
-## Registro (Vicente Alarcón).
-### Interfaz y funcionalidad del Registro.
-* resources\views\auth\register.blade.php
-### Validaciones.
-* resources\lang\es\validation.php
-## F4: Generación de Listados (Vicente Alarcón).
-### Interfaz y función de los Listados.
-* resources\views\listados.blade.php
-### Controlador de la función.
-* app\Http\Controllers\ListadoController.php
+* **Dashboard (/dashboard):** Menú principal con acceso a todas las funcionalidades del sistema.
+* **Ingresar Habilitación (/ingreso):** Permite registrar un nuevo Proyecto de Título (PrIng, PrInv) o Práctica Tutelada (PrTut) para un alumno. Incluye validaciones de límites de profesores por semestre.
+* **Actualizar/Eliminar (/actualizar_eliminar):** Permite buscar habilitaciones existentes por RUT de alumno para modificar datos o eliminar completamente la habilitación. Incluye validaciones de negocio y transacciones seguras.
+* **Generar Listados (/listados):** Crea reportes semestrales o históricos de las habilitaciones, permitiendo filtrar por tipo, semestre y otros criterios.
+* **Perfil de Usuario (/profile):** Gestión del perfil personal del usuario, incluyendo actualización de datos y eliminación de cuenta.
+* **Sincronización Automática (RF1):** Proceso en segundo plano que ejecuta cada minuto el CargaUCSCService.php para simular la carga automática de datos desde sistemas UCSC, actualizando información de profesores y notas de alumnos.
