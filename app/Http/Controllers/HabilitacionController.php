@@ -50,6 +50,11 @@ class HabilitacionController extends Controller
                 ->first();
         }
 
+        // Si hay habilitación, ajustar semestres para update: anterior, actual, posterior
+        if ($habilitacion) {
+            $semestres = $this->getSemestresForUpdate($habilitacion->semestre_inicio);
+        }
+
         return view('actualizar_eliminar', compact('alumnos', 'profesores', 'habilitacion', 'semestres'));
     }
 
@@ -208,11 +213,11 @@ class HabilitacionController extends Controller
         if ($validatedData['tipo_habilitacion'] === 'PrTut') {
             $profesores = [$validatedData['seleccion_tutor_rut']];
         } else {
-            $profesores = array_filter([$validatedData['seleccion_guia_rut'], $validatedData['seleccion_co_guia_rut'], $validatedData['seleccion_comision_rut']]);
+            $profesores = array_filter([$request->seleccion_guia_rut, $request->seleccion_co_guia_rut, $request->seleccion_comision_rut]);
         }
 
         // Verificar que no haya profesores con múltiples roles
-        $error = $this->validateMultipleRoles($validatedData['tipo_habilitacion'], $validatedData['seleccion_guia_rut'], $validatedData['seleccion_co_guia_rut'], $validatedData['seleccion_comision_rut']);
+        $error = $this->validateMultipleRoles($validatedData['tipo_habilitacion'], $request->seleccion_guia_rut, $request->seleccion_co_guia_rut, $request->seleccion_comision_rut);
         if ($error) {
             return redirect()->back()->with('error', $error)->withInput();
         }
@@ -372,5 +377,45 @@ class HabilitacionController extends Controller
         }
 
         return response()->json(['message' => 'OK'], 200);
+    }
+
+    /**
+     * Get semestres for update: previous, current, and next relative to given semestre.
+     */
+    private function getSemestresForUpdate($currentSemestre)
+    {
+        // Parse current semestre (e.g., "2025-1" -> year=2025, semester=1)
+        list($year, $semester) = explode('-', $currentSemestre);
+        $year = (int)$year;
+        $semester = (int)$semester;
+
+        $semestres = [];
+
+        // Previous semester
+        if ($semester == 1) {
+            // If current is 1, previous is previous year's 2
+            $prevYear = $year - 1;
+            if ($prevYear >= 2025) { // Don't go before 2025
+                $semestres[] = $prevYear . '-2';
+            }
+        } else {
+            // If current is 2, previous is same year's 1
+            $semestres[] = $year . '-1';
+        }
+
+        // Current semester
+        $semestres[] = $currentSemestre;
+
+        // Next semester
+        if ($semester == 1) {
+            // If current is 1, next is same year's 2
+            $semestres[] = $year . '-2';
+        } else {
+            // If current is 2, next is next year's 1
+            $nextYear = $year + 1;
+            $semestres[] = $nextYear . '-1';
+        }
+
+        return $semestres;
     }
 }

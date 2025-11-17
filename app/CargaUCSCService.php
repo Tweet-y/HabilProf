@@ -91,9 +91,10 @@ class CargaUCSCService
                 
                 // Asegurar que nunca se asigne null a nota_final
                 $notaFinal = $notaData && $notaData->nota_final !== null ? $notaData->nota_final : 0.0;
+                $fechaNota = $notaData && $notaData->fecha_nota !== null ? $notaData->fecha_nota : '2050-12-31';
                 
                 $habilitacion->nota_final = $notaFinal;
-                $habilitacion->fecha_nota = $notaData ? $notaData->fecha_nota : Carbon::now(); 
+                $habilitacion->fecha_nota = $fechaNota;
                 $habilitacion->save(); 
 
                 $resultados[] = ['rut' => $rutAlumno, 'status' => 'COMPLETADO', 'nota_aplicada' => $notaFinal];

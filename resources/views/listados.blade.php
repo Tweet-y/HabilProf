@@ -325,7 +325,7 @@
                                     <th>Nota Final</th>
                                     <th>Fecha Nota</th>
                                     <th>Profesor Principal</th>
-                                    <th>RUT Guía</th>
+                                    <th>RUT Guía o Tutor</th>
                                     <th>RUT Co-Guía</th>
                                     <th>RUT Comisión</th>
                                     <th>Detalles</th>

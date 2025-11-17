@@ -329,9 +329,9 @@
         }
 
         // Función para guardar cambios
-        function guardarCambios() {
+        async function guardarCambios() {
             // Llama a la validación JS antes de mostrar el modal
-            if (validarFormulario()) {
+            if (await validarFormulario()) {
                 window.dispatchEvent(new CustomEvent('open-modal', { detail: 'confirm-update' }));
             }
         }
