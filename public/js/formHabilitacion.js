@@ -1,5 +1,4 @@
 /**
- * Archivo: formHabilitacion.js
  * Propósito: Controlar la visibilidad de secciones del formulario según el tipo de habilitación seleccionada.
  * Funcionalidad: Maneja la interfaz de usuario para mostrar/ocultar campos específicos de PrIng/PrInv vs PrTut.
  */
