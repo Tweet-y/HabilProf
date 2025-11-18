@@ -1,13 +1,19 @@
 # **HabilProf \- Sistema de Gestión de Habilitaciones Profesionales**
 
+Para ver detalles de implementación, consulta Decisiones Técnicas.
+
 **HabilProf** es una aplicación web desarrollada en Laravel 10 para la gestión, seguimiento y reporte del proceso de Habilitación Profesional (Proyectos de Título y Prácticas Profesionales) de la carrera de Ingeniería Civil Informática de la UCSC.
 
 ## **Creadores y Archivos Trabajados**
 
 Este proyecto fue desarrollado por:
 
-### **Vicente Alarcón** - RF5 (Login), RF6 (Registro) y F4 (Generación de Listados)
+### **Vicente Alarcón** - RF4 (Generación de Listados), RF5 (Login) y RF6 (Registro)
 
+- **RF4: Generación de Listados**: Interfaz y función de los Listados
+  - `routes/web.php` (Rutas de listados)
+  - `resources/views/listados.blade.php` (Vista principal)
+  - `app/Http/Controllers/ListadoController.php` (Controlador de la función)
 - **RF5: Login**: Interfaz y funcionalidad del Login
   - `routes/web.php` (Rutas de autenticación)
   - `database/migrations/2014_10_12_000000_create_users_table.php` (Migración tabla users)
@@ -16,38 +22,39 @@ Este proyecto fue desarrollado por:
 - **RF6: Registro**: Interfaz y funcionalidad del Registro
   - `resources/views/auth/register.blade.php` (Vista principal)
   - `resources/lang/es/validation.php` (Validaciones)
-- **RF4: Generación de Listados**: Interfaz y función de los Listados
-  - `routes/web.php` (Rutas de listados)
-  - `resources/views/listados.blade.php` (Vista principal)
-  - `app/Http/Controllers/ListadoController.php` (Controlador de la función)
 
 ### **Benjamín Bizama** - RF3 (Actualizar/Eliminar Habilitaciones)
 
 - **RF3: Actualizar/Eliminar Habilitaciones**: Backend y frontend de la funcionalidad
   - `routes/web.php` (Rutas relacionadas con habilitaciones)
-  - `app/Http/Controllers/HabilitacionController.php` (Métodos index, update, destroy, getSemestresForUpdate, líneas 25-64, 238-350)
+  - `app/Http/Controllers/HabilitacionController.php` (Métodos index, edit, update, destroy, calculaSemestresActualizacion, líneas 115-325)
   - `app/Http/Requests/UpdateHabilitacionRequest.php` (Validaciones de actualización)
   - `resources/views/actualizar_eliminar.blade.php` (Vista principal)
   - `public/js/validacion.js` (Validaciones frontend)
   - `public/js/formHabilitacion.js` (Control de UI condicional)
+  - Modelos relacionados: `app/Models/Habilitacion.php`, `app/Models/Proyecto.php`, `app/Models/PrTut.php`
 
 ### **Brandon Martínez** - RF2 (Ingreso de Habilitaciones)
 
 - **RF2: Ingreso de Habilitaciones**: Ingreso de nuevas habilitaciones
   - `routes/web.php` (Rutas relacionadas con ingreso de habilitaciones)
-  - `app/Http/Controllers/HabilitacionController.php` (Métodos create, store, checkLimit, validateMultipleRoles, validarLimitesProfesoresBackend, líneas 65-199, 351-420)
+  - `app/Http/Controllers/HabilitacionController.php` (Métodos create, store, checkLimit, validarMultiplesRoles, validarLimitesProfesoresBackend, líneas 23-113, 336-496)
   - `app/Http/Requests/StoreHabilitacionRequest.php` (Validaciones de ingreso)
   - `resources/views/habilitacion_create.blade.php` (Vista de ingreso)
   - `public/js/validacion.js` (Validaciones frontend)
   - `public/js/formHabilitacion.js` (Control de UI condicional)
   - Modelos relacionados: `app/Models/Habilitacion.php`, `app/Models/Proyecto.php`, `app/Models/PrTut.php`
 
-### **Rodrigo Sandoval** - RF1 (Carga de Datos) y Base de Datos
+### **Rodrigo Sandoval** - RF1 (Carga de Datos) y MR (Base de Datos)
 
 - **RF1: Carga de Datos desde Sistemas UCSC**: Servicio de carga automática de datos
   - `routes/web.php` (Rutas relacionadas con sincronización)
   - `app/CargaUCSCService.php` (Servicio principal)
   - `app/Console/Commands/SimulacionCarga.php` (Comando para Carga Automática)
+  - `app/Console/Kernel.php` (Configuración del Scheduler)
+  - `app/Models/Profesor.php` (Modelo Base de Profesor)
+  - `app/Models/Alumno.php` (Modelo Base de Alumno)
+  - `config/database.php` (Configuración de Base de Datos)
   - Migraciones de Base de Datos: ubicados en `database/migrations`
   - `database/seeders/CargaSeeder.php` (Datos de simulación)
 

@@ -63,7 +63,7 @@ class HabilitacionController extends Controller
             }
             
             // Validar que no haya profesores con múltiples roles
-            $error = $this->validateMultipleRoles($request->tipo_habilitacion, $request->seleccion_guia_rut, $request->seleccion_co_guia_rut, $request->seleccion_comision_rut);
+            $error = $this->validarMultiplesRoles($request->tipo_habilitacion, $request->seleccion_guia_rut, $request->seleccion_co_guia_rut, $request->seleccion_comision_rut);
             if ($error) {
                 return redirect()->back()->with('error', $error)->withInput();
             }
@@ -172,52 +172,11 @@ class HabilitacionController extends Controller
 
             // Si se encontró habilitación, limitar semestres para edición
             if ($habilitacion) {
-                $semestres = $this->getSemestresForUpdate($habilitacion->semestre_inicio);
+                $semestres = $this->calculaSemestresActualizacion($habilitacion->semestre_inicio);
             }
         }
 
         return view('actualizar_eliminar', compact('alumnos', 'profesores', 'habilitacion', 'semestres'));
-    }
-    
-    /**
-     * Calcula semestres disponibles para actualización: anterior, actual y siguiente.
-     * Limita opciones para evitar cambios drásticos.
-     */
-    private function getSemestresForUpdate($currentSemestre)
-    {
-        // Parsear semestre actual (ej: "2025-1" -> año=2025, semestre=1)
-        list($year, $semester) = explode('-', $currentSemestre);
-        $year = (int)$year;
-        $semester = (int)$semester;
-    
-        $semestres = [];
-    
-        // Semestre anterior
-        if ($semester == 1) {
-            // Si actual es 1, anterior es 2 del año previo
-            $prevYear = $year - 1;
-            if ($prevYear >= 2025) { // No ir antes de 2025
-                $semestres[] = $prevYear . '-2';
-            }
-        } else {
-            // Si actual es 2, anterior es 1 del mismo año
-            $semestres[] = $year . '-1';
-        }
-    
-        // Semestre actual
-        $semestres[] = $currentSemestre;
-    
-        // Semestre siguiente
-        if ($semester == 1) {
-            // Si actual es 1, siguiente es 2 del mismo año
-            $semestres[] = $year . '-2';
-        } else {
-            // Si actual es 2, siguiente es 1 del año siguiente
-            $nextYear = $year + 1;
-            $semestres[] = $nextYear . '-1';
-        }
-    
-        return $semestres;
     }
     
     /**
@@ -242,7 +201,7 @@ class HabilitacionController extends Controller
         }
 
         // Validar roles únicos
-        $error = $this->validateMultipleRoles($validatedData['tipo_habilitacion'], $request->seleccion_guia_rut, $request->seleccion_co_guia_rut, $request->seleccion_comision_rut);
+        $error = $this->validarMultiplesRoles($validatedData['tipo_habilitacion'], $request->seleccion_guia_rut, $request->seleccion_co_guia_rut, $request->seleccion_comision_rut);
         if ($error) {
             return redirect()->back()->with('error', $error)->withInput();
         }
@@ -303,15 +262,6 @@ class HabilitacionController extends Controller
         return redirect()->route('habilitaciones.index')->with('success', 'Habilitación actualizada correctamente.');
     }
     
-
-    /**
-     * Muestra una habilitación específica (no implementado).
-     */
-    public function show(string $id)
-    {
-        // Método no implementado en esta versión
-    }
-
     /**
      * Muestra el formulario de edición para una habilitación específica.
      * Carga la habilitación seleccionada y prepara datos para edición.
@@ -328,10 +278,60 @@ class HabilitacionController extends Controller
             ->firstOrFail();
 
         // Limitar semestres a anterior, actual y siguiente para edición
-        $semestres = $this->getSemestresForUpdate($habilitacion->semestre_inicio);
+        $semestres = $this->calculaSemestresActualizacion($habilitacion->semestre_inicio);
 
         return view('actualizar_eliminar', compact('alumnos', 'profesores', 'habilitacion', 'semestres'));
     }
+    
+    /**
+     * Calcula semestres disponibles para actualización: anterior, actual y siguiente.
+     * Limita opciones para evitar cambios drásticos.
+     */
+    private function calculaSemestresActualizacion($currentSemestre)
+    {
+        // Parsear semestre actual (ej: "2025-1" -> año=2025, semestre=1)
+        list($year, $semester) = explode('-', $currentSemestre);
+        $year = (int)$year;
+        $semester = (int)$semester;
+    
+        $semestres = [];
+    
+        // Semestre anterior
+        if ($semester == 1) {
+            // Si actual es 1, anterior es 2 del año previo
+            $prevYear = $year - 1;
+            if ($prevYear >= 2025) { // No ir antes de 2025
+                $semestres[] = $prevYear . '-2';
+            }
+        } else {
+            // Si actual es 2, anterior es 1 del mismo año
+            $semestres[] = $year . '-1';
+        }
+    
+        // Semestre actual
+        $semestres[] = $currentSemestre;
+    
+        // Semestre siguiente
+        if ($semester == 1) {
+            // Si actual es 1, siguiente es 2 del mismo año
+            $semestres[] = $year . '-2';
+        } else {
+            // Si actual es 2, siguiente es 1 del año siguiente
+            $nextYear = $year + 1;
+            $semestres[] = $nextYear . '-1';
+        }
+    
+        return $semestres;
+    }
+
+    /**
+     * Muestra una habilitación específica (no implementado).
+     */
+    public function show(string $id)
+    {
+        // Método no implementado en esta versión
+    }
+
 
     /**
      * DIFERENCIAS ENTRE MÉTODOS DE VALIDACIÓN DE LÍMITES DE PROFESORES:
@@ -404,7 +404,7 @@ class HabilitacionController extends Controller
      * Valida que no haya profesores con múltiples roles en una habilitación.
      * Solo aplica para PrIng/PrInv.
      */
-    private function validateMultipleRoles($tipo, $guia, $co_guia, $comision)
+    private function validarMultiplesRoles($tipo, $guia, $co_guia, $comision)
     {
         // PrTut no tiene múltiples roles
         if ($tipo === 'PrTut') {

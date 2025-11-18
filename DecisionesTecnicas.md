@@ -1,7 +1,7 @@
 # Documentación Técnica del Proyecto HabilProf
 
 ## Introducción
-Esta documentación describe las decisiones técnicas, validaciones y lógica de negocio implementadas en el proyecto HabilProf, una aplicación Laravel para la gestión de habilitaciones académicas. Se enfoca en los archivos especificados: `routes/web.php`, `app/Http/Controllers/HabilitacionController.php`, `resources/views/actualizar_eliminar.blade.php`, `app/Http/Requests/StoreHabilitacionRequest.php` y `app/Http/Requests/UpdateHabilitacionRequest.php`.
+Esta documentación describe las decisiones técnicas, validaciones y lógica de negocio implementadas en el proyecto HabilProf, una aplicación Laravel para la gestión de habilitaciones académicas.
 
 ## Arquitectura General
 
@@ -47,8 +47,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // CRUD Habilitaciones
-    Route::get('/habilitaciones/ingreso', [HabilitacionController::class, 'create'])->name('habilitaciones.create');
-    Route::post('/habilitaciones/ingreso', [HabilitacionController::class, 'store'])->name('habilitaciones.store');
+    Route::get('/ingreso', [HabilitacionController::class, 'create'])->name('habilitaciones.create');
+    Route::post('/ingreso', [HabilitacionController::class, 'store'])->name('habilitaciones.store');
     Route::post('/habilitaciones/check-limit', [HabilitacionController::class, 'checkLimit'])->name('habilitaciones.checkLimit');
 
     // Actualizar/Eliminar Habilitaciones
@@ -182,4 +182,6 @@ public function habilitacion() { return $this->belongsTo(Habilitacion::class, 'i
 - Reestructurar validaciones.
 - Agregar logs más detallado.
 - Realizar testeo de forma más completa.
-- Implementar autenticación de usuarios via email y agregar notificaciones por email para cambios importantes.
+- Agregar un registro de auditoría con los últimos cambios que hace un usuario.
+- Implementar autenticación de usuarios via email.
+- Agregar notificaciones por email para cambios importantes.
