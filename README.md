@@ -30,7 +30,7 @@ Este proyecto fue desarrollado por:
   - `app/Http/Controllers/HabilitacionController.php` (Métodos index, edit, update, destroy, calculaSemestresActualizacion, líneas 115-325)
   - `app/Http/Requests/UpdateHabilitacionRequest.php` (Validaciones de actualización)
   - `resources/views/actualizar_eliminar.blade.php` (Vista principal)
-  - `public/js/validacion.js` (Validaciones frontend)
+  - `public/js/validacion.js` (Validaciones frontend, líneas)
   - `public/js/formHabilitacion.js` (Control de UI condicional)
   - Modelos relacionados: `app/Models/Habilitacion.php`, `app/Models/Proyecto.php`, `app/Models/PrTut.php`
 
@@ -41,7 +41,7 @@ Este proyecto fue desarrollado por:
   - `app/Http/Controllers/HabilitacionController.php` (Métodos create, store, checkLimit, validarMultiplesRoles, validarLimitesProfesoresBackend, líneas 23-113, 336-496)
   - `app/Http/Requests/StoreHabilitacionRequest.php` (Validaciones de ingreso)
   - `resources/views/habilitacion_create.blade.php` (Vista de ingreso)
-  - `public/js/validacion.js` (Validaciones frontend)
+  - `public/js/validacion.js` (Validaciones frontend, líneas 7-167, 175-206)
   - `public/js/formHabilitacion.js` (Control de UI condicional)
   - Modelos relacionados: `app/Models/Habilitacion.php`, `app/Models/Proyecto.php`, `app/Models/PrTut.php`
 
