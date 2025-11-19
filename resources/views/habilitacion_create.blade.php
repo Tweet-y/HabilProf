@@ -152,7 +152,7 @@
                             <select id="seleccion_guia_rut" name="seleccion_guia_rut"
                                     class="{{ $errors->has('seleccion_guia_rut') ? 'field-error' : '' }}">
                                 <option value="" disabled selected>Seleccione un guía...</option>
-                                @foreach($profesores as $profesor)
+                                @foreach($profesores_dinf as $profesor)
                                     <option value="{{ $profesor->rut_profesor }}"
                                         {{ old('seleccion_guia_rut') == $profesor->rut_profesor ? 'selected' : '' }}>
                                         {{ $profesor->nombre_profesor }} {{ $profesor->apellido_profesor }} ({{ $profesor->rut_profesor }})
@@ -163,16 +163,16 @@
                                 <div class="error-text">{{ $errors->first('seleccion_guia_rut') }}</div>
                             @endif
                         </div>
-                        
+
                         <div class="form-group">
                             <label for="seleccion_co_guia_rut">Profesor Co-Guía (UCSC)</label>
                             <select id="seleccion_co_guia_rut" name="seleccion_co_guia_rut"
                                     class="{{ $errors->has('seleccion_co_guia_rut') ? 'field-error' : '' }}">
                                 <option value="" selected>Ninguno (Opcional)</option>
-                                @foreach($profesores as $profesor)
+                                @foreach($profesores_ucsc as $profesor)
                                     <option value="{{ $profesor->rut_profesor }}"
                                         {{ old('seleccion_co_guia_rut') == $profesor->rut_profesor ? 'selected' : '' }}>
-                                        {{ $profesor->nombre_profesor }} {{ $profesor->apellido_profesor }} ({{ $profesor->rut_profesor }})
+                                        {{ $profesor->nombre_profesor }} {{ $profesor->apellido_profesor }} ({{ $profesor->rut_profesor }}) - {{ $profesor->departamento }}
                                     </option>
                                 @endforeach
                             </select>
@@ -186,7 +186,7 @@
                             <select id="seleccion_comision_rut" name="seleccion_comision_rut"
                                     class="{{ $errors->has('seleccion_comision_rut') ? 'field-error' : '' }}">
                                 <option value="" disabled selected>Seleccione comisión...</option>
-                                @foreach($profesores as $profesor)
+                                @foreach($profesores_dinf as $profesor)
                                     <option value="{{ $profesor->rut_profesor }}"
                                         {{ old('seleccion_comision_rut') == $profesor->rut_profesor ? 'selected' : '' }}>
                                         {{ $profesor->nombre_profesor }} {{ $profesor->apellido_profesor }} ({{ $profesor->rut_profesor }})
@@ -229,22 +229,22 @@
                             @endif
                         </div>
 
-                        <div class="form-group">
-                            <label for="seleccion_tutor_rut" class="required">Profesor Tutor (DINF)</label>
-                            <select id="seleccion_tutor_rut" name="seleccion_tutor_rut"
-                                    class="{{ $errors->has('seleccion_tutor_rut') ? 'field-error' : '' }}">
-                                <option value="" disabled selected>Seleccione un tutor...</option>
-                                @foreach($profesores as $profesor)
-                                    <option value="{{ $profesor->rut_profesor }}"
-                                        {{ old('seleccion_tutor_rut') == $profesor->rut_profesor ? 'selected' : '' }}>
-                                        {{ $profesor->nombre_profesor }} {{ $profesor->apellido_profesor }} ({{ $profesor->rut_profesor }})
-                                    </option>
-                                @endforeach
-                            </select>
-                            @if($errors->has('seleccion_tutor_rut'))
-                                <div class="error-text">{{ $errors->first('seleccion_tutor_rut') }}</div>
-                            @endif
-                        </div>
+                            <div class="form-group">
+                                <label for="seleccion_tutor_rut" class="required">Profesor Tutor (DINF)</label>
+                                <select id="seleccion_tutor_rut" name="seleccion_tutor_rut"
+                                        class="{{ $errors->has('seleccion_tutor_rut') ? 'field-error' : '' }}">
+                                    <option value="" disabled selected>Seleccione un tutor...</option>
+                                    @foreach($profesores_dinf as $profesor)
+                                        <option value="{{ $profesor->rut_profesor }}"
+                                            {{ old('seleccion_tutor_rut') == $profesor->rut_profesor ? 'selected' : '' }}>
+                                            {{ $profesor->nombre_profesor }} {{ $profesor->apellido_profesor }} ({{ $profesor->rut_profesor }})
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @if($errors->has('seleccion_tutor_rut'))
+                                    <div class="error-text">{{ $errors->first('seleccion_tutor_rut') }}</div>
+                                @endif
+                            </div>
                     </div>
                 </fieldset>
             </div>

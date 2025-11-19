@@ -7,6 +7,7 @@ use App\Models\Profesor;
 use App\Models\Habilitacion;
 use App\Models\Proyecto;
 use App\Models\PrTut;
+use App\Models\GestionAcademica;
 use App\Http\Requests\StoreHabilitacionRequest;
 use App\Http\Requests\UpdateHabilitacionRequest;
 use Illuminate\Http\Request;
@@ -27,8 +28,27 @@ class HabilitacionController extends Controller
     {
         // Obtener alumnos disponibles (sin habilitación)
         $alumnos = Alumno::whereDoesntHave('habilitacion')->get();
-        $profesores = Profesor::all();
-        
+
+        // Sincronizar profesores de gestion_academica a tabla profesor
+        $this->sincronizarProfesores();
+
+        // Obtener profesores DINF para guía, comisión y tutor
+        $profesores_dinf = DB::table('profesor')
+            ->join('gestion_academica', 'profesor.rut_profesor', '=', 'gestion_academica.rut_profesor')
+            ->where('gestion_academica.departamento', 'DINF')
+            ->select('profesor.*')
+            ->distinct()
+            ->get();
+
+        // Obtener TODOS los profesores para co-guía (DINF y otros departamentos)
+        $profesores_ucsc = DB::table('profesor')
+            ->join('gestion_academica', 'profesor.rut_profesor', '=', 'gestion_academica.rut_profesor')
+            ->select('profesor.*', 'gestion_academica.departamento')
+            ->distinct()
+            ->orderBy('gestion_academica.departamento')
+            ->orderBy('profesor.apellido_profesor')
+            ->get();
+
         // Calcular próximos 2 semestres para nuevas habilitaciones
         $mesActual = date('n');
         $yearActual = date('Y');
@@ -37,8 +57,27 @@ class HabilitacionController extends Controller
         } else { // Segundo semestre
             $semestres = [$yearActual . '-2', ($yearActual + 1) . '-1'];
         }
+
+        return view('habilitacion_create', compact('alumnos', 'profesores_dinf', 'profesores_ucsc', 'semestres'));
+    }
+
+    /**
+     * Sincroniza profesores de gestion_academica a la tabla profesor.
+     * Asegura que todos los profesores disponibles estén en la tabla profesor.
+     */
+    private function sincronizarProfesores()
+    {
+        $profesoresGestion = GestionAcademica::all();
         
-        return view('habilitacion_create', compact('alumnos', 'profesores', 'semestres'));
+        foreach ($profesoresGestion as $profGestion) {
+            Profesor::updateOrCreate(
+                ['rut_profesor' => $profGestion->rut_profesor],
+                [
+                    'nombre_profesor' => $profGestion->nombre_profesor,
+                    'apellido_profesor' => $profGestion->apellido_profesor,
+                ]
+            );
+        }
     }
     
     /**
@@ -142,7 +181,26 @@ class HabilitacionController extends Controller
     {
         // Obtener alumnos con habilitaciones y sus relaciones
         $alumnos = Alumno::whereHas('habilitacion')->with(['habilitacion.proyecto', 'habilitacion.prTut'])->get();
-        $profesores = Profesor::all();
+
+        // Sincronizar profesores de gestion_academica a tabla profesor
+        $this->sincronizarProfesores();
+
+        // Obtener profesores DINF para guía, comisión y tutor
+        $profesores_dinf = DB::table('profesor')
+            ->join('gestion_academica', 'profesor.rut_profesor', '=', 'gestion_academica.rut_profesor')
+            ->where('gestion_academica.departamento', 'DINF')
+            ->select('profesor.*')
+            ->distinct()
+            ->get();
+
+        // Obtener TODOS los profesores para co-guía (DINF y otros departamentos)
+        $profesores_ucsc = DB::table('profesor')
+            ->join('gestion_academica', 'profesor.rut_profesor', '=', 'gestion_academica.rut_profesor')
+            ->select('profesor.*', 'gestion_academica.departamento')
+            ->distinct()
+            ->orderBy('gestion_academica.departamento')
+            ->orderBy('profesor.apellido_profesor')
+            ->get();
 
         // Obtener semestres únicos con habilitaciones existentes
         $semestres = Habilitacion::distinct()
@@ -176,7 +234,7 @@ class HabilitacionController extends Controller
             }
         }
 
-        return view('actualizar_eliminar', compact('alumnos', 'profesores', 'habilitacion', 'semestres'));
+        return view('actualizar_eliminar', compact('alumnos', 'profesores_dinf', 'profesores_ucsc', 'habilitacion', 'semestres'));
     }
     
     /**
@@ -270,7 +328,26 @@ class HabilitacionController extends Controller
     {
         // Obtener alumnos con habilitaciones para el selector
         $alumnos = Alumno::whereHas('habilitacion')->with(['habilitacion.proyecto', 'habilitacion.prTut'])->get();
-        $profesores = Profesor::all();
+
+        // Sincronizar profesores de gestion_academica a tabla profesor
+        $this->sincronizarProfesores();
+
+        // Obtener profesores DINF para guía, comisión y tutor
+        $profesores_dinf = DB::table('profesor')
+            ->join('gestion_academica', 'profesor.rut_profesor', '=', 'gestion_academica.rut_profesor')
+            ->where('gestion_academica.departamento', 'DINF')
+            ->select('profesor.*')
+            ->distinct()
+            ->get();
+
+        // Obtener TODOS los profesores para co-guía (DINF y otros departamentos)
+        $profesores_ucsc = DB::table('profesor')
+            ->join('gestion_academica', 'profesor.rut_profesor', '=', 'gestion_academica.rut_profesor')
+            ->select('profesor.*', 'gestion_academica.departamento')
+            ->distinct()
+            ->orderBy('gestion_academica.departamento')
+            ->orderBy('profesor.apellido_profesor')
+            ->get();
 
         // Buscar la habilitación específica a editar
         $habilitacion = Habilitacion::where('rut_alumno', $rut_alumno)
@@ -280,7 +357,7 @@ class HabilitacionController extends Controller
         // Limitar semestres a anterior, actual y siguiente para edición
         $semestres = $this->calculaSemestresActualizacion($habilitacion->semestre_inicio);
 
-        return view('actualizar_eliminar', compact('alumnos', 'profesores', 'habilitacion', 'semestres'));
+        return view('actualizar_eliminar', compact('alumnos', 'profesores_dinf', 'profesores_ucsc', 'habilitacion', 'semestres'));
     }
     
     /**

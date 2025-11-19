@@ -182,7 +182,7 @@
                                 <label for="seleccion_guia_rut" class="required">Profesor Guía (DINF)</label>
                                 <select id="seleccion_guia_rut" name="seleccion_guia_rut">
                                     <option value="" disabled {{ !(old('seleccion_guia_rut', $habilitacion->proyecto->rut_profesor_guia ?? '')) ? 'selected' : '' }}>Seleccione un profesor guía...</option>
-                                    @foreach($profesores as $profesor)
+                                    @foreach($profesores_dinf as $profesor)
                                         <option value="{{ $profesor->rut_profesor }}" {{ (old('seleccion_guia_rut', $habilitacion->proyecto->rut_profesor_guia ?? '') == $profesor->rut_profesor) ? 'selected' : '' }}>
                                             {{ $profesor->apellido_profesor }}, {{ $profesor->nombre_profesor }} ({{ $profesor->rut_profesor }})
                                         </option>
@@ -193,9 +193,9 @@
                                 <label for="seleccion_co_guia_rut">Profesor Co-Guía (UCSC) (Opcional)</label>
                                 <select id="seleccion_co_guia_rut" name="seleccion_co_guia_rut">
                                     <option value="">Ninguno (Opcional)</option>
-                                    @foreach($profesores as $profesor)
+                                    @foreach($profesores_ucsc as $profesor)
                                         <option value="{{ $profesor->rut_profesor }}" {{ (old('seleccion_co_guia_rut', $habilitacion->proyecto->rut_profesor_co_guia ?? '') == $profesor->rut_profesor) ? 'selected' : '' }}>
-                                            {{ $profesor->apellido_profesor }}, {{ $profesor->nombre_profesor }} ({{ $profesor->rut_profesor }})
+                                            {{ $profesor->apellido_profesor }}, {{ $profesor->nombre_profesor }} ({{ $profesor->rut_profesor }}) - {{ $profesor->departamento }}
                                         </option>
                                     @endforeach
                                 </select>
@@ -204,7 +204,7 @@
                                 <label for="seleccion_comision_rut" class="required">Profesor Comisión (DINF)</label>
                                 <select id="seleccion_comision_rut" name="seleccion_comision_rut">
                                     <option value="" disabled {{ !(old('seleccion_comision_rut', $habilitacion->proyecto->rut_profesor_comision ?? '')) ? 'selected' : '' }}>Seleccione un profesor comisión...</option>
-                                    @foreach($profesores as $profesor)
+                                    @foreach($profesores_dinf as $profesor)
                                         <option value="{{ $profesor->rut_profesor }}" {{ (old('seleccion_comision_rut', $habilitacion->proyecto->rut_profesor_comision ?? '') == $profesor->rut_profesor) ? 'selected' : '' }}>
                                             {{ $profesor->apellido_profesor }}, {{ $profesor->nombre_profesor }} ({{ $profesor->rut_profesor }})
                                         </option>
@@ -235,7 +235,7 @@
                                 <label for="seleccion_tutor_rut" class="required">Profesor Tutor (DINF)</label>
                                 <select id="seleccion_tutor_rut" name="seleccion_tutor_rut">
                                     <option value="" disabled {{ !(old('seleccion_tutor_rut', $habilitacion->prTut->rut_profesor_tutor ?? '')) ? 'selected' : '' }}>Seleccione un tutor...</option>
-                                    @foreach($profesores as $profesor)
+                                    @foreach($profesores_dinf as $profesor)
                                         <option value="{{ $profesor->rut_profesor }}" {{ (old('seleccion_tutor_rut', $habilitacion->prTut->rut_profesor_tutor ?? '') == $profesor->rut_profesor) ? 'selected' : '' }}>
                                             {{ $profesor->apellido_profesor }}, {{ $profesor->nombre_profesor }} ({{ $profesor->rut_profesor }})
                                         </option>
