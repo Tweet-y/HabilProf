@@ -22,15 +22,16 @@ Este proyecto fue desarrollado por:
 - **RF6: Registro**: Interfaz y funcionalidad del Registro
   - `resources/views/auth/register.blade.php` (Vista principal)
   - `resources/lang/es/validation.php` (Validaciones)
+  - `app/Models/User.php` (Modelo Base de User)
 
 ### **Benjamín Bizama** - RF3 (Actualizar/Eliminar Habilitaciones)
 
 - **RF3: Actualizar/Eliminar Habilitaciones**: Backend y frontend de la funcionalidad
   - `routes/web.php` (Rutas relacionadas con habilitaciones)
-  - `app/Http/Controllers/HabilitacionController.php` (Métodos index, edit, update, destroy, calculaSemestresActualizacion, líneas 115-325)
+  - `app/Http/Controllers/HabilitacionController.php` (Métodos index, edit, update, destroy, calculaSemestresActualizacion, líneas 154-402)
   - `app/Http/Requests/UpdateHabilitacionRequest.php` (Validaciones de actualización)
   - `resources/views/actualizar_eliminar.blade.php` (Vista principal)
-  - `public/js/validacion.js` (Validaciones frontend, líneas)
+  - `public/js/validacion.js` (Validaciones frontend)
   - `public/js/formHabilitacion.js` (Control de UI condicional)
   - `public/css/form.css` (Estilos CSS para formularios)
   - Modelos relacionados: `app/Models/Habilitacion.php`, `app/Models/Proyecto.php`, `app/Models/PrTut.php`
@@ -39,7 +40,7 @@ Este proyecto fue desarrollado por:
 
 - **RF2: Ingreso de Habilitaciones**: Ingreso de nuevas habilitaciones
   - `routes/web.php` (Rutas relacionadas con ingreso de habilitaciones)
-  - `app/Http/Controllers/HabilitacionController.php` (Métodos create, store, checkLimit, validarMultiplesRoles, validarLimitesProfesoresBackend, líneas 23-113, 336-496)
+  - `app/Http/Controllers/HabilitacionController.php` (Métodos create, store, checkLimit, validarMultiplesRoles, validarLimitesProfesoresBackend, sincronizarProfesores, líneas 23-152, 413-573)
   - `app/Http/Requests/StoreHabilitacionRequest.php` (Validaciones de ingreso)
   - `resources/views/habilitacion_create.blade.php` (Vista de ingreso)
   - `public/js/validacion.js` (Validaciones frontend, líneas 7-167, 175-206)
@@ -55,6 +56,7 @@ Este proyecto fue desarrollado por:
   - `app/Console/Commands/SimulacionCarga.php` (Comando para Carga Automática)
   - `app/Console/Kernel.php` (Configuración del Scheduler)
   - `app/Models/Profesor.php` (Modelo Base de Profesor)
+  - `app/Models/GestionAcademica.php` (Modelo Base de Gestión Académica)
   - `app/Models/Alumno.php` (Modelo Base de Alumno)
   - `config/database.php` (Configuración de Base de Datos)
   - Migraciones de Base de Datos: ubicados en `database/migrations`
