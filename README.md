@@ -32,6 +32,7 @@ Este proyecto fue desarrollado por:
   - `resources/views/actualizar_eliminar.blade.php` (Vista principal)
   - `public/js/validacion.js` (Validaciones frontend)
   - `public/js/formHabilitacion.js` (Control de UI condicional)
+  - `public/css/form.css` (Estilos CSS para formularios)
   - Modelos relacionados: `app/Models/Habilitacion.php`, `app/Models/Proyecto.php`, `app/Models/PrTut.php`
 
 ### **Brandon Martínez** - RF2 (Ingreso de Habilitaciones)
@@ -43,6 +44,7 @@ Este proyecto fue desarrollado por:
   - `resources/views/habilitacion_create.blade.php` (Vista de ingreso)
   - `public/js/validacion.js` (Validaciones frontend)
   - `public/js/formHabilitacion.js` (Control de UI condicional)
+  - `public/css/form.css` (Estilos CSS para formularios)
   - Modelos relacionados: `app/Models/Habilitacion.php`, `app/Models/Proyecto.php`, `app/Models/PrTut.php`
 
 ### **Rodrigo Sandoval** - RF1 (Carga de Datos) y MR (Base de Datos)

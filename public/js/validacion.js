@@ -1,5 +1,4 @@
 /**
- * Archivo: validacion.js
  * Propósito: Validar formularios de habilitación en el frontend antes del envío.
  * Funcionalidad: Realiza validaciones síncronas y asíncronas (AJAX) para asegurar integridad de datos.
  * Integración: Trabaja con formHabilitacion.js para control de UI y con backend para validaciones complejas.
