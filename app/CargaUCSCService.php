@@ -47,6 +47,7 @@ class CargaUCSCService
                 [
                     'nombre_profesor' => $profesor->nombre_profesor,
                     'apellido_profesor' => $profesor->apellido_profesor,
+                    'departamento' => $profesor->departamento,
                 ]
             );
         }
