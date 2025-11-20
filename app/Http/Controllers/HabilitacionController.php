@@ -7,6 +7,7 @@ use App\Models\Profesor;
 use App\Models\Habilitacion;
 use App\Models\Proyecto;
 use App\Models\PrTut;
+use App\Models\GestionAcademica;
 use App\Http\Requests\StoreHabilitacionRequest;
 use App\Http\Requests\UpdateHabilitacionRequest;
 use Illuminate\Http\Request;
@@ -27,8 +28,22 @@ class HabilitacionController extends Controller
     {
         // Obtener alumnos disponibles (sin habilitación)
         $alumnos = Alumno::whereDoesntHave('habilitacion')->get();
-        $profesores = Profesor::all();
-        
+
+        // Obtener profesores DINF para guía, comisión y tutor
+        $profesores_dinf = DB::table('profesor')
+            ->join('gestion_academica', 'profesor.rut_profesor', '=', 'gestion_academica.rut_profesor')
+            ->where('gestion_academica.departamento', 'DINF')
+            ->select('profesor.*')
+            ->distinct()
+            ->get();
+
+        // Obtener TODOS los profesores para co-guía (DINF y otros departamentos) desde gestion_academica
+        $profesores_ucsc = DB::table('gestion_academica')
+            ->select('rut_profesor', 'nombre_profesor', 'apellido_profesor', 'departamento')
+            ->orderBy('departamento')
+            ->orderBy('apellido_profesor')
+            ->get();
+
         // Calcular próximos 2 semestres para nuevas habilitaciones
         $mesActual = date('n');
         $yearActual = date('Y');
@@ -37,10 +52,10 @@ class HabilitacionController extends Controller
         } else { // Segundo semestre
             $semestres = [$yearActual . '-2', ($yearActual + 1) . '-1'];
         }
-        
-        return view('habilitacion_create', compact('alumnos', 'profesores', 'semestres'));
+
+        return view('habilitacion_create', compact('alumnos', 'profesores_dinf', 'profesores_ucsc', 'semestres'));
     }
-    
+
     /**
      * Crea una nueva habilitación en la base de datos.
      * Incluye validaciones de negocio y creación de registros relacionados.
@@ -142,7 +157,21 @@ class HabilitacionController extends Controller
     {
         // Obtener alumnos con habilitaciones y sus relaciones
         $alumnos = Alumno::whereHas('habilitacion')->with(['habilitacion.proyecto', 'habilitacion.prTut'])->get();
-        $profesores = Profesor::all();
+
+        // Obtener profesores DINF para guía, comisión y tutor
+        $profesores_dinf = DB::table('profesor')
+            ->join('gestion_academica', 'profesor.rut_profesor', '=', 'gestion_academica.rut_profesor')
+            ->where('gestion_academica.departamento', 'DINF')
+            ->select('profesor.*')
+            ->distinct()
+            ->get();
+
+        // Obtener TODOS los profesores para co-guía (DINF y otros departamentos) desde gestion_academica
+        $profesores_ucsc = DB::table('gestion_academica')
+            ->select('rut_profesor', 'nombre_profesor', 'apellido_profesor', 'departamento')
+            ->orderBy('departamento')
+            ->orderBy('apellido_profesor')
+            ->get();
 
         // Obtener semestres únicos con habilitaciones existentes
         $semestres = Habilitacion::distinct()
@@ -176,7 +205,7 @@ class HabilitacionController extends Controller
             }
         }
 
-        return view('actualizar_eliminar', compact('alumnos', 'profesores', 'habilitacion', 'semestres'));
+        return view('actualizar_eliminar', compact('alumnos', 'profesores_dinf', 'profesores_ucsc', 'habilitacion', 'semestres'));
     }
     
     /**
@@ -270,7 +299,21 @@ class HabilitacionController extends Controller
     {
         // Obtener alumnos con habilitaciones para el selector
         $alumnos = Alumno::whereHas('habilitacion')->with(['habilitacion.proyecto', 'habilitacion.prTut'])->get();
-        $profesores = Profesor::all();
+
+        // Obtener profesores DINF para guía, comisión y tutor
+        $profesores_dinf = DB::table('profesor')
+            ->join('gestion_academica', 'profesor.rut_profesor', '=', 'gestion_academica.rut_profesor')
+            ->where('gestion_academica.departamento', 'DINF')
+            ->select('profesor.*')
+            ->distinct()
+            ->get();
+
+        // Obtener TODOS los profesores para co-guía (DINF y otros departamentos) desde gestion_academica
+        $profesores_ucsc = DB::table('gestion_academica')
+            ->select('rut_profesor', 'nombre_profesor', 'apellido_profesor', 'departamento')
+            ->orderBy('departamento')
+            ->orderBy('apellido_profesor')
+            ->get();
 
         // Buscar la habilitación específica a editar
         $habilitacion = Habilitacion::where('rut_alumno', $rut_alumno)
@@ -280,7 +323,7 @@ class HabilitacionController extends Controller
         // Limitar semestres a anterior, actual y siguiente para edición
         $semestres = $this->calculaSemestresActualizacion($habilitacion->semestre_inicio);
 
-        return view('actualizar_eliminar', compact('alumnos', 'profesores', 'habilitacion', 'semestres'));
+        return view('actualizar_eliminar', compact('alumnos', 'profesores_dinf', 'profesores_ucsc', 'habilitacion', 'semestres'));
     }
     
     /**
@@ -392,7 +435,11 @@ class HabilitacionController extends Controller
 
         // Verificar límite
         if ($count >= 5) {
+            // Buscar primero en tabla profesor (DINF), si no está buscar en gestion_academica
             $profesor = Profesor::find($rut_profesor);
+            if (!$profesor) {
+                $profesor = GestionAcademica::find($rut_profesor);
+            }
             $nombre = $profesor ? $profesor->nombre_profesor . ' ' . $profesor->apellido_profesor : $rut_profesor;
             return "$nombre ya participa en 5 habilitaciones este semestre.";
         }
@@ -450,7 +497,11 @@ class HabilitacionController extends Controller
 
             // Verificar límite
             if ($count >= 5) {
+                // Buscar primero en tabla profesor (DINF), si no está buscar en gestion_academica
                 $profesor = Profesor::find($rut);
+                if (!$profesor) {
+                    $profesor = GestionAcademica::find($rut);
+                }
                 $nombre = $profesor ? $profesor->nombre_profesor . ' ' . $profesor->apellido_profesor : $rut;
                 return "El profesor $nombre ya participa en 5 habilitaciones este semestre.";
             }
