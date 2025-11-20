@@ -62,7 +62,7 @@
                                 @foreach($alumnos as $alumno)
                                     <option value="{{ $alumno->rut_alumno }}"
                                         {{ old('selector_alumno_rut') == $alumno->rut_alumno ? 'selected' : '' }}>
-                                        {{ $alumno->apellido_alumno }}, {{ $alumno->nombre_alumno }} ({{ $alumno->rut_alumno }})
+                                        {{ $alumno->nombre_alumno }} {{ $alumno->apellido_alumno }} ({{ $alumno->rut_alumno }})
                                     </option>
                                 @endforeach
                             @else

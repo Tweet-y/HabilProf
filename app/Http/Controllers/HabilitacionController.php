@@ -29,9 +29,6 @@ class HabilitacionController extends Controller
         // Obtener alumnos disponibles (sin habilitación)
         $alumnos = Alumno::whereDoesntHave('habilitacion')->get();
 
-        // Sincronizar profesores de gestion_academica a tabla profesor
-        $this->sincronizarProfesores();
-
         // Obtener profesores DINF para guía, comisión y tutor
         $profesores_dinf = DB::table('profesor')
             ->join('gestion_academica', 'profesor.rut_profesor', '=', 'gestion_academica.rut_profesor')
@@ -40,13 +37,11 @@ class HabilitacionController extends Controller
             ->distinct()
             ->get();
 
-        // Obtener TODOS los profesores para co-guía (DINF y otros departamentos)
-        $profesores_ucsc = DB::table('profesor')
-            ->join('gestion_academica', 'profesor.rut_profesor', '=', 'gestion_academica.rut_profesor')
-            ->select('profesor.*', 'gestion_academica.departamento')
-            ->distinct()
-            ->orderBy('gestion_academica.departamento')
-            ->orderBy('profesor.apellido_profesor')
+        // Obtener TODOS los profesores para co-guía (DINF y otros departamentos) desde gestion_academica
+        $profesores_ucsc = DB::table('gestion_academica')
+            ->select('rut_profesor', 'nombre_profesor', 'apellido_profesor', 'departamento')
+            ->orderBy('departamento')
+            ->orderBy('apellido_profesor')
             ->get();
 
         // Calcular próximos 2 semestres para nuevas habilitaciones
@@ -61,25 +56,6 @@ class HabilitacionController extends Controller
         return view('habilitacion_create', compact('alumnos', 'profesores_dinf', 'profesores_ucsc', 'semestres'));
     }
 
-    /**
-     * Sincroniza profesores de gestion_academica a la tabla profesor.
-     * Asegura que todos los profesores disponibles estén en la tabla profesor.
-     */
-    private function sincronizarProfesores()
-    {
-        $profesoresGestion = GestionAcademica::all();
-        
-        foreach ($profesoresGestion as $profGestion) {
-            Profesor::updateOrCreate(
-                ['rut_profesor' => $profGestion->rut_profesor],
-                [
-                    'nombre_profesor' => $profGestion->nombre_profesor,
-                    'apellido_profesor' => $profGestion->apellido_profesor,
-                ]
-            );
-        }
-    }
-    
     /**
      * Crea una nueva habilitación en la base de datos.
      * Incluye validaciones de negocio y creación de registros relacionados.
@@ -182,9 +158,6 @@ class HabilitacionController extends Controller
         // Obtener alumnos con habilitaciones y sus relaciones
         $alumnos = Alumno::whereHas('habilitacion')->with(['habilitacion.proyecto', 'habilitacion.prTut'])->get();
 
-        // Sincronizar profesores de gestion_academica a tabla profesor
-        $this->sincronizarProfesores();
-
         // Obtener profesores DINF para guía, comisión y tutor
         $profesores_dinf = DB::table('profesor')
             ->join('gestion_academica', 'profesor.rut_profesor', '=', 'gestion_academica.rut_profesor')
@@ -193,13 +166,11 @@ class HabilitacionController extends Controller
             ->distinct()
             ->get();
 
-        // Obtener TODOS los profesores para co-guía (DINF y otros departamentos)
-        $profesores_ucsc = DB::table('profesor')
-            ->join('gestion_academica', 'profesor.rut_profesor', '=', 'gestion_academica.rut_profesor')
-            ->select('profesor.*', 'gestion_academica.departamento')
-            ->distinct()
-            ->orderBy('gestion_academica.departamento')
-            ->orderBy('profesor.apellido_profesor')
+        // Obtener TODOS los profesores para co-guía (DINF y otros departamentos) desde gestion_academica
+        $profesores_ucsc = DB::table('gestion_academica')
+            ->select('rut_profesor', 'nombre_profesor', 'apellido_profesor', 'departamento')
+            ->orderBy('departamento')
+            ->orderBy('apellido_profesor')
             ->get();
 
         // Obtener semestres únicos con habilitaciones existentes
@@ -329,9 +300,6 @@ class HabilitacionController extends Controller
         // Obtener alumnos con habilitaciones para el selector
         $alumnos = Alumno::whereHas('habilitacion')->with(['habilitacion.proyecto', 'habilitacion.prTut'])->get();
 
-        // Sincronizar profesores de gestion_academica a tabla profesor
-        $this->sincronizarProfesores();
-
         // Obtener profesores DINF para guía, comisión y tutor
         $profesores_dinf = DB::table('profesor')
             ->join('gestion_academica', 'profesor.rut_profesor', '=', 'gestion_academica.rut_profesor')
@@ -340,13 +308,11 @@ class HabilitacionController extends Controller
             ->distinct()
             ->get();
 
-        // Obtener TODOS los profesores para co-guía (DINF y otros departamentos)
-        $profesores_ucsc = DB::table('profesor')
-            ->join('gestion_academica', 'profesor.rut_profesor', '=', 'gestion_academica.rut_profesor')
-            ->select('profesor.*', 'gestion_academica.departamento')
-            ->distinct()
-            ->orderBy('gestion_academica.departamento')
-            ->orderBy('profesor.apellido_profesor')
+        // Obtener TODOS los profesores para co-guía (DINF y otros departamentos) desde gestion_academica
+        $profesores_ucsc = DB::table('gestion_academica')
+            ->select('rut_profesor', 'nombre_profesor', 'apellido_profesor', 'departamento')
+            ->orderBy('departamento')
+            ->orderBy('apellido_profesor')
             ->get();
 
         // Buscar la habilitación específica a editar
@@ -469,7 +435,11 @@ class HabilitacionController extends Controller
 
         // Verificar límite
         if ($count >= 5) {
+            // Buscar primero en tabla profesor (DINF), si no está buscar en gestion_academica
             $profesor = Profesor::find($rut_profesor);
+            if (!$profesor) {
+                $profesor = GestionAcademica::find($rut_profesor);
+            }
             $nombre = $profesor ? $profesor->nombre_profesor . ' ' . $profesor->apellido_profesor : $rut_profesor;
             return "$nombre ya participa en 5 habilitaciones este semestre.";
         }
@@ -527,7 +497,11 @@ class HabilitacionController extends Controller
 
             // Verificar límite
             if ($count >= 5) {
+                // Buscar primero en tabla profesor (DINF), si no está buscar en gestion_academica
                 $profesor = Profesor::find($rut);
+                if (!$profesor) {
+                    $profesor = GestionAcademica::find($rut);
+                }
                 $nombre = $profesor ? $profesor->nombre_profesor . ' ' . $profesor->apellido_profesor : $rut;
                 return "El profesor $nombre ya participa en 5 habilitaciones este semestre.";
             }
