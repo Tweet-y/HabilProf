@@ -19,22 +19,23 @@ Este documento describe específicamente las validaciones y lógica de negocio i
 
 #### Para PrIng/PrInv (Proyecto de Investigación/Ingeniería):
 
-- **seleccion_guia_rut**: Obligatorio, debe existir en tabla `profesor`
-- **seleccion_co_guia_rut**: Opcional, debe existir en tabla `profesor`
-- **seleccion_comision_rut**: Obligatorio, debe existir en tabla `profesor`
+- **seleccion_guia_rut**: Obligatorio, debe existir en tabla `profesors` y departamento DINF
+- **seleccion_co_guia_rut**: Opcional, debe existir en tabla `profesors` (cualquier departamento)
+- **seleccion_comision_rut**: Obligatorio, debe existir en tabla `profesors` y departamento DINF
 
 #### Para PrTut (Práctica Tutelada):
 
 - **nombre_empresa**: Obligatorio, máximo 50 caracteres, regex: `/^[a-zA-Z0-9\s]+$/u`
 - **nombre_supervisor**: Obligatorio, máximo 50 caracteres, regex: `/^[a-zA-Z\sñÑáéíóúÁÉÍÓÚ]+$/u`
-- **seleccion_tutor_rut**: Obligatorio, debe existir en tabla `profesor`
+- **seleccion_tutor_rut**: Obligatorio, debe existir en tabla `profesors` y departamento DINF
 
 ### Mensajes de Error Personalizados
 
-- Campos obligatorios: "Este campo es obligatorio."
+- Campos obligatorios: Mensajes específicos por campo (ej: "El tipo de habilitación es obligatorio.")
 - Campos condicionales: "Este campo es obligatorio para la modalidad seleccionada."
-- Existencia en BD: "El valor seleccionado no es válido o no existe."
-- Roles duplicados: "El Co-Guía no puede ser el mismo que el Guía o el de Comisión."
+- Existencia en BD: "El guía seleccionado no es válido o no pertenece al departamento DINF."
+- Regex: "El título contiene caracteres no permitidos."
+- Longitud: "El título debe tener al menos 6 caracteres."
 
 ## Lógica de Negocio en HabilitacionController
 
@@ -53,9 +54,10 @@ Este documento describe específicamente las validaciones y lógica de negocio i
 
 ### Método destroy()
 
-1. **Eliminación en Cascada**: Primero elimina Proyecto o PrTut relacionado
+1. **Eliminación en Cascada**: Primero elimina Proyecto o PrTut relacionado (si existe)
 2. **Eliminación Principal**: Luego elimina el registro de Habilitacion
 3. **Integridad Referencial**: Mantiene consistencia de base de datos
+4. **Búsqueda por RUT**: Encuentra la habilitación usando rut_alumno como parámetro
 
 ### Método checkLimit()
 
@@ -98,7 +100,7 @@ function toggleHabilitacionSections() {
 - **Alumno**: Verifica que se haya seleccionado un alumno
 - **Tipo**: Confirma selección de tipo de habilitación
 - **Semestre**: Asegura selección de semestre de inicio
-- **Título**: Valida longitud (6-50) y formato usando regex
+- **Título**: Valida longitud (6-80) y formato usando regex
 - **Descripción**: Valida longitud (30-500) caracteres
 
 #### 2. Validación de Roles Duplicados
