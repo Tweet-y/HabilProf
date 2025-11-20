@@ -18,17 +18,15 @@ class CargaUCSCService
         // 1.1 Carga_academica: Lista de alumnos a procesar y sus asignaturas
         $mockAlumnos = DB::table('carga_academica')->get();
         
-        // 1.2 Gestión_academica: Lista completa de profesores DINF
-        $mockProfesores = DB::table('gestion_academica')
-                            ->where('departamento', 'DINF') 
-                            ->get(); // Retorna la lista completa de profesores DINF
+        // 1.2 Gestión_academica: Lista completa de TODOS los profesores (DINF y externos)
+        $mockProfesores = DB::table('gestion_academica')->get(); // Retorna TODOS los profesores
         
         // 1.3 Notas_en_linea: Contiene todas las notas registradas
         $mockNotas = DB::table('notas_en_linea')->get()->keyBy('rut_alumno')->toArray();
     
         return [
             'alumnos_carga' => $mockAlumnos,
-            'profesores_dinf' => $mockProfesores, 
+            'profesores' => $mockProfesores,  
             'notas' => $mockNotas,
         ];
     }
@@ -39,9 +37,10 @@ class CargaUCSCService
         $dataSets = $this->obtenerDatosParaProcesar();
         $resultados = [];
 
-        $profesoresDINF = $dataSets['profesores_dinf'];
+        // Cargar TODOS los profesores (DINF y externos) a la tabla profesor
+        $profesores = $dataSets['profesores'];
         
-        foreach ($profesoresDINF as $profesor) {
+        foreach ($profesores as $profesor) {
             Profesor::updateOrCreate(
                 ['rut_profesor' => $profesor->rut_profesor],
                 [
@@ -51,7 +50,7 @@ class CargaUCSCService
                 ]
             );
         }
-        $resultados[] = ['status' => 'GENERAL', 'mensaje' => count($profesoresDINF) . ' profesores DINF cargados/actualizados (RF1).'];
+        $resultados[] = ['status' => 'GENERAL', 'mensaje' => count($profesores) . ' profesores cargados/actualizados (RF1).'];
 
 
         

@@ -49,7 +49,7 @@
         <form action="{{ route('habilitaciones.store') }}" method="POST" id="habilitacion-form">
             @csrf
 
-            <fieldset>
+            <fieldset >
                 <legend>Datos Principales</legend>
                 <div class="form-grid">
                     <div class="form-group form-group-full">
@@ -73,7 +73,9 @@
                             <div class="error-text">{{ $errors->first('selector_alumno_rut') }}</div>
                         @endif
                     </div>
-
+                </div>
+            
+                <div class="form-grid" style="margin-top: 20px;">
                     <div class="form-group">
                         <label for="tipo_habilitacion" class="required">Tipo de Habilitación</label>
                         <select id="tipo_habilitacion" name="tipo_habilitacion" required
@@ -101,16 +103,6 @@
                             <div class="error-text">{{ $errors->first('semestre_inicio') }}</div>
                         @endif
                     </div>
-
-                    <div class="form-group">
-                        <label for="nota_final">Nota Final</label>
-                        <input type="number" id="nota_final" name="nota_final"
-                               min="1.0" max="7.0" step="0.1"
-                               placeholder="Se actualizará desde R1" readonly
-                               value="{{ old('nota_final') }}">
-                        <small class="help-text">Este campo no se puede modificar.</small>
-                    </div>
-
                 </div>
             </fieldset>
 

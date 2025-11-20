@@ -7,7 +7,6 @@ use App\Models\Profesor;
 use App\Models\Habilitacion;
 use App\Models\Proyecto;
 use App\Models\PrTut;
-use App\Models\GestionAcademica;
 use App\Http\Requests\StoreHabilitacionRequest;
 use App\Http\Requests\UpdateHabilitacionRequest;
 use Illuminate\Http\Request;
@@ -30,18 +29,15 @@ class HabilitacionController extends Controller
         $alumnos = Alumno::whereDoesntHave('habilitacion')->get();
 
         // Obtener profesores DINF para guía, comisión y tutor
-        $profesores_dinf = DB::table('profesor')
-            ->join('gestion_academica', 'profesor.rut_profesor', '=', 'gestion_academica.rut_profesor')
-            ->where('gestion_academica.departamento', 'DINF')
-            ->select('profesor.*')
-            ->distinct()
+        $profesores_dinf = Profesor::where('departamento', 'DINF')
+            ->orderBy('apellido_profesor')
+            ->orderBy('nombre_profesor')
             ->get();
 
-        // Obtener TODOS los profesores para co-guía (DINF y otros departamentos) desde gestion_academica
-        $profesores_ucsc = DB::table('gestion_academica')
-            ->select('rut_profesor', 'nombre_profesor', 'apellido_profesor', 'departamento')
-            ->orderBy('departamento')
+        // Obtener TODOS los profesores para co-guía (DINF y otros departamentos)
+        $profesores_ucsc = Profesor::orderBy('departamento')
             ->orderBy('apellido_profesor')
+            ->orderBy('nombre_profesor')
             ->get();
 
         // Calcular próximos 2 semestres para nuevas habilitaciones
@@ -159,18 +155,15 @@ class HabilitacionController extends Controller
         $alumnos = Alumno::whereHas('habilitacion')->with(['habilitacion.proyecto', 'habilitacion.prTut'])->get();
 
         // Obtener profesores DINF para guía, comisión y tutor
-        $profesores_dinf = DB::table('profesor')
-            ->join('gestion_academica', 'profesor.rut_profesor', '=', 'gestion_academica.rut_profesor')
-            ->where('gestion_academica.departamento', 'DINF')
-            ->select('profesor.*')
-            ->distinct()
+        $profesores_dinf = Profesor::where('departamento', 'DINF')
+            ->orderBy('apellido_profesor')
+            ->orderBy('nombre_profesor')
             ->get();
 
-        // Obtener TODOS los profesores para co-guía (DINF y otros departamentos) desde gestion_academica
-        $profesores_ucsc = DB::table('gestion_academica')
-            ->select('rut_profesor', 'nombre_profesor', 'apellido_profesor', 'departamento')
-            ->orderBy('departamento')
+        // Obtener TODOS los profesores para co-guía (DINF y otros departamentos)
+        $profesores_ucsc = Profesor::orderBy('departamento')
             ->orderBy('apellido_profesor')
+            ->orderBy('nombre_profesor')
             ->get();
 
         // Obtener semestres únicos con habilitaciones existentes
@@ -301,18 +294,15 @@ class HabilitacionController extends Controller
         $alumnos = Alumno::whereHas('habilitacion')->with(['habilitacion.proyecto', 'habilitacion.prTut'])->get();
 
         // Obtener profesores DINF para guía, comisión y tutor
-        $profesores_dinf = DB::table('profesor')
-            ->join('gestion_academica', 'profesor.rut_profesor', '=', 'gestion_academica.rut_profesor')
-            ->where('gestion_academica.departamento', 'DINF')
-            ->select('profesor.*')
-            ->distinct()
+        $profesores_dinf = Profesor::where('departamento', 'DINF')
+            ->orderBy('apellido_profesor')
+            ->orderBy('nombre_profesor')
             ->get();
 
-        // Obtener TODOS los profesores para co-guía (DINF y otros departamentos) desde gestion_academica
-        $profesores_ucsc = DB::table('gestion_academica')
-            ->select('rut_profesor', 'nombre_profesor', 'apellido_profesor', 'departamento')
-            ->orderBy('departamento')
+        // Obtener TODOS los profesores para co-guía (DINF y otros departamentos)
+        $profesores_ucsc = Profesor::orderBy('departamento')
             ->orderBy('apellido_profesor')
+            ->orderBy('nombre_profesor')
             ->get();
 
         // Buscar la habilitación específica a editar
@@ -435,11 +425,8 @@ class HabilitacionController extends Controller
 
         // Verificar límite
         if ($count >= 5) {
-            // Buscar primero en tabla profesor (DINF), si no está buscar en gestion_academica
+            // Buscar profesor en la tabla profesor (contiene DINF y externos)
             $profesor = Profesor::find($rut_profesor);
-            if (!$profesor) {
-                $profesor = GestionAcademica::find($rut_profesor);
-            }
             $nombre = $profesor ? $profesor->nombre_profesor . ' ' . $profesor->apellido_profesor : $rut_profesor;
             return "$nombre ya participa en 5 habilitaciones este semestre.";
         }
@@ -497,11 +484,8 @@ class HabilitacionController extends Controller
 
             // Verificar límite
             if ($count >= 5) {
-                // Buscar primero en tabla profesor (DINF), si no está buscar en gestion_academica
+                // Buscar profesor en la tabla profesor (contiene DINF y externos)
                 $profesor = Profesor::find($rut);
-                if (!$profesor) {
-                    $profesor = GestionAcademica::find($rut);
-                }
                 $nombre = $profesor ? $profesor->nombre_profesor . ' ' . $profesor->apellido_profesor : $rut;
                 return "El profesor $nombre ya participa en 5 habilitaciones este semestre.";
             }

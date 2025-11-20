@@ -50,7 +50,7 @@ class StoreHabilitacionRequest extends FormRequest
         // Reglas específicas para PrIng/PrInv (Proyectos)
         if ($this->tipo_habilitacion === 'PrIng' || $this->tipo_habilitacion === 'PrInv') {
             $rules['seleccion_guia_rut'] = 'required_if:tipo_habilitacion,PrIng,PrInv|integer|exists:profesor,rut_profesor';
-            $rules['seleccion_co_guia_rut'] = 'nullable|integer|exists:gestion_academica,rut_profesor'; // Puede ser de cualquier departamento
+            $rules['seleccion_co_guia_rut'] = 'nullable|integer|exists:profesor,rut_profesor'; // Todos los profesores están en tabla profesor
             $rules['seleccion_comision_rut'] = 'required_if:tipo_habilitacion,PrIng,PrInv|integer|exists:profesor,rut_profesor';
 
         // Reglas específicas para PrTut (Práctica Tutelada)

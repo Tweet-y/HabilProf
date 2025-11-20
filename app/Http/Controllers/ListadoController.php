@@ -137,7 +137,7 @@ class ListadoController extends Controller
                 ->join('proyecto as p', 'h.id_habilitacion', '=', 'p.id_habilitacion')
                 ->join('alumno as a', 'h.rut_alumno', '=', 'a.rut_alumno')
                 ->leftJoin('profesor as pg', 'p.rut_profesor_guia', '=', 'pg.rut_profesor')
-                ->leftJoin('gestion_academica as pcg', 'p.rut_profesor_co_guia', '=', 'pcg.rut_profesor')
+                ->leftJoin('profesor as pcg', 'p.rut_profesor_co_guia', '=', 'pcg.rut_profesor')
                 ->leftJoin('profesor as pc', 'p.rut_profesor_comision', '=', 'pc.rut_profesor')
                 ->where('h.semestre_inicio', $semestre);
 
@@ -223,11 +223,8 @@ class ListadoController extends Controller
             $query_params = $request->only(['tipo_listado']);
             
             $profesores_base = DB::table('profesor')
-                ->join('gestion_academica', 'profesor.rut_profesor', '=', 'gestion_academica.rut_profesor')
-                ->where('gestion_academica.departamento', 'DINF')
-                ->orderBy('profesor.apellido_profesor')
-                ->select('profesor.*')
-                ->distinct()
+                ->where('departamento', 'DINF')
+                ->orderBy('apellido_profesor')
                 ->get();
 
             \Log::info('Cantidad de profesores DINF encontrados: ' . $profesores_base->count());

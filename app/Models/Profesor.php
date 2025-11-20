@@ -19,6 +19,7 @@ class Profesor extends Model
         'rut_profesor',
         'nombre_profesor',
         'apellido_profesor',
+        'departamento',
     ];
 
     public function gestionAcademica()
