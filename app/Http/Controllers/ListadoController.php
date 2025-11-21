@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Habilitacion;
-use App\Models\Profesor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;

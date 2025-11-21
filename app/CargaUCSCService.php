@@ -6,7 +6,6 @@ use App\Models\Alumno;
 use App\Models\Profesor;
 use App\Models\Habilitacion;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Carbon;
 
 class CargaUCSCService
 {

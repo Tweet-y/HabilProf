@@ -16,6 +16,7 @@ Este proyecto fue desarrollado por:
   - `app/Http/Controllers/ListadoController.php` (Controlador de la función)
 - **RF5: Login**: Interfaz y funcionalidad del Login
   - `routes/web.php` (Rutas de autenticación)
+  - `resources/views/auth/login.blade.php` (Vista principal)
   - `database/migrations/2014_10_12_000000_create_users_table.php` (Migración tabla users)
   - `resources/views/auth/login.blade.php` (Vista principal)
   - `app/Http/Requests/Auth/LoginRequest.php` (Validaciones del Login)
@@ -28,7 +29,7 @@ Este proyecto fue desarrollado por:
 
 - **RF3: Actualizar/Eliminar Habilitaciones**: Backend y frontend de la funcionalidad
   - `routes/web.php` (Rutas relacionadas con habilitaciones)
-  - `app/Http/Controllers/HabilitacionController.php` (Métodos index, edit, update, destroy, calculaSemestresActualizacion, líneas 126-358)
+  - `app/Http/Controllers/HabilitacionController.php` (Métodos index, edit, update, destroy, calculaSemestresActualizacion, líneas 120-341)
   - `app/Http/Requests/UpdateHabilitacionRequest.php` (Validaciones de actualización)
   - `resources/views/actualizar_eliminar.blade.php` (Vista principal)
   - `public/js/validacion.js` (Validaciones frontend)
@@ -40,7 +41,7 @@ Este proyecto fue desarrollado por:
 
 - **RF2: Ingreso de Habilitaciones**: Ingreso de nuevas habilitaciones
   - `routes/web.php` (Rutas relacionadas con ingreso de habilitaciones)
-  - `app/Http/Controllers/HabilitacionController.php` (Métodos create, store, checkLimit, validarMultiplesRoles, validarLimitesProfesoresBackend, validarLimiteProfesorIndividual, líneas 1-124, 369-532)
+  - `app/Http/Controllers/HabilitacionController.php` (Métodos create, store, checkLimit, validarMultiplesRoles, validarLimitesProfesoresBackend, validarLimiteProfesorIndividual, líneas 1-118, 352-515)
   - `app/Http/Requests/StoreHabilitacionRequest.php` (Validaciones de ingreso)
   - `resources/views/habilitacion_create.blade.php` (Vista de ingreso)
   - `public/js/validacion.js` (Validaciones frontend, líneas 7-167, 175-206)
@@ -61,6 +62,7 @@ Este proyecto fue desarrollado por:
   - `config/database.php` (Configuración de Base de Datos)
   - Migraciones de Base de Datos: ubicados en `database/migrations`
   - `database/seeders/CargaSeeder.php` (Datos de simulación)
+  - Modelos relacionados: `app/Models/Alumno.php`, `app/Models/Profesor.php`, `app/Models/Habilitacion.php`, `app/Models/Proyecto.php`, `app/Models/PrTut.php`
 
 ## **Índice**
 
