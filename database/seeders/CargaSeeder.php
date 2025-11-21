@@ -64,6 +64,19 @@ class CargaSeeder extends Seeder
             ['rut_profesor' => 41414141, 'nombre_profesor' => 'Vicente', 'apellido_profesor' => 'Molina', 'departamento' => 'BIO'],
         ]);
 
+        DB::table('profesor')->insert([
+            
+            // Profesores MAT 
+            ['rut_profesor' => 33333333, 'nombre_profesor' => 'Laura', 'apellido_profesor' => 'Soto', 'departamento' => 'MAT'],
+            ['rut_profesor' => 34343434, 'nombre_profesor' => 'Felipe', 'apellido_profesor' => 'Núñez', 'departamento' => 'MAT'],
+            
+            // Profesores FIS
+            ['rut_profesor' => 20000000, 'nombre_profesor' => 'Luis', 'apellido_profesor' => 'Gomez', 'departamento' => 'FIS'],
+            
+            // Profesores BIO
+            ['rut_profesor' => 39393939, 'nombre_profesor' => 'Rodrigo', 'apellido_profesor' => 'Cortés', 'departamento' => 'BIO'],
+        ]);
+
         // -----------------------------------------------------------------
         // 2. CARGA ACADÉMICA (ALUMNOS y ASIGNATURAS) - Fuente para el filtro IN2000C
         // -----------------------------------------------------------------
