@@ -346,6 +346,19 @@
                     block: 'start'
                 });
             }
+
+            // Auto-hide despues de  4 segundos, mensaje de éxito
+            
+            const successMessage = document.querySelector('.message.success');
+            if (successMessage) {
+                setTimeout(() => {
+                    successMessage.style.transition = 'opacity 0.5s ease-out';
+                    successMessage.style.opacity = '0';
+                    setTimeout(() => {
+                        successMessage.style.display = 'none';
+                    }, 500);
+                }, 4000); 
+            }
         });
     </script>
 
