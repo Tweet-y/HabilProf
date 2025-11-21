@@ -13,21 +13,15 @@ class CargaUCSCService
     const CODIGO_HABILITACION = "IN2000C";
     private function obtenerDatosParaProcesar(): array
     {
-        // 1. EXTRAER TODOS LOS REGISTROS DE LAS TRES FUENTES MOCKUP
-        
-        // 1.1 Carga_academica: Lista de alumnos a procesar y sus asignaturas
-        $mockAlumnos = DB::table('carga_academica')->get();
-        
-        // 1.2 Gestión_academica: Lista completa de TODOS los profesores (DINF y externos)
-        $mockProfesores = DB::table('gestion_academica')->get(); // Retorna TODOS los profesores
-        
-        // 1.3 Notas_en_linea: Contiene todas las notas registradas
-        $mockNotas = DB::table('notas_en_linea')->get()->keyBy('rut_alumno')->toArray();
+        // 1. EXTRAER TODOS LOS REGISTROS DE LAS TRES FUENTES 
+        $datosAlumnos = DB::table('carga_academica')->get();
+        $datosProfesores = DB::table('gestion_academica')->where('departamento', 'DINF')->get();
+        $datosNotas = DB::table('notas_en_linea')->get()->keyBy('rut_alumno')->toArray();
     
         return [
-            'alumnos_carga' => $mockAlumnos,
-            'profesores' => $mockProfesores,  
-            'notas' => $mockNotas,
+            'alumnos_carga' => $datosAlumnos,
+            'profesores' => $datosProfesores,  
+            'notas' => $datosNotas,
         ];
     }
 
@@ -54,19 +48,19 @@ class CargaUCSCService
 
 
         
-        $mockAlumnos = $dataSets['alumnos_carga'];
-        $mockNotas = $dataSets['notas'];
+        $datosAlumnos = $dataSets['alumnos_carga'];
+        $datosNotas = $dataSets['notas'];
 
-        foreach ($mockAlumnos as $mockA_object) {
+        foreach ($datosAlumnos as $mockA_object) {
     
         // 1. Convertir el objeto stdClass a un array asociativo.
-        $mockA = (array) $mockA_object; 
+        $datosA = (array) $mockA_object; 
             
         // 2. Usar la sintaxis de array para acceder a las claves
-        $rutAlumno = $mockA['rut_alumno'];
+        $rutAlumno = $datosA['rut_alumno'];
             
         // 3. Decodificar asignaturas, usando una clave segura y manejo de nulls
-        $asignaturas = json_decode($mockA['asignaturas'] ?? '[]', true) ?: []; 
+        $asignaturas = json_decode($datosA['asignaturas'] ?? '[]', true) ?: []; 
             
         if (!in_array(self::CODIGO_HABILITACION, $asignaturas)) {
             continue; 
@@ -76,8 +70,8 @@ class CargaUCSCService
         Alumno::updateOrCreate(
             ['rut_alumno' => $rutAlumno], 
             [
-                'nombre_alumno' => $mockA['nombre_alumno'],
-                'apellido_alumno' => $mockA['apellido_alumno'],
+                'nombre_alumno' => $datosA['nombre_alumno'],
+                'apellido_alumno' => $datosA['apellido_alumno'],
             ]
         );
 
@@ -87,7 +81,7 @@ class CargaUCSCService
 
             if ($habilitacion) {
                 
-                $notaData = $mockNotas[$rutAlumno] ?? null;
+                $notaData = $datosNotas[$rutAlumno] ?? null;
                 
                 // Asegurar que nunca se asigne null a nota_final
                 $notaFinal = $notaData && $notaData->nota_final !== null ? $notaData->nota_final : 0.0;
