@@ -34,12 +34,6 @@ class HabilitacionController extends Controller
             ->orderBy('nombre_profesor')
             ->get();
 
-        // Obtener TODOS los profesores para co-guía (DINF y otros departamentos)
-        $profesores_ucsc = Profesor::orderBy('departamento')
-            ->orderBy('apellido_profesor')
-            ->orderBy('nombre_profesor')
-            ->get();
-
         // Calcular próximos 2 semestres para nuevas habilitaciones
         $mesActual = date('n');
         $yearActual = date('Y');
@@ -49,7 +43,7 @@ class HabilitacionController extends Controller
             $semestres = [$yearActual . '-2', ($yearActual + 1) . '-1'];
         }
 
-        return view('habilitacion_create', compact('alumnos', 'profesores_dinf', 'profesores_ucsc', 'semestres'));
+        return view('habilitacion_create', compact('alumnos', 'profesores_dinf', 'semestres'));
     }
 
     /**
@@ -160,12 +154,6 @@ class HabilitacionController extends Controller
             ->orderBy('nombre_profesor')
             ->get();
 
-        // Obtener TODOS los profesores para co-guía (DINF y otros departamentos)
-        $profesores_ucsc = Profesor::orderBy('departamento')
-            ->orderBy('apellido_profesor')
-            ->orderBy('nombre_profesor')
-            ->get();
-
         // Obtener semestres únicos con habilitaciones existentes
         $semestres = Habilitacion::distinct()
             ->orderBy('semestre_inicio', 'desc')
@@ -174,16 +162,17 @@ class HabilitacionController extends Controller
 
         // Si no hay semestres, agregar los próximos 2 semestres disponibles
         if (empty($semestres)) {
+            // Calcular próximos 2 semestres para nuevas habilitaciones
             $mesActual = date('n');
             $yearActual = date('Y');
             if ($mesActual <= 6) { // Primer semestre
-                $semestres[] = $yearActual . '-1';
-                $semestres[] = $yearActual . '-2';
+                $semestres = [$yearActual . '-1', $yearActual . '-2'];
             } else { // Segundo semestre
-                $semestres[] = $yearActual . '-2';
-                $semestres[] = ($yearActual + 1) . '-1';
+                $semestres = [$yearActual . '-2', ($yearActual + 1) . '-1'];
             }
         }
+
+        
 
         // Buscar habilitación si se recibió rut_alumno
         $habilitacion = null;
@@ -198,7 +187,7 @@ class HabilitacionController extends Controller
             }
         }
 
-        return view('actualizar_eliminar', compact('alumnos', 'profesores_dinf', 'profesores_ucsc', 'habilitacion', 'semestres'));
+        return view('actualizar_eliminar', compact('alumnos', 'profesores_dinf', 'habilitacion', 'semestres'));
     }
     
     /**
@@ -299,12 +288,6 @@ class HabilitacionController extends Controller
             ->orderBy('nombre_profesor')
             ->get();
 
-        // Obtener TODOS los profesores para co-guía (DINF y otros departamentos)
-        $profesores_ucsc = Profesor::orderBy('departamento')
-            ->orderBy('apellido_profesor')
-            ->orderBy('nombre_profesor')
-            ->get();
-
         // Buscar la habilitación específica a editar
         $habilitacion = Habilitacion::where('rut_alumno', $rut_alumno)
             ->with(['proyecto', 'prTut'])
@@ -313,7 +296,7 @@ class HabilitacionController extends Controller
         // Limitar semestres a anterior, actual y siguiente para edición
         $semestres = $this->calculaSemestresActualizacion($habilitacion->semestre_inicio);
 
-        return view('actualizar_eliminar', compact('alumnos', 'profesores_dinf', 'profesores_ucsc', 'habilitacion', 'semestres'));
+        return view('actualizar_eliminar', compact('alumnos', 'profesores_dinf', 'habilitacion', 'semestres'));
     }
     
     /**

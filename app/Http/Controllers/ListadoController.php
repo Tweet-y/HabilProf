@@ -6,6 +6,7 @@ use App\Models\Habilitacion;
 use App\Models\Profesor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 class ListadoController extends Controller
@@ -26,8 +27,8 @@ class ListadoController extends Controller
 
     public function generar(Request $request)
     {
-        \Log::info('Método de la solicitud: ' . $request->method());
-        \Log::info('Datos de la solicitud:', $request->all());
+        Log::info('Método de la solicitud: ' . $request->method());
+        Log::info('Datos de la solicitud:', $request->all());
 
         try {
             // Si es POST, validar y guardar en sesión
@@ -55,8 +56,8 @@ class ListadoController extends Controller
                 return redirect()->route('listados');
             }
 
-            \Log::info('Tipo de listado: ' . $tipo_listado);
-            \Log::info('Semestre: ' . ($semestre ?? 'no especificado'));
+            Log::info('Tipo de listado: ' . $tipo_listado);
+            Log::info('Semestre: ' . ($semestre ?? 'no especificado'));
 
             // Crear request con los datos combinados
             $newRequest = new Request();
@@ -70,7 +71,7 @@ class ListadoController extends Controller
                 ? $this->generarListadoSemestral($newRequest)
                 : $this->generarListadoHistorico($newRequest);
         } catch (\Exception $e) {
-            \Log::error('Error al generar listado: ' . $e->getMessage());
+            Log::error('Error al generar listado: ' . $e->getMessage());
             return back()->with('error', 'Error al generar el listado: ' . $e->getMessage());
         }
     }
@@ -79,7 +80,7 @@ class ListadoController extends Controller
     {
         try {
             $semestre = $request->semestre;
-            \Log::info('Generando listado semestral para el semestre: ' . $semestre);
+            Log::info('Generando listado semestral para el semestre: ' . $semestre);
 
             $query_params = $request->only(['tipo_listado', 'semestre']);
 
@@ -196,7 +197,7 @@ class ListadoController extends Controller
             // Agregar los parámetros del query a la paginación
             $paginator->appends($query_params);
 
-            \Log::info('Cantidad de habilitaciones encontradas: ' . $paginator->total());
+            Log::info('Cantidad de habilitaciones encontradas: ' . $paginator->total());
 
             if ($paginator->isEmpty()) {
                 return back()->with('error', 'No hay Habilitaciones Profesionales para este semestre');
@@ -218,7 +219,7 @@ class ListadoController extends Controller
     private function generarListadoHistorico(Request $request)
     {
         try {
-            \Log::info('Generando listado histórico');
+            Log::info('Generando listado histórico');
             
             $query_params = $request->only(['tipo_listado']);
             
@@ -227,7 +228,7 @@ class ListadoController extends Controller
                 ->orderBy('apellido_profesor')
                 ->get();
 
-            \Log::info('Cantidad de profesores DINF encontrados: ' . $profesores_base->count());
+            Log::info('Cantidad de profesores DINF encontrados: ' . $profesores_base->count());
 
             $profesores_dinf = collect();
 

@@ -161,7 +161,7 @@
                             <select id="seleccion_co_guia_rut" name="seleccion_co_guia_rut"
                                     class="{{ $errors->has('seleccion_co_guia_rut') ? 'field-error' : '' }}">
                                 <option value="" selected>Ninguno (Opcional)</option>
-                                @foreach($profesores_ucsc as $profesor)
+                                @foreach($profesores_dinf as $profesor)
                                     <option value="{{ $profesor->rut_profesor }}"
                                         {{ old('seleccion_co_guia_rut') == $profesor->rut_profesor ? 'selected' : '' }}>
                                         {{ $profesor->nombre_profesor }} {{ $profesor->apellido_profesor }} ({{ $profesor->rut_profesor }}) - {{ $profesor->departamento }}

@@ -193,7 +193,7 @@
                                 <label for="seleccion_co_guia_rut">Profesor Co-Guía (UCSC) (Opcional)</label>
                                 <select id="seleccion_co_guia_rut" name="seleccion_co_guia_rut">
                                     <option value="">Ninguno (Opcional)</option>
-                                    @foreach($profesores_ucsc as $profesor)
+                                    @foreach($profesores_dinf as $profesor)
                                         <option value="{{ $profesor->rut_profesor }}" {{ (old('seleccion_co_guia_rut', $habilitacion->proyecto->rut_profesor_co_guia ?? '') == $profesor->rut_profesor) ? 'selected' : '' }}>
                                             {{ $profesor->nombre_profesor }} {{ $profesor->apellido_profesor }} ({{ $profesor->rut_profesor }}) - {{ $profesor->departamento }}
                                         </option>
