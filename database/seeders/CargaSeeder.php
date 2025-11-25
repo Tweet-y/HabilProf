@@ -19,7 +19,7 @@ class CargaSeeder extends Seeder
         // 1. GESTIÓN ACADÉMICA (PROFESORES) - Fuente para el filtro DINF
         // -----------------------------------------------------------------
         DB::table('gestion_academica')->insert([
-            // Profesores DINF - Titulares
+            // Profesores DINF
             ['rut_profesor' => 10234567, 'nombre_profesor' => 'Ana', 'apellido_profesor' => 'Perez', 'departamento' => 'DINF'],
             ['rut_profesor' => 12345678, 'nombre_profesor' => 'Sofia', 'apellido_profesor' => 'Rojas', 'departamento' => 'DINF'],
             ['rut_profesor' => 15000000, 'nombre_profesor' => 'Roberto', 'apellido_profesor' => 'Mena', 'departamento' => 'DINF'],
@@ -28,14 +28,10 @@ class CargaSeeder extends Seeder
             ['rut_profesor' => 14141414, 'nombre_profesor' => 'Carmen', 'apellido_profesor' => 'Lagos', 'departamento' => 'DINF'],
             ['rut_profesor' => 17171717, 'nombre_profesor' => 'Ricardo', 'apellido_profesor' => 'Muñoz', 'departamento' => 'DINF'],
             ['rut_profesor' => 18181818, 'nombre_profesor' => 'Paula', 'apellido_profesor' => 'Vargas', 'departamento' => 'DINF'],
-            
-            // Profesores DINF - Adjuntos
             ['rut_profesor' => 26262626, 'nombre_profesor' => 'Ignacio', 'apellido_profesor' => 'Valenzuela', 'departamento' => 'DINF'],
             ['rut_profesor' => 27272727, 'nombre_profesor' => 'Daniela', 'apellido_profesor' => 'Parra', 'departamento' => 'DINF'],
             ['rut_profesor' => 28282828, 'nombre_profesor' => 'Gabriel', 'apellido_profesor' => 'Martínez', 'departamento' => 'DINF'],
             ['rut_profesor' => 29292929, 'nombre_profesor' => 'Isabella', 'apellido_profesor' => 'Vergara', 'departamento' => 'DINF'],
-            
-            // Profesores DINF - Part-time
             ['rut_profesor' => 30303030, 'nombre_profesor' => 'Sebastián', 'apellido_profesor' => 'Araya', 'departamento' => 'DINF'],
             ['rut_profesor' => 31313131, 'nombre_profesor' => 'Valentina', 'apellido_profesor' => 'Sepúlveda', 'departamento' => 'DINF'],
             ['rut_profesor' => 32323232, 'nombre_profesor' => 'Matías', 'apellido_profesor' => 'Herrera', 'departamento' => 'DINF'],
@@ -67,14 +63,27 @@ class CargaSeeder extends Seeder
         DB::table('profesor')->insert([
             
             // Profesores MAT 
+            ['rut_profesor' => 21212121, 'nombre_profesor' => 'Patricio', 'apellido_profesor' => 'Diaz', 'departamento' => 'MAT'],
+            ['rut_profesor' => 22222222, 'nombre_profesor' => 'Maria', 'apellido_profesor' => 'Torres', 'departamento' => 'MAT'],
+            ['rut_profesor' => 25252525, 'nombre_profesor' => 'Alberto', 'apellido_profesor' => 'Pinto', 'departamento' => 'MAT'],
             ['rut_profesor' => 33333333, 'nombre_profesor' => 'Laura', 'apellido_profesor' => 'Soto', 'departamento' => 'MAT'],
             ['rut_profesor' => 34343434, 'nombre_profesor' => 'Felipe', 'apellido_profesor' => 'Núñez', 'departamento' => 'MAT'],
             
             // Profesores FIS
             ['rut_profesor' => 20000000, 'nombre_profesor' => 'Luis', 'apellido_profesor' => 'Gomez', 'departamento' => 'FIS'],
+            ['rut_profesor' => 23232323, 'nombre_profesor' => 'Fernando', 'apellido_profesor' => 'Ruiz', 'departamento' => 'FIS'],
+            ['rut_profesor' => 35353535, 'nombre_profesor' => 'Catalina', 'apellido_profesor' => 'Mora', 'departamento' => 'FIS'],
+            ['rut_profesor' => 36363636, 'nombre_profesor' => 'Diego', 'apellido_profesor' => 'Espinoza', 'departamento' => 'FIS'],
+            
+            // Profesores QUI
+            ['rut_profesor' => 24242424, 'nombre_profesor' => 'Carolina', 'apellido_profesor' => 'Bravo', 'departamento' => 'QUI'],
+            ['rut_profesor' => 37373737, 'nombre_profesor' => 'Andrés', 'apellido_profesor' => 'Miranda', 'departamento' => 'QUI'],
+            ['rut_profesor' => 38383838, 'nombre_profesor' => 'Javiera', 'apellido_profesor' => 'Rojas', 'departamento' => 'QUI'],
             
             // Profesores BIO
             ['rut_profesor' => 39393939, 'nombre_profesor' => 'Rodrigo', 'apellido_profesor' => 'Cortés', 'departamento' => 'BIO'],
+            ['rut_profesor' => 40404040, 'nombre_profesor' => 'Camila', 'apellido_profesor' => 'Vega', 'departamento' => 'BIO'],
+            ['rut_profesor' => 41414141, 'nombre_profesor' => 'Vicente', 'apellido_profesor' => 'Molina', 'departamento' => 'BIO'],
         ]);
 
         // -----------------------------------------------------------------
