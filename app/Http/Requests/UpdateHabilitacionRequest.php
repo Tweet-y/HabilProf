@@ -39,7 +39,7 @@ class UpdateHabilitacionRequest extends FormRequest
 
         // Reglas específicas para PrTut (Práctica Tutelada)
         } elseif ($this->tipo_habilitacion === 'PrTut') {
-            $rules['nombre_empresa'] = 'required_if:tipo_habilitacion,PrTut|nullable|string|max:50|regex:/^[a-zA-Z0-9\s]+$/u';
+            $rules['nombre_empresa'] = 'required_if:tipo_habilitacion,PrTut|nullable|string|max:50|regex:/^[a-zA-Z0-9\sñÑáéíóúÁÉÍÓÚ]+$/u';
             $rules['nombre_supervisor'] = 'required_if:tipo_habilitacion,PrTut|nullable|string|max:50|regex:/^[a-zA-Z\sñÑáéíóúÁÉÍÓÚ]+$/u';
             $rules['seleccion_tutor_rut'] = 'required_if:tipo_habilitacion,PrTut|nullable|exists:profesor,rut_profesor';
         }

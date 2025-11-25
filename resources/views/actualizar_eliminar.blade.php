@@ -222,14 +222,23 @@
                             <div class="form-group">
                                 <label for="nombre_empresa" class="required">Nombre Empresa</label>
                                 <input type="text" id="nombre_empresa" name="nombre_empresa"
-                                       maxlength="50" pattern="[a-zA-Z0-9\s]+"
-                                       value="{{ old('nombre_empresa', $habilitacion->prTut->nombre_empresa ?? '') }}">
+                                        maxlength="50" pattern="[a-zA-Z0-9\sñÑáéíóúÁÉÍÓÚ]+"
+                                        value="{{ old('nombre_empresa', $habilitacion->prTut->nombre_empresa ?? '') }}">
+                                    <small class="help-text">Alfanumérico, máx 50 caracteres.</small>
+                                    @if($errors->has('nombre_empresa'))
+                                        <div class="error-text">{{ $errors->first('nombre_empresa') }}</div>
+                                    @endif
                             </div>
                             <div class="form-group">
                                 <label for="nombre_supervisor" class="required">Nombre Supervisor (Empresa)</label>
                                 <input type="text" id="nombre_supervisor" name="nombre_supervisor"
-                                       maxlength="50" pattern="[a-zA-Z\sñÑáéíóúÁÉÍÓÚ]+"
-                                       value="{{ old('nombre_supervisor', $habilitacion->prTut->nombre_supervisor ?? '') }}">
+                                        maxlength="50" pattern="[a-zA-Z\sñÑáéíóúÁÉÍÓÚ]+"
+                                        value="{{ old('nombre_supervisor', $habilitacion->prTut->nombre_supervisor ?? '') }}">
+                                        class="{{ $errors->has('nombre_supervisor') ? 'field-error' : '' }}">
+                                <small class="help-text">Alfabético, máx 50 caracteres.</small>
+                                @if($errors->has('nombre_supervisor'))
+                                    <div class="error-text">{{ $errors->first('nombre_supervisor') }}</div>
+                                @endif
                             </div>
                             <div class="form-group">
                                 <label for="seleccion_tutor_rut" class="required">Profesor Tutor (DINF)</label>
