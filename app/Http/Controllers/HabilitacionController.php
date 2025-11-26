@@ -224,13 +224,13 @@ class HabilitacionController extends Controller
         // Validar roles únicos
         $error = $this->validarMultiplesRoles($validatedData['tipo_habilitacion'], $request->seleccion_guia_rut, $request->seleccion_co_guia_rut, $request->seleccion_comision_rut);
         if ($error) {
-            return redirect()->back()->with('error', $error)->withInput();
+            return redirect()->route('habilitaciones.edit', $alumno)->with('error', $error)->withInput();
         }
 
         // Validar límites de profesores (excluyendo la habilitación actual)
         $error = $this->validarLimitesProfesoresBackend($profesores, $semestre, $alumno);
         if ($error) {
-            return redirect()->back()->with('error', $error)->withInput();
+            return redirect()->route('habilitaciones.edit', $alumno)->with('error', $error)->withInput();
         }
 
         try {

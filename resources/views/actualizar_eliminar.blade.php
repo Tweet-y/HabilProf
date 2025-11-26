@@ -222,8 +222,10 @@
                             <div class="form-group">
                                 <label for="nombre_empresa" class="required">Nombre Empresa</label>
                                 <input type="text" id="nombre_empresa" name="nombre_empresa"
-                                        maxlength="50" pattern="[a-zA-Z0-9\sñÑáéíóúÁÉÍÓÚ]+"
-                                        value="{{ old('nombre_empresa', $habilitacion->prTut->nombre_empresa ?? '') }}">
+                                        minlength="1" maxlength="50" pattern="[a-zA-Z0-9\sñÑáéíóúÁÉÍÓÚ]+"
+                                        title="Solo alfanumérico y espacios."
+                                        value="{{ old('nombre_empresa', $habilitacion->prTut->nombre_empresa ?? '') }}"
+                                        class="{{ $errors->has('nombre_empresa') ? 'field-error' : '' }}">
                                     <small class="help-text">Alfanumérico, máx 50 caracteres.</small>
                                     @if($errors->has('nombre_empresa'))
                                         <div class="error-text">{{ $errors->first('nombre_empresa') }}</div>
@@ -232,8 +234,9 @@
                             <div class="form-group">
                                 <label for="nombre_supervisor" class="required">Nombre Supervisor (Empresa)</label>
                                 <input type="text" id="nombre_supervisor" name="nombre_supervisor"
-                                        maxlength="50" pattern="[a-zA-Z\sñÑáéíóúÁÉÍÓÚ]+"
-                                        value="{{ old('nombre_supervisor', $habilitacion->prTut->nombre_supervisor ?? '') }}">
+                                        minlength="1" maxlength="50" pattern="[a-zA-Z\sñÑáéíóúÁÉÍÓÚ]+"
+                                        title="Solo letras y espacios."
+                                        value="{{ old('nombre_supervisor', $habilitacion->prTut->nombre_supervisor ?? '') }}"
                                         class="{{ $errors->has('nombre_supervisor') ? 'field-error' : '' }}">
                                 <small class="help-text">Alfabético, máx 50 caracteres.</small>
                                 @if($errors->has('nombre_supervisor'))

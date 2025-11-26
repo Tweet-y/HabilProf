@@ -111,13 +111,13 @@
                 <div class="form-grid">
                     <div class="form-group form-group-full">
                         <label for="titulo" class="required">Título</label>
-               <input type="text" id="titulo" name="titulo" required 
-                   minlength="6" maxlength="50"
-                   pattern="[a-zA-Z0-9\s.,;:''&quot;&quot;-_()]" 
-                   title="Solo alfanumérico y algunos símbolos."
-                   value="{{ old('titulo') }}"
-                   class="{{ $errors->has('titulo') ? 'field-error' : '' }}">
-               <small class="help-text">Entre 6 y 50 caracteres. Símbolos permitidos: . , ; : ' " - _ ( )</small>
+                        <input type="text" id="titulo" name="titulo" required 
+                               minlength="6" maxlength="50"
+                               pattern="[a-zA-Z0-9\s.,;:'&quot;&amp;\-_()áéíóúñÁÉÍÓÚ]+" 
+                               title="Solo alfanumérico y algunos símbolos: . , ; : ' &quot; &amp; - _ ( )"
+                               value="{{ old('titulo') }}"
+                               class="{{ $errors->has('titulo') ? 'field-error' : '' }}">
+                        <small class="help-text">Entre 6 y 50 caracteres. Símbolos permitidos: . , ; : ' " &amp; - _ ( )</small>
                         @if($errors->has('titulo'))
                             <div class="error-text">{{ $errors->first('titulo') }}</div>
                         @endif
@@ -126,8 +126,10 @@
                         <label for="descripcion" class="required">Descripción</label>
                         <textarea id="descripcion" name="descripcion" required 
                                   minlength="30" maxlength="500"
+                                  pattern="[a-zA-Z0-9\s.,;:'&quot;&amp;\-_()áéíóúñÁÉÍÓÚ]+"
+                                  title="Solo alfanumérico y algunos símbolos: . , ; : ' &quot; &amp; - _ ( )"
                                   class="{{ $errors->has('descripcion') ? 'field-error' : '' }}">{{ old('descripcion') }}</textarea>
-                        <small class="help-text">Entre 30 y 500 caracteres. Símbolos permitidos: . , ; : ' " - _ ( )</small>
+                        <small class="help-text">Entre 30 y 500 caracteres. Símbolos permitidos: . , ; : ' " &amp; - _ ( )</small>
                         @if($errors->has('descripcion'))
                             <div class="error-text">{{ $errors->first('descripcion') }}</div>
                         @endif
@@ -199,11 +201,13 @@
                     <div class="form-grid">
                         <div class="form-group">
                             <label for="nombre_empresa" class="required">Nombre Empresa</label>
-                            <input type="text" id="nombre_empresa" name="nombre_empresa" 
-                                   maxlength="50" pattern="[a-zA-Z0-9\s]+" 
+                            <input type="text" id="nombre_empresa" name="nombre_empresa"
+                                   minlength="1" maxlength="50"
+                                   pattern="[a-zA-Z0-9\sñÑáéíóúÁÉÍÓÚ]+"
+                                   title="Solo letras, números y espacios"
                                    value="{{ old('nombre_empresa') }}"
                                    class="{{ $errors->has('nombre_empresa') ? 'field-error' : '' }}">
-                            <small class="help-text">Alfanumérico, máx 50 caracteres.</small>
+                            <small class="help-text">Alfanumérico con espacios, máx 50 caracteres.</small>
                             @if($errors->has('nombre_empresa'))
                                 <div class="error-text">{{ $errors->first('nombre_empresa') }}</div>
                             @endif
@@ -212,10 +216,12 @@
                         <div class="form-group">
                             <label for="nombre_supervisor" class="required">Nombre Supervisor (Empresa)</label>
                             <input type="text" id="nombre_supervisor" name="nombre_supervisor" 
-                                   maxlength="50" pattern="[a-zA-Z\sñÑáéíóúÁÉÍÓÚ]+"
+                                   maxlength="50" 
+                                   pattern="[a-zA-Z\sñÑáéíóúÁÉÍÓÚ]+"
+                                   title="Solo letras y espacios"
                                    value="{{ old('nombre_supervisor') }}"
                                    class="{{ $errors->has('nombre_supervisor') ? 'field-error' : '' }}">
-                            <small class="help-text">Alfabético, máx 50 caracteres.</small>
+                            <small class="help-text">Solo letras y espacios, máx 50 caracteres.</small>
                             @if($errors->has('nombre_supervisor'))
                                 <div class="error-text">{{ $errors->first('nombre_supervisor') }}</div>
                             @endif
@@ -348,7 +354,6 @@
             }
 
             // Auto-hide despues de  4 segundos, mensaje de éxito
-            
             const successMessage = document.querySelector('.message.success');
             if (successMessage) {
                 setTimeout(() => {
@@ -357,7 +362,7 @@
                     setTimeout(() => {
                         successMessage.style.display = 'none';
                     }, 500);
-                }, 4000); 
+                }, 4000);
             }
         });
     </script>

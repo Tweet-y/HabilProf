@@ -62,8 +62,8 @@ class UpdateHabilitacionRequest extends FormRequest
     }
 
     /**
-     * Mensajes de error personalizados para las reglas de validación.
-     */
+    * Mensajes de error personalizados para las reglas de validación.
+    */
     public function messages(): array
     {
         return [
