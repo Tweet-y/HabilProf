@@ -43,19 +43,19 @@ class StoreHabilitacionRequest extends FormRequest
             'selector_alumno_rut' => 'required|integer|exists:alumno,rut_alumno',
             'tipo_habilitacion' => 'required|in:PrIng,PrInv,PrTut',
             'semestre_inicio' => 'required|string',
-            'titulo' => 'required|string|max:50|min:6|regex:/^[a-zA-Z0-9\s.,;:\'"&-_()áéíóúñÁÉÍÓÚ]+$/u',
-            'descripcion' => 'required|string|max:500|min:30|regex:/^[a-zA-Z0-9\s.,;:\'"&-_()áéíóúñÁÉÍÓÚ]+$/u',
+            'titulo' => 'required|string|max:50|min:6|regex:/^[a-zA-Z0-9\s.,;:\'\"\&\-_()áéíóúñÁÉÍÓÚ]+$/u',
+            'descripcion' => 'required|string|max:500|min:30|regex:/^[a-zA-Z0-9\s.,;:\'\"\&\-_()áéíóúñÁÉÍÓÚ]+$/u',
         ];
 
         // Reglas específicas para PrIng/PrInv (Proyectos)
         if ($this->tipo_habilitacion === 'PrIng' || $this->tipo_habilitacion === 'PrInv') {
             $rules['seleccion_guia_rut'] = 'required_if:tipo_habilitacion,PrIng,PrInv|integer|exists:profesor,rut_profesor';
-            $rules['seleccion_co_guia_rut'] = 'nullable|integer|exists:profesor,rut_profesor'; // Todos los profesores están en tabla profesor
+            $rules['seleccion_co_guia_rut'] = 'nullable|integer|exists:profesor,rut_profesor';
             $rules['seleccion_comision_rut'] = 'required_if:tipo_habilitacion,PrIng,PrInv|integer|exists:profesor,rut_profesor';
 
         // Reglas específicas para PrTut (Práctica Tutelada)
         } elseif ($this->tipo_habilitacion === 'PrTut') {
-            $rules['nombre_empresa'] = 'required_if:tipo_habilitacion,PrTut|string|max:50|regex:/^[a-zA-Z0-9\s]+$/u';
+            $rules['nombre_empresa'] = 'required_if:tipo_habilitacion,PrTut|string|max:50|regex:/^[a-zA-Z0-9\sñÑáéíóúÁÉÍÓÚ]+$/u';
             $rules['nombre_supervisor'] = 'required_if:tipo_habilitacion,PrTut|string|max:50|regex:/^[a-zA-Z\sñÑáéíóúÁÉÍÓÚ]+$/u';
             $rules['seleccion_tutor_rut'] = 'required_if:tipo_habilitacion,PrTut|integer|exists:profesor,rut_profesor';
         }
