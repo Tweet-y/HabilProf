@@ -18,6 +18,11 @@ Route::get('/', function () {
 // Login y autenticación (Públicas)
 require __DIR__.'/auth.php';
 
+// Rutas de verificación de email (Públicas)
+use App\Http\Controllers\Auth\VerificationController;
+Route::get('/verify', [VerificationController::class, 'show'])->name('verification.show');
+Route::post('/verify', [VerificationController::class, 'verify'])->name('verification.verify');
+
 // Verificación CSRF para todas las rutas POST
 Route::middleware(['web'])->group(function () {
     // Aquí van las rutas que necesitan CSRF
