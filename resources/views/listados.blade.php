@@ -221,9 +221,13 @@
                     <div class="form-group" id="filtro_semestre_container" style="display: none;">
                         <label for="semestre" class="required">Filtrar por semestre</label>
                         <select id="semestre" name="semestre">
-                            @foreach($semestres_disponibles as $semestre)
-                                <option value="{{ $semestre }}" {{ $semestre == session('semestre') ? 'selected' : '' }}>{{ $semestre }}</option>
-                            @endforeach
+                            @if($semestres_disponibles->isEmpty())
+                                <option value="" disabled selected>No hay semestres disponibles</option>
+                            @else
+                                @foreach($semestres_disponibles as $semestre)
+                                    <option value="{{ $semestre }}" {{ $semestre == session('semestre') ? 'selected' : '' }}>{{ $semestre }}</option>
+                                @endforeach
+                            @endif
                         </select>
                     </div>
 
@@ -253,9 +257,15 @@
                         return false;
                     }
 
-                    if (tipo === 'Listado Semestral' && !semestre.value) {
-                        alert('Por favor seleccione un semestre');
-                        return false;
+                    if (tipo === 'Listado Semestral') {
+                        if (!semestre || semestre.options.length === 0 || semestre.options[0].disabled) {
+                            alert('No hay semestres disponibles para seleccionar');
+                            return false;
+                        }
+                        if (!semestre.value) {
+                            alert('Por favor seleccione un semestre');
+                            return false;
+                        }
                     }
 
                     this.submit();
