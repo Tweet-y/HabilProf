@@ -91,7 +91,6 @@ class HabilitacionController extends Controller
                 'semestre_inicio' => $validatedData['semestre_inicio'],
                 'titulo' => $validatedData['titulo'],
                 'descripcion' => $validatedData['descripcion'],
-                // Nota inicial por defecto
                 'nota_final' => 0.0,
                 'fecha_nota' => null,
             ]);
@@ -100,7 +99,7 @@ class HabilitacionController extends Controller
             if ($validatedData['tipo_habilitacion'] === 'PrIng' || $validatedData['tipo_habilitacion'] === 'PrInv') {
                 // Crear registro de proyecto
                 Proyecto::create([
-                    'id_habilitacion' => $habilitacion->id_habilitacion,
+                    'rut_alumno' => $habilitacion->rut_alumno,
                     'tipo_proyecto' => $validatedData['tipo_habilitacion'],
                     'rut_profesor_guia' => $validatedData['seleccion_guia_rut'],
                     'rut_profesor_co_guia' => $validatedData['seleccion_co_guia_rut'] ?: null,
@@ -109,7 +108,7 @@ class HabilitacionController extends Controller
             } elseif ($validatedData['tipo_habilitacion'] === 'PrTut') {
                 // Crear registro de práctica tutelada
                 PrTut::create([
-                    'id_habilitacion' => $habilitacion->id_habilitacion,
+                    'rut_alumno' => $habilitacion->rut_alumno,
                     'nombre_supervisor' => $validatedData['nombre_supervisor'],
                     'nombre_empresa' => $validatedData['nombre_empresa'],
                     'rut_profesor_tutor' => $validatedData['seleccion_tutor_rut'],
@@ -125,7 +124,7 @@ class HabilitacionController extends Controller
     
     /**
      * Elimina una habilitación y sus registros relacionados.
-    */
+     */
     public function destroy($alumno)
     {
         $habilitacion = Habilitacion::where('rut_alumno', $alumno)->firstOrFail();
@@ -251,7 +250,7 @@ class HabilitacionController extends Controller
                         $habilitacion->prTut->delete();
                     }
                     Proyecto::updateOrCreate(
-                        ['id_habilitacion' => $habilitacion->id_habilitacion],
+                        ['rut_alumno' => $habilitacion->rut_alumno],
                         [
                             'tipo_proyecto' => $validatedData['tipo_habilitacion'],
                             'rut_profesor_guia' => $validatedData['seleccion_guia_rut'],
@@ -265,7 +264,7 @@ class HabilitacionController extends Controller
                         $habilitacion->proyecto->delete();
                     }
                     PrTut::updateOrCreate(
-                        ['id_habilitacion' => $habilitacion->id_habilitacion],
+                        ['rut_alumno' => $habilitacion->rut_alumno],
                         [
                             'nombre_empresa' => $validatedData['nombre_empresa'],
                             'nombre_supervisor' => $validatedData['nombre_supervisor'],

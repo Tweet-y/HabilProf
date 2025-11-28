@@ -11,9 +11,8 @@ return new class extends Migration
     {
         Schema::create('habilitacion', function (Blueprint $table) {
             
-            $table->id('id_habilitacion'); 
-            $table->integer('rut_alumno')->unique()->nullable(false); 
-            $table->foreign('rut_alumno')->references('rut_alumno')->on('alumno')->onDelete('cascade'); 
+            $table->integer('rut_alumno')->primary();
+            $table->foreign('rut_alumno')->references('rut_alumno')->on('alumno')->onDelete('cascade');
             
             $table->float('nota_final')->nullable(false)->default(0.0);
             $table->date('fecha_nota')->nullable(true); 

@@ -14,8 +14,8 @@ return new class extends Migration
     {
         Schema::create('pr_tut', function (Blueprint $table) {
             
-            $table->integer('id_habilitacion')->primary(); 
-            $table->foreign('id_habilitacion')->references('id_habilitacion')->on('habilitacion')->onDelete('cascade'); 
+            $table->integer('rut_alumno')->primary();
+            $table->foreign('rut_alumno')->references('rut_alumno')->on('habilitacion')->onDelete('cascade');
             
             $table->string('nombre_supervisor', 50)->nullable(false);
             $table->string('nombre_empresa', 50)->nullable(false);
