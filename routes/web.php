@@ -26,7 +26,7 @@ Route::middleware(['web'])->group(function () {
 // --- INICIO DE LA ZONA SEGURA (SOLO USUARIOS LOGUEADOS) ---
 Route::middleware(['auth', 'verified'])->group(function () {
 
-    // 1. Dashboard (Tu menú principal)
+    // 1. Dashboard (Menú principal)
     Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard');
