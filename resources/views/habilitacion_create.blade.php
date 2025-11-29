@@ -112,7 +112,7 @@
                     <div class="form-group form-group-full">
                         <label for="titulo" class="required">Título</label>
                         <input type="text" id="titulo" name="titulo" required 
-                               minlength="6" maxlength="50"
+                               minlength="6" maxlength="80"
                                pattern="[a-zA-Z0-9\s.,;:'&quot;&amp;\-_()áéíóúñÁÉÍÓÚ]+" 
                                title="Solo alfanumérico y algunos símbolos: . , ; : ' &quot; &amp; - _ ( )"
                                value="{{ old('titulo') }}"

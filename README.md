@@ -29,25 +29,25 @@ Este proyecto fue desarrollado por:
 
 - **RF3: Actualizar/Eliminar Habilitaciones**: Backend y frontend de la funcionalidad
   - `routes/web.php` (Rutas relacionadas con habilitaciones)
-  - `app/Http/Controllers/HabilitacionController.php` (Métodos index, edit, update, destroy, calculaSemestresActualizacion, líneas 120-341)
+  - `app/Http/Controllers/HabilitacionController.php` (Métodos index, edit, update, destroy, calculaSemestresActualizacion, líneas *120-341*)
   - `app/Http/Requests/UpdateHabilitacionRequest.php` (Validaciones de actualización)
   - `resources/views/actualizar_eliminar.blade.php` (Vista principal)
   - `public/js/validacion.js` (Validaciones frontend)
   - `public/js/formHabilitacion.js` (Control de UI condicional)
   - `public/css/form.css` (Estilos CSS para formularios)
-  - Modelos relacionados: `app/Models/Habilitacion.php`, `app/Models/Proyecto.php`, `app/Models/PrTut.php`
+  - Modelos relacionados: `app/ModelsAlumno.php`, `app/Models/Profesor.php`, `app/Models/Habilitacion.php`, `app/Models/Proyecto.php`, `app/Models/PrTut.php`
 
 ### **Brandon Martínez** - RF2 (Ingreso de Habilitaciones)
 
 - **RF2: Ingreso de Habilitaciones**: Ingreso de nuevas habilitaciones
   - `routes/web.php` (Rutas relacionadas con ingreso de habilitaciones)
-  - `app/Http/Controllers/HabilitacionController.php` (Métodos create, store, checkLimit, validarMultiplesRoles, validarLimitesProfesoresBackend, validarLimiteProfesorIndividual, líneas 1-118, 352-515)
+  - `app/Http/Controllers/HabilitacionController.php` (Métodos create, store, checkLimit, validarMultiplesRoles, validarLimitesProfesoresBackend, validarLimiteProfesorIndividual, líneas *1-118, 352-515*)
   - `app/Http/Requests/StoreHabilitacionRequest.php` (Validaciones de ingreso)
   - `resources/views/habilitacion_create.blade.php` (Vista de ingreso)
-  - `public/js/validacion.js` (Validaciones frontend, líneas 7-167, 175-206)
+  - `public/js/validacion.js` (Validaciones frontend, líneas *7-167, 175-206*)
   - `public/js/formHabilitacion.js` (Control de UI condicional)
   - `public/css/form.css` (Estilos CSS para formularios)
-  - Modelos relacionados: `app/Models/Habilitacion.php`, `app/Models/Proyecto.php`, `app/Models/PrTut.php`
+  - Modelos relacionados: `app/ModelsAlumno.php`, `app/Models/Profesor.php`, `app/Models/Habilitacion.php`, `app/Models/Proyecto.php`, `app/Models/PrTut.php`
 
 ### **Rodrigo Sandoval** - RF1 (Carga de Datos) y MR (Base de Datos)
 
@@ -56,13 +56,20 @@ Este proyecto fue desarrollado por:
   - `app/CargaUCSCService.php` (Servicio principal)
   - `app/Console/Commands/SimulacionCarga.php` (Comando para Carga Automática)
   - `app/Console/Kernel.php` (Configuración del Scheduler)
-  - `app/Models/Profesor.php` (Modelo Base de Profesor)
-  - `app/Models/GestionAcademica.php` (Modelo Base de Gestión Académica)
   - `app/Models/Alumno.php` (Modelo Base de Alumno)
+  - `app/Models/Profesor.php` (Modelo Base de Profesor)
+  - `app/Models/Habilitacion.php` (Modelo Base de Habilitacion)
   - `config/database.php` (Configuración de Base de Datos)
   - Migraciones de Base de Datos: ubicados en `database/migrations`
+    - profesores
+    - alumnos
+    - habilitaciones
+    - pr_tuts
+    - proyectos
+    - gestion_academica
+    - carga_academica
+    - notas_en_linea
   - `database/seeders/CargaSeeder.php` (Datos de simulación)
-  - Modelos relacionados: `app/Models/Alumno.php`, `app/Models/Profesor.php`, `app/Models/Habilitacion.php`, `app/Models/Proyecto.php`, `app/Models/PrTut.php`
 
 ## **Índice**
 

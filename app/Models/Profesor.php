@@ -22,11 +22,6 @@ class Profesor extends Model
         'departamento',
     ];
 
-    public function gestionAcademica()
-    {
-        return $this->hasOne(GestionAcademica::class, 'rut_profesor', 'rut_profesor');
-    }
-
     public function proyectosComoGuia()
     {
         return $this->hasMany(Proyecto::class, 'rut_profesor_guia', 'rut_profesor');

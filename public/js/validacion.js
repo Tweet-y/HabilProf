@@ -57,7 +57,7 @@ async function validarFormulario() {
     if (titulo) {
         const tituloValue = titulo.value.trim();
         const tituloRegex = /^[a-zA-Z0-9\s.,;:'"&\-_()áéíóúñÁÉÍÓÚ]+$/;
-        if (tituloValue.length < 6 || tituloValue.length > 50 || !tituloRegex.test(tituloValue)) {
+        if (tituloValue.length < 6 || tituloValue.length > 80 || !tituloRegex.test(tituloValue)) {
             titulo.classList.add('field-error');
             errorDiv.innerHTML = '<strong>Error de validación:</strong> El título no cumple con los requisitos (6-50 caracteres, solo alfanumérico y símbolos permitidos).';
             errorDiv.style.display = 'block';

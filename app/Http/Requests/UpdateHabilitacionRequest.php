@@ -41,7 +41,7 @@ class UpdateHabilitacionRequest extends FormRequest
             // Datos básicos obligatorios
             'tipo_habilitacion' => 'required|in:PrIng,PrInv,PrTut',
             'semestre_inicio' => 'required|string',
-            'titulo' => 'required|string|max:50|min:6|regex:/^[a-zA-Z0-9\s.,;:\'\"\&\-_()áéíóúñÁÉÍÓÚ]+$/u',
+            'titulo' => 'required|string|max:80|min:6|regex:/^[a-zA-Z0-9\s.,;:\'\"\&\-_()áéíóúñÁÉÍÓÚ]+$/u',
             'descripcion' => 'required|string|max:500|min:30|regex:/^[a-zA-Z0-9\s.,;:\'\"\&\-_()áéíóúñÁÉÍÓÚ]+$/u',
         ];
 

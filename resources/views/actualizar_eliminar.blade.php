@@ -53,7 +53,7 @@
                         <option value="" disabled {{ !request('rut_alumno') ? 'selected' : '' }}>Buscar y seleccionar un alumno...</option>
                         @if(isset($alumnos) && count($alumnos) > 0)
                             @foreach($alumnos as $alumno)
-                                <!-- Mostrar apellido, nombre y RUT para fácil identificación -->
+                                <!-- Mostrar apellido, nombre y RUT -->
                                 <option value="{{ $alumno->rut_alumno }}" {{ (request('rut_alumno') == $alumno->rut_alumno) ? 'selected' : '' }}>
                                     {{ $alumno->nombre_alumno }} {{ $alumno->apellido_alumno }} ({{ $alumno->rut_alumno }})
                                 </option>
@@ -153,7 +153,7 @@
                             <label for="titulo" class="required">Título</label>
                             <input type="text" id="titulo" name="titulo" required
                                    minlength="6" maxlength="80"
-                                   pattern="[a-zA-Z0-9\s.,;:\'&-_()]+" title="Solo alfanumérico y algunos símbolos."
+                                   pattern="[a-zA-Z0-9\s.,;:\'\"\&\-_()áéíóúñÁÉÍÓÚ]+" title="Solo alfanumérico y algunos símbolos."
                                    value="{{ old('titulo', $habilitacion->titulo ?? '') }}"
                                    class="{{ $errors->has('titulo') ? 'field-error' : '' }}">
                             <small class="help-text">Entre 6 y 80 caracteres. Símbolos permitidos: . , ; : ' " - _ ( )</small>
@@ -165,6 +165,7 @@
                             <label for="descripcion" class="required">Descripción</label>
                             <textarea id="descripcion" name="descripcion" required
                                       minlength="30" maxlength="500"
+                                      pattern="[a-zA-Z0-9\s.,;:\'\"\&\-_()áéíóúñÁÉÍÓÚ]+" title="Solo alfanumérico y algunos símbolos."
                                       class="{{ $errors->has('descripcion') ? 'field-error' : '' }}">{{ old('descripcion', $habilitacion->descripcion ?? '') }}</textarea>
                             <small class="help-text">Entre 30 y 500 caracteres. Símbolos permitidos: . , ; : ' " - _ ( )</small>
                             @if($errors->has('descripcion'))

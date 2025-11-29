@@ -12,18 +12,18 @@ Este documento describe específicamente las validaciones y lógica de negocio i
 
 - **tipo_habilitacion**: Obligatorio, valores permitidos: PrIng, PrInv, PrTut
 - **semestre_inicio**: Obligatorio, formato string (ej: "2025-1")
-- **titulo**: Obligatorio, 6-50 caracteres, regex: `/^[a-zA-Z0-9\s.,;:\'\"\&\-_()áéíóúñÁÉÍÓÚ]+$/u`
+- **titulo**: Obligatorio, 6-80 caracteres, regex: `/^[a-zA-Z0-9\s.,;:\'\"\&\-_()áéíóúñÁÉÍÓÚ]+$/u`
 - **descripcion**: Obligatorio, 30-500 caracteres, mismo regex que título
 
 ### Validaciones Condicionales por Tipo de Habilitación
 
-#### Para PrIng/PrInv (Proyecto de Investigación/Ingeniería):
+#### Para PrIng/PrInv (Proyecto de Investigación/Ingeniería)
 
 - **seleccion_guia_rut**: Obligatorio, debe existir en tabla `profesor` y departamento DINF
 - **seleccion_co_guia_rut**: Opcional, debe existir en tabla `profesor` (cualquier departamento)
 - **seleccion_comision_rut**: Obligatorio, debe existir en tabla `profesor` y departamento DINF
 
-#### Para PrTut (Práctica Tutelada):
+#### Para PrTut (Práctica Tutelada)
 
 - **nombre_empresa**: Obligatorio, máximo 50 caracteres, regex: `/^[a-zA-Z0-9\sñÑáéíóúÁÉÍÓÚ]+$/u`
 - **nombre_supervisor**: Obligatorio, máximo 50 caracteres, regex: `/^[a-zA-Z\sñÑáéíóúÁÉÍÓÚ]+$/u`
@@ -39,6 +39,13 @@ Este documento describe específicamente las validaciones y lógica de negocio i
 
 ## Lógica de Negocio en HabilitacionController
 
+### Método index()
+
+1. **Recuperación de Datos**: Obtiene alumnos con habilitaciones activas, incluyendo relaciones con proyecto o prTut
+2. **Cálculo de Semestres**: Recopila semestres únicos de habilitaciones existentes. En caso de no haber, no hay semestres para mostrar.
+3. **Búsqueda Específica**: Si se recibe rut_alumno en la request, busca y carga la habilitación específica con relaciones, limitando semestres a anterior, actual y siguiente para edición
+4. **Preparación de Vista**: Pasa alumnos, profesores (DINF y UCSC), semestres, y habilitación (si aplicable) a la vista actualizar_eliminar.blade.php
+
 ### Método update()
 
 1. **Validación Inicial**: Usa UpdateHabilitacionRequest para validar datos entrantes
@@ -46,7 +53,7 @@ Este documento describe específicamente las validaciones y lógica de negocio i
 3. **Verificación de Límites**: Confirma que ningún profesor exceda 5 habilitaciones por semestre (excluyendo la actual en updates)
 4. **Transacción de Base de Datos**: Garantiza atomicidad en operaciones que afectan múltiples tablas
 
-#### Proceso de Actualización:
+#### Proceso de Actualización
 
 - Actualiza siempre la tabla `habilitacion` con semestre, título y descripción
 - Si cambia el tipo: elimina el registro relacionado (Proyecto/PrTut) y crea el nuevo usando updateOrCreate
@@ -98,10 +105,11 @@ function toggleHabilitacionSections() {
 // Verifica campos requeridos: alumno, tipo, semestre, título, descripción
 // Usa validación manual con regex y longitudes
 ```
+
 - **Alumno**: Verifica que se haya seleccionado un alumno
 - **Tipo**: Confirma selección de tipo de habilitación
 - **Semestre**: Asegura selección de semestre de inicio
-- **Título**: Valida longitud (6-50) y regex manual
+- **Título**: Valida longitud (6-80) y regex manual
 - **Descripción**: Valida longitud (30-500) y regex manual
 
 #### 2. Validación de Roles Duplicados
@@ -114,6 +122,7 @@ if (profesores.length !== unicos.size) {
     // Mostrar error de duplicados
 }
 ```
+
 - **Lógica**: Recopila RUTs de profesores según tipo de habilitación
 - **Verificación**: Usa Set para detectar duplicados
 - **Feedback**: Muestra mensaje de error y resalta campos afectados
@@ -133,6 +142,7 @@ const response = await fetch('/habilitaciones/check-limit', {
     body: formData
 });
 ```
+
 - **Propósito**: Verifica límite de 5 habilitaciones por profesor por semestre
 - **Datos Enviados**: Semestre, tipo, RUTs de profesores, token CSRF, exclude_rut_alumno
 - **Manejo de Errores**: Procesa respuesta JSON y muestra errores específicos
@@ -163,15 +173,15 @@ const response = await fetch('/habilitaciones/check-limit', {
 
 ## Flujo de Validación Completo
 
-### En Frontend (JavaScript):
+### En Frontend (JavaScript)
 
 1. **Campos Básicos** → 2. **Roles Duplicados** → 3. **Campos por Tipo** → 4. **Límite Profesores (AJAX)**
 
-### En Backend (Laravel):
+### En Backend (Laravel)
 
 1. **UpdateHabilitacionRequest** → 2. **Validación de Roles** → 3. **Verificación de Límites** → 4. **Transacción de BD**
 
-### Integración Frontend-Backend:
+### Integración Frontend-Backend
 
 - Frontend pre-valida para mejor UX
 - Backend valida definitivamente para seguridad
@@ -180,14 +190,14 @@ const response = await fetch('/habilitaciones/check-limit', {
 
 ## Consideraciones de Seguridad y Performance
 
-### Seguridad:
+### Seguridad
 
 - **Validación en Múltiples Capas**: Frontend + Backend
 - **Protección CSRF**: Tokens en formularios y AJAX
 - **Sanitización**: Regex patterns para prevenir inyección
 - **Autorización**: Middleware de autenticación en rutas
 
-### Performance:
+### Performance
 
 - **Validación Asíncrona**: AJAX para límites evita recargas de página
 - **Queries Optimizadas**: Uso de whereHas y with para relaciones

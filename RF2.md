@@ -18,13 +18,13 @@ Este documento describe específicamente las validaciones y lógica de negocio i
 
 ### Validaciones Condicionales por Tipo de Habilitación
 
-#### Para PrIng/PrInv (Proyecto de Investigación/Ingeniería):
+#### Para PrIng/PrInv (Proyecto de Investigación/Ingeniería)
 
 - **seleccion_guia_rut**: Obligatorio, debe existir en tabla `profesor`
 - **seleccion_co_guia_rut**: Opcional, debe existir en tabla `profesor`
 - **seleccion_comision_rut**: Obligatorio, debe existir en tabla `profesor`
 
-#### Para PrTut (Práctica Tutelada):
+#### Para PrTut (Práctica Tutelada)
 
 - **nombre_empresa**: Obligatorio, máximo 50 caracteres, regex: `/^[a-zA-Z0-9\sñÑáéíóúÁÉÍÓÚ]+$/u`
 - **nombre_supervisor**: Obligatorio, máximo 50 caracteres, regex: `/^[a-zA-Z\sñÑáéíóúÁÉÍÓÚ]+$/u`
@@ -46,7 +46,8 @@ Este documento describe específicamente las validaciones y lógica de negocio i
 2. **Cálculo de Semestres**: Genera los próximos 2 semestres disponibles para creación (basado en mes actual)
 3. **Preparación de Vista**: Pasa datos a la vista `habilitacion_create`
 
-#### Datos Preparados:
+#### Datos Preparados
+
 - **alumnos**: Alumnos que no tienen habilitación asignada
 - **profesores_dinf**: Profesores del departamento DINF
 - **profesores_ucsc**: Todos los profesores (para co-guía)
@@ -59,7 +60,7 @@ Este documento describe específicamente las validaciones y lógica de negocio i
 3. **Verificación de Límites**: Confirma que ningún profesor exceda 5 habilitaciones por semestre
 4. **Transacción de Base de Datos**: Garantiza atomicidad en operaciones que afectan múltiples tablas
 
-#### Proceso de Creación:
+#### Proceso de Creación
 
 - Crea el registro en tabla `habilitacion` con datos básicos y nota_final=0.0
 - Según el tipo, crea registro relacionado en `proyecto` o `pr_tut`
@@ -105,6 +106,7 @@ function toggleHabilitacionSections() {
 // Verifica campos requeridos: alumno, tipo, semestre, título, descripción
 // Usa validación manual con regex y longitudes
 ```
+
 - **Alumno**: Verifica que se haya seleccionado un alumno
 - **Tipo**: Confirma selección de tipo de habilitación
 - **Semestre**: Asegura selección de semestre de inicio
@@ -121,6 +123,7 @@ if (profesores.length !== unicos.size) {
     // Mostrar error de duplicados
 }
 ```
+
 - **Lógica**: Recopila RUTs de profesores según tipo de habilitación
 - **Verificación**: Usa Set para detectar duplicados
 - **Feedback**: Muestra mensaje de error y resalta campos afectados
@@ -140,6 +143,7 @@ const response = await fetch('/habilitaciones/check-limit', {
     body: formData
 });
 ```
+
 - **Propósito**: Verifica límite de 5 habilitaciones por profesor por semestre
 - **Datos Enviados**: Semestre, tipo, RUTs de profesores, token CSRF
 - **Manejo de Errores**: Procesa respuesta JSON y muestra errores específicos
@@ -166,15 +170,15 @@ const response = await fetch('/habilitaciones/check-limit', {
 
 ## Flujo de Validación Completo
 
-### En Frontend (JavaScript):
+### En Frontend (JavaScript)
 
 1. **Campos Básicos** → 2. **Roles Duplicados** → 3. **Campos por Tipo** → 4. **Límite Profesores (AJAX)**
 
-### En Backend (Laravel):
+### En Backend (Laravel)
 
 1. **StoreHabilitacionRequest** → 2. **Validación de Roles** → 3. **Verificación de Límites** → 4. **Transacción de BD**
 
-### Integración Frontend-Backend:
+### Integración Frontend-Backend
 
 - Frontend pre-valida para mejor UX
 - Backend valida definitivamente para seguridad
@@ -183,14 +187,14 @@ const response = await fetch('/habilitaciones/check-limit', {
 
 ## Consideraciones de Seguridad y Performance
 
-### Seguridad:
+### Seguridad
 
 - **Validación en Múltiples Capas**: Frontend + Backend
 - **Protección CSRF**: Tokens en formularios y AJAX
 - **Sanitización**: Regex patterns para prevenir inyección
 - **Autorización**: Middleware de autenticación en rutas
 
-### Performance:
+### Performance
 
 - **Validación Asíncrona**: AJAX para límites evita recargas de página
 - **Queries Optimizadas**: Uso de exists para validaciones de BD
