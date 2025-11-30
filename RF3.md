@@ -46,6 +46,14 @@ Este documento describe específicamente las validaciones y lógica de negocio i
 3. **Búsqueda Específica**: Si se recibe rut_alumno en la request, busca y carga la habilitación específica con relaciones, limitando semestres a anterior, actual y siguiente para edición
 4. **Preparación de Vista**: Pasa alumnos, profesores (DINF y UCSC), semestres, y habilitación (si aplicable) a la vista actualizar_eliminar.blade.php
 
+### Método edit()
+
+1. **Propósito**: Muestra el formulario de edición para una habilitación específica, permitiendo edición directa sin pasar por búsqueda inicial
+2. **Recuperación de Datos**: Obtiene alumnos con habilitaciones (para selector de búsqueda), profesores DINF/UCSC, y la habilitación específica por RUT
+3. **Cálculo de Semestres**: Limita semestres a anterior, actual y siguiente para la habilitación encontrada, evitando cambios drásticos
+4. **Diferencia con index()**: index() maneja búsqueda general y opcional; edit() carga directamente una habilitación específica para edición inmediata
+5. **Preparación de Vista**: Pasa datos similares a index(), pero con habilitación siempre presente y semestres restringidos
+
 ### Método update()
 
 1. **Validación Inicial**: Usa UpdateHabilitacionRequest para validar datos entrantes

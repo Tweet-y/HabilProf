@@ -147,6 +147,7 @@ class HabilitacionController extends Controller
      * Muestra la vista de actualizar/eliminar habilitaciones.
      * Lista alumnos con habilitaciones disponibles para selección.
      * Si se recibe rut_alumno, busca y muestra la habilitación específica.
+     * Funciona para vista inicial y precarga de datos para edición. 
      */
     public function index(Request $request)
     {
@@ -173,7 +174,7 @@ class HabilitacionController extends Controller
 
         // En caso de no haber semestres registrados
         if (empty($semestres)) {
-            // Lógica por defecto (no es necesario de implementar ahora)
+            // No hace nada (no se usa en la vista si no hay habilitaciones)
         }
 
         // Buscar habilitación si se recibió rut_alumno
@@ -195,10 +196,11 @@ class HabilitacionController extends Controller
     /**
      * Muestra el formulario de edición para una habilitación específica.
      * Carga la habilitación seleccionada y prepara datos para edición.
+     * Se encarga de la vista posterior a la selección de alumno en index().
      */
     public function edit($rut_alumno)
     {
-        // Obtener alumnos con habilitaciones para el selector
+        // Obtener alumnos con habilitaciones para el selector (en caso de querer volver a seleccionar alumno)
         $alumnos = Alumno::whereHas('habilitacion')->with(['habilitacion.proyecto', 'habilitacion.prTut'])->get();
 
         // Obtener profesores DINF para guía, comisión y tutor
@@ -226,7 +228,7 @@ class HabilitacionController extends Controller
  
     /**
      * Actualiza una habilitación existente.
-     * Maneja cambios de tipo y validaciones de negocio.
+     * Maneja cambios de tipo, valores de campos y verifica restricciones del negocio (roles repetidos, etc).
      */
     public function update(UpdateHabilitacionRequest $request, $alumno)
     {
@@ -270,7 +272,7 @@ class HabilitacionController extends Controller
 
                 // Manejar cambio de tipo de habilitación
                 if (in_array($validatedData['tipo_habilitacion'], ['PrIng', 'PrInv'])) {
-                    // Cambiando a proyecto: eliminar PrTut si existe y crear/actualizar Proyecto
+                    // Cambiando a Proyecto: eliminar PrTut si existe antes de crear nuevo Proyecto
                     if ($habilitacion->prTut) {
                         $habilitacion->prTut->delete();
                     }
@@ -284,7 +286,7 @@ class HabilitacionController extends Controller
                         ]
                     );
                 } elseif ($validatedData['tipo_habilitacion'] === 'PrTut') {
-                    // Cambiando a PrTut: eliminar Proyecto si existe y crear/actualizar PrTut
+                    // Cambiando a PrTut: eliminar Proyecto si existe antes de crear nueva PrTut
                     if ($habilitacion->proyecto) {
                         $habilitacion->proyecto->delete();
                     }
@@ -353,7 +355,7 @@ class HabilitacionController extends Controller
      */
     public function show(string $id)
     {
-        // Método no implementado en esta versión
+        // Método que puede implementarse en el futuro si se requiere
     }
 
 

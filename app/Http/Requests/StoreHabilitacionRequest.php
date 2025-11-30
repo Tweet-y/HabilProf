@@ -83,7 +83,7 @@ class StoreHabilitacionRequest extends FormRequest
             'seleccion_comision_rut.required_if' => 'Debe seleccionar un Profesor Comisión.',
             'seleccion_tutor_rut.required_if' => 'Debe seleccionar un Profesor Tutor.',
 
-            // Mensajes para títulos y descripciones
+            // Mensajes para campos de ingreso manual
             'titulo.regex' => 'El título solo puede contener letras, números y símbolos: . , ; : \' " - _ ( )',
             'descripcion.regex' => 'La descripción solo puede contener letras, números y símbolos: . , ; : \' " - _ ( )',
             'nombre_empresa.regex' => 'El nombre de empresa solo puede contener letras y números.',
