@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Mail\VerificationCodeMail;
 use App\Models\User;
 use App\Providers\RouteServiceProvider;
 use Illuminate\Auth\Events\Registered;
@@ -10,6 +11,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Validation\Rules;
 use Illuminate\View\View;
 
@@ -46,9 +48,9 @@ class RegisteredUserController extends Controller
                 'string',
                 'email',
                 'min:12',  // 'a@ucsc.cl' (4) + @ (1) + ucsc.cl (7) = 12
-                'max:42',  
+                'max:42',
                 'unique:users', // Requisito: "no aceptará que correo_user esté duplicado"
-                'regex:/^[a-z]{4,30}@ucsc\.cl$/' // Valida formato X@ucsc.cl
+                'regex:/^[a-z]{4,30}@(ucsc|ing\.ucsc)\.cl$/' // Valida formato X@ucsc.cl o X@ing.ucsc.cl
             ],
 
             // Requisito 'clave_user' y 'confirmar_clave_user': 8-64 chars y coincidir.
@@ -83,16 +85,23 @@ class RegisteredUserController extends Controller
         ]
         );
 
+        // Generar código de verificación de 6 dígitos
+        $verificationCode = str_pad(mt_rand(0, 999999), 6, '0', STR_PAD_LEFT);
+
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'verification_code' => $verificationCode,
+            'is_verified' => false,
         ]);
+
+        // Enviar correo con el código de verificación
+        Mail::to($user->email)->send(new VerificationCodeMail($verificationCode));
 
         event(new Registered($user));
 
-        Auth::login($user);
-
-        return redirect(RouteServiceProvider::HOME);
+        // Redirigir a pantalla de verificación en lugar de iniciar sesión
+        return redirect()->route('verification.show', ['email' => $user->email]);
     }
 }

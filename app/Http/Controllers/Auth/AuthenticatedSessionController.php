@@ -27,6 +27,13 @@ class AuthenticatedSessionController extends Controller
     {
         $request->authenticate();
 
+        // Verificar si la cuenta está verificada
+        $user = Auth::user();
+        if (!$user->is_verified) {
+            Auth::logout();
+            return back()->withErrors(['email' => 'Debe verificar su correo para poder iniciar sesión en HabilProf.']);
+        }
+
         $request->session()->regenerate();
 
         return redirect()->intended(RouteServiceProvider::HOME);

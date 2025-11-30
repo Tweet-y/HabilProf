@@ -257,9 +257,15 @@
                         return false;
                     }
 
-                    if (tipo === 'Listado Semestral' && !semestre.value) {
-                        alert('Por favor seleccione un semestre');
-                        return false;
+                    if (tipo === 'Listado Semestral') {
+                        if (!semestre || semestre.options.length === 0 || semestre.options[0].disabled) {
+                            alert('No hay semestres disponibles para seleccionar');
+                            return false;
+                        }
+                        if (!semestre.value) {
+                            alert('Por favor seleccione un semestre');
+                            return false;
+                        }
                     }
 
                     this.submit();

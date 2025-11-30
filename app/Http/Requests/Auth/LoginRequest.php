@@ -33,14 +33,14 @@ class LoginRequest extends FormRequest
 public function rules(): array
 {
     return [
-        // Requisito 'correo_user': 'X@ucsc.cl', X=4-30 chars.
+        // Requisito 'correo_user': 'X@ucsc.cl' o 'X@ing.ucsc.cl', X=4-30 chars.
         'email' => [
             'required',
             'string',
             'email',
             'min:12',
             'max:42',
-            'regex:/^[a-z]{4,30}@ucsc\.cl$/'
+            'regex:/^[a-z]{4,30}@(ucsc|ing\.ucsc)\.cl$/'
         ],
 
         // Requisito 'clave_user': 8-64 chars.
