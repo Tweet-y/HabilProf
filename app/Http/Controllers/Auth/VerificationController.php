@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\View\View;
 use Illuminate\Http\RedirectResponse;
+// 5.6 El sistema debe verificar que el usuario tiene acceso al email ingresado en el formulario “Registro de nueva cuenta”, 
+// mediante el uso de un código de verificación enviado a dicho correo, antes de habilitar el inicio de sesión de la cuenta.
 
 class VerificationController extends Controller
 {

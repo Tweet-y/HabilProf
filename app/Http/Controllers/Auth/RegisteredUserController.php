@@ -32,6 +32,7 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
+        //5.1 Validaciones de los campos de registro.
         // Tu bloque de validación existente
         $request->validate([
             // Requisito 'nombre_user': Alfabético, max:50, sin números/símbolos.
@@ -85,7 +86,7 @@ class RegisteredUserController extends Controller
         ]
         );
 
-        // Generar código de verificación de 6 dígitos
+        // 5.6.1.1 Generar código de verificación de 6 dígitos
         $verificationCode = str_pad(mt_rand(0, 999999), 6, '0', STR_PAD_LEFT);
 
         $user = User::create([
@@ -95,7 +96,7 @@ class RegisteredUserController extends Controller
             'verification_code' => $verificationCode,
             'is_verified' => false,
         ]);
-
+        // 5.6.1.3
         // Enviar correo con el código de verificación
         Mail::to($user->email)->send(new VerificationCodeMail($verificationCode));
 

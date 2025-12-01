@@ -16,7 +16,7 @@ class VerificationCodeMail extends Mailable
     public $code;
 
     /**
-     * Create a new message instance.
+     * Crear una nueva instancia del mensaje.
      */
     public function __construct($code)
     {
@@ -24,7 +24,7 @@ class VerificationCodeMail extends Mailable
     }
 
     /**
-     * Get the message envelope.
+     * Obtener el sobre del mensaje.
      */
     public function envelope(): Envelope
     {
@@ -34,7 +34,7 @@ class VerificationCodeMail extends Mailable
     }
 
     /**
-     * Get the message content definition.
+     * Obtener el contenido del mensaje.
      */
     public function content(): Content
     {
@@ -44,7 +44,7 @@ class VerificationCodeMail extends Mailable
     }
 
     /**
-     * Get the attachments for the message.
+     * Obtener los archivos adjuntos del mensaje.
      *
      * @return array<int, \Illuminate\Mail\Mailables\Attachment>
      */
