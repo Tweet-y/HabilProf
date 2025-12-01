@@ -4,39 +4,6 @@
  */
 
 /**
- * Función principal para mostrar/ocultar secciones según tipo de habilitación.
- * Se ejecuta cuando cambia la selección en el dropdown de tipo_habilitacion.
- */
-function toggleHabilitacionSections() {
-    // Obtener referencia al elemento selector de tipo
-    const tipoHabilitacion = document.getElementById('tipo_habilitacion');
-
-    // Verificar que el elemento existe antes de agregar listener
-    if (tipoHabilitacion) {
-        // Agregar event listener para cambios en la selección
-        tipoHabilitacion.addEventListener('change', function() {
-            // Obtener el valor seleccionado
-            const tipo = this.value;
-
-            // Obtener referencias a las secciones del formulario
-            const seccionPringPrinv = document.getElementById('seccion-pring-prinv');
-            const seccionPrtut = document.getElementById('seccion-prtut');
-
-            // Lógica de visibilidad basada en el tipo seleccionado
-            if (tipo === 'PrTut') {
-                // Para Práctica Tutelada: ocultar sección proyecto, mostrar sección práctica
-                if (seccionPringPrinv) seccionPringPrinv.classList.add('hidden');
-                if (seccionPrtut) seccionPrtut.classList.remove('hidden');
-            } else {
-                // Para PrIng/PrInv: mostrar sección proyecto, ocultar sección práctica
-                if (seccionPringPrinv) seccionPringPrinv.classList.remove('hidden');
-                if (seccionPrtut) seccionPrtut.classList.add('hidden');
-            }
-        });
-    }
-}
-
-/**
  * Función para inicializar las secciones al cargar la página.
  * Asegura que las secciones correctas estén visibles según el valor inicial.
  */
@@ -55,9 +22,6 @@ function initializeSections() {
 
 // Inicializar funcionalidades cuando el DOM esté completamente cargado
 document.addEventListener('DOMContentLoaded', function() {
-    // Configurar el listener para cambios en tipo de habilitación
-    toggleHabilitacionSections();
-
     // Inicializar la visibilidad de secciones
     initializeSections();
 });

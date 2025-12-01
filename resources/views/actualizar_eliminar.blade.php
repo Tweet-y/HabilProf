@@ -53,12 +53,13 @@
                         <option value="" disabled {{ !request('rut_alumno') ? 'selected' : '' }}>Buscar y seleccionar un alumno...</option>
                         @if(isset($alumnos) && count($alumnos) > 0)
                             @foreach($alumnos as $alumno)
-                                <!-- Mostrar apellido, nombre y RUT -->
+                                <!-- Mostrar apellido, nombre y RUT (R3.3)-->
                                 <option value="{{ $alumno->rut_alumno }}" {{ (request('rut_alumno') == $alumno->rut_alumno) ? 'selected' : '' }}>
                                     {{ $alumno->nombre_alumno }} {{ $alumno->apellido_alumno }} ({{ $alumno->rut_alumno }})
                                 </option>
                             @endforeach
                         @else
+                            <!-- Despliegue de mensaje al no haber habilitaciones (R3.3.1) -->
                             <option value="" disabled>No hay alumnos con habilitaciones disponibles</option>
                         @endif
                     </select>
@@ -92,7 +93,7 @@
 
         <div id="js-validation-error" class="error-message" style="display: none; margin-bottom: 20px;"></div>
 
-        <!-- Acciones disponibles para la habilitación encontrada -->
+        <!-- Mostrar opciones de Modificar y Eliminar (R3.4) -->
         @if($habilitacion)
             @php
                 // Preparar nombre completo del alumno para mostrar
@@ -103,6 +104,7 @@
                 <h2>Alumno Seleccionado: <strong>{{ $alumnoNombre }}</strong></h2>
                 <p>¿Desea eliminar o modificar los datos de esta habilitación?</p>
                 <div class="button-container">
+                    
                     <!-- Botón para mostrar formulario de modificación -->
                     <button type="button" class="btn-primary" onclick="mostrarModificar()">Modificar Datos</button>
                     <!-- Botón para mostrar confirmación de eliminación -->
