@@ -13,7 +13,7 @@ use Illuminate\View\View;
 class AuthenticatedSessionController extends Controller
 {
     /**
-     * Display the login view.
+     * Mostrar la vista del Login.
      */
     public function create(): View
     {
@@ -21,11 +21,18 @@ class AuthenticatedSessionController extends Controller
     }
 
     /**
-     * Handle an incoming authentication request.
+     * Manejar una solicitud entrante de autenticación.
      */
     public function store(LoginRequest $request): RedirectResponse
     {
         $request->authenticate();
+
+        // Verificar si la cuenta está verificada
+        $user = Auth::user();
+        if (!$user->is_verified) {
+            Auth::logout();
+            return back()->withErrors(['email' => 'Debe verificar su correo para poder iniciar sesión en HabilProf.']);
+        }
 
         $request->session()->regenerate();
 
@@ -33,7 +40,7 @@ class AuthenticatedSessionController extends Controller
     }
 
     /**
-     * Destroy an authenticated session.
+     * Destruir la sesión autenticada.
      */
     public function destroy(Request $request): RedirectResponse
     {

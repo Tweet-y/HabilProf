@@ -1,5 +1,5 @@
 <?php
-
+// Listado ordenado por semestre (Vicente Alarcón)
 namespace App\Http\Controllers;
 
 use App\Models\Habilitacion;
@@ -74,7 +74,7 @@ class ListadoController extends Controller
             return back()->with('error', 'Error al generar el listado: ' . $e->getMessage());
         }
     }
-
+    // 4.1 tipo_listado: Texto alfabético que puede tomar dos valores, “Listado Semestral” y “Listado Histórico.
     private function generarListadoSemestral(Request $request)
     {
         try {
@@ -82,7 +82,7 @@ class ListadoController extends Controller
             Log::info('Generando listado semestral para el semestre: ' . $semestre);
 
             $query_params = $request->only(['tipo_listado', 'semestre']);
-
+            // 4.4.1.3 El sistema tiene que recuperar los campos comunes para todos los tipo_habilitación con los siguientes datos.
             // Campos comunes para ambas consultas
             $commonFields = [
                 'h.id_habilitacion',
@@ -176,7 +176,7 @@ class ListadoController extends Controller
 
             $merged = $proyectosCollection->merge($practicasCollection);
 
-            // Ordenar por tipo_habilitacion (para agrupar) y por apellido_alumno asc
+            // 4.4.1.6 Ordenar por tipo_habilitacion (para agrupar) y por apellido_alumno asc
             $sorted = $merged->sortBy(function ($item) {
                 $tipo = $item->tipo_habilitacion ?? '';
                 $apellido = $item->apellido_alumno ?? '';
@@ -214,7 +214,7 @@ class ListadoController extends Controller
             return back()->with('error', 'Error al generar el listado semestral: ' . $e->getMessage());
         }
     }
-
+    // 4.4.2 Si tipo_listado toma el valor de “Listado Histórico”, el sistema debe generar el listado histórico de todos los profesores DINF.
     private function generarListadoHistorico(Request $request)
     {
         try {
@@ -325,7 +325,7 @@ class ListadoController extends Controller
 
                 $profesores_dinf->push($profesor_info);
             }
-
+            //4.4.2.1.1  Si no existen profesores, el sistema deberá desplegar un mensaje “No hay datos de profesores del DINF en el sistema”.
             if ($profesores_dinf->isEmpty()) {
                 return back()->with('error', 'No hay datos de profesores del DINF en el sistema');
             }
