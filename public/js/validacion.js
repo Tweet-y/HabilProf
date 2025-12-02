@@ -138,7 +138,7 @@ async function validarFormulario() {
     }
 
     // === 3. VALIDACIÓN DE CAMPOS REQUERIDOS POR TIPO ===
-    // Asegura que todos los campos obligatorios según el tipo estén completos
+    // Asegura que todos los campos obligatorios según el tipo estén completos Requisito 2.20
 
     const tipoValidacion = document.getElementById('tipo_habilitacion').value;
 

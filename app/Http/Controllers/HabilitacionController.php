@@ -25,22 +25,22 @@ class HabilitacionController extends Controller
     */
     public function create()
     {
-        // Obtener alumnos disponibles (sin habilitación)
+        // Obtener alumnos disponibles (sin habilitación) requisito 2.15
         $alumnos = Alumno::whereDoesntHave('habilitacion')->get();
 
-        // Obtener profesores DINF para guía, comisión y tutor
+        // Obtener profesores DINF para guía, comisión y tutor Requisito 2.17.3
         $profesores_dinf = Profesor::where('departamento', 'DINF')
             ->orderBy('apellido_profesor')
             ->orderBy('nombre_profesor')
             ->get();
 
-        // Obtener TODOS los profesores para co-guía (DINF y otros departamentos)
+        // Obtener TODOS los profesores para co-guía (DINF y otros departamentos). Requisito 2.17.3
         $profesores_ucsc = Profesor::orderBy('departamento')
             ->orderBy('apellido_profesor')
             ->orderBy('nombre_profesor')
             ->get();
 
-        // Calcular próximos 2 semestres para nuevas habilitaciones
+        // Calcular próximos 2 semestres para nuevas habilitaciones. Requisito 2.19
         $mesActual = date('n');
         $yearActual = date('Y');
         if ($mesActual <= 6) { // Primer semestre
@@ -73,7 +73,7 @@ class HabilitacionController extends Controller
                 $profesores = array_filter([$request->seleccion_guia_rut, $request->seleccion_co_guia_rut, $request->seleccion_comision_rut]);
             }
             
-            // Validar que no haya profesores con múltiples roles
+            // Validar que no haya profesores con múltiples roles, requisito 2.17.1
             $error = $this->validarMultiplesRoles($request->tipo_habilitacion, $request->seleccion_guia_rut, $request->seleccion_co_guia_rut, $request->seleccion_comision_rut);
             if ($error) {
                 return redirect()->back()->with('error', $error)->withInput();
@@ -114,7 +114,7 @@ class HabilitacionController extends Controller
                     'rut_profesor_tutor' => $validatedData['seleccion_tutor_rut'],
                 ]);
             }
-            
+            // Requisito 2.22
             return redirect()->back()->with('success', 'Habilitación creada correctamente');
             
         } catch (\Exception $e) {
@@ -429,7 +429,7 @@ class HabilitacionController extends Controller
 
     /**
      * Valida que no haya profesores con múltiples roles en una habilitación.
-     * Solo aplica para PrIng/PrInv.
+     * Solo aplica para PrIng/PrInv. Requisito 2.17.1.
      */
     private function validarMultiplesRoles($tipo, $guia, $co_guia, $comision)
     {
@@ -448,7 +448,7 @@ class HabilitacionController extends Controller
     }
 
     /**
-     * Verifica que ningún profesor exceda el límite de 5 habilitaciones por semestre.
+     * Verifica que ningún profesor exceda el límite de 5 habilitaciones por semestre. Requisito 2.17.2
      */
     private function validarLimitesProfesoresBackend($profesores, $semestre, $excludeRutAlumno = null)
     {
@@ -489,7 +489,7 @@ class HabilitacionController extends Controller
 
     /**
      * Verifica límites de profesores vía AJAX (usado en formularios).
-     * Retorna errores JSON para validación en frontend.
+     * Retorna errores JSON para validación en frontend. Requisito 2.17.2
      */
     public function checkLimit(Request $request)
     {

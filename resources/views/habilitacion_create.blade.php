@@ -54,6 +54,7 @@
                 <div class="form-grid">
                     <div class="form-group form-group-full">
                         <label for="selector_alumno_rut" class="required">Seleccionar Alumno Habilitado</label>
+                        <!--Requisito 2.15-->
                         <select id="selector_alumno_rut" name="selector_alumno_rut" required
                                 class="{{ $errors->has('selector_alumno_rut') ? 'field-error' : '' }}"
                                 {{ $alumnos->count() == 0 ? 'disabled' : '' }}>
@@ -65,6 +66,7 @@
                                         {{ $alumno->nombre_alumno }} {{ $alumno->apellido_alumno }} ({{ $alumno->rut_alumno }})
                                     </option>
                                 @endforeach
+                                <!--Requisito 2.15.1-->
                             @else
                                 <option value="" disabled selected>No hay alumnos disponibles</option>
                             @endif
@@ -74,7 +76,7 @@
                         @endif
                     </div>
                 </div>
-            
+            <!-- Requisito 2.16 -->
                 <div class="form-grid" style="margin-top: 20px;">
                     <div class="form-group">
                         <label for="tipo_habilitacion" class="required">Tipo de Habilitación</label>
@@ -300,6 +302,7 @@
             window.dispatchEvent(new CustomEvent('close-modal', { detail: 'confirm-submit' }));
         }
     </script>
+    <!-- Requisito 2.13.1.1 y 2.13.1.2 -->
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const tipoHabilitacion = document.getElementById('tipo_habilitacion');
