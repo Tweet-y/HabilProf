@@ -34,7 +34,7 @@ class StoreHabilitacionRequest extends FormRequest
     }
 
     /**
-     * Reglas de validación para la solicitud.
+     * Reglas de validación para la solicitud Requisito 2.20.
      */
     public function rules(): array
     {
@@ -64,7 +64,7 @@ class StoreHabilitacionRequest extends FormRequest
     }
 
     /**
-     * Mensajes de error personalizados para las reglas de validación.
+     * Mensajes de error personalizados para las reglas de validación 2.20.
      */
     public function messages(): array
     {
