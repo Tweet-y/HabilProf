@@ -120,8 +120,8 @@
                 <fieldset>
                     <legend>Datos Principales (Editando)</legend>
                     <div class="form-grid">
+                        <!-- Selector para cambiar el tipo de habilitación durante la edición (R3.5 y R3.5.2) -->
                         <div class="form-group">
-                            <!-- Selector para cambiar el tipo de habilitación durante la edición (R3.5) -->
                             <label for="tipo_habilitacion" class="required">Tipo de Habilitación</label>
                             <select id="tipo_habilitacion" name="tipo_habilitacion" required>
                                 <!-- Opciones: PrIng, PrInv, PrTut. Selecciona basado en old() (errores) o tipo actual de la habilitación (desde proyecto o prTut) -->
@@ -131,18 +131,18 @@
                             </select>
                         </div>
 
+                        <!-- Selector para cambiar el semestre durante la edición (R3.5.1.1.2 y R3.5.1.2.2) -->
                         <div class="form-group">
                             <label for="semestre_inicio" class="required">Semestre de Inicio</label>
                             <select id="semestre_inicio" name="semestre_inicio" required>
                                 <option value="" disabled>Seleccione semestre...</option>
-                                <!-- Selector para cambiar el semestre durante la edición (R3.5.1.1.2) -->
                                 @foreach($semestres as $semestre)
                                     <option value="{{ $semestre }}" {{ (old('semestre_inicio', $habilitacion->semestre_inicio) == $semestre) ? 'selected' : '' }}>{{ $semestre }}</option>
                                 @endforeach
                             </select>
                             <small class="help-text">Semestre anterior, actual y siguiente.</small>
                         </div>
-
+                        <!-- Campo de nota final (solo lectura) (R3.5.1.1.4) -->
                         <div class="form-group">
                             <label for="nota_final">Nota Final</label>
                             <input type="number" id="nota_final" name="nota_final"
@@ -153,6 +153,7 @@
                 </fieldset>
 
                 <fieldset>
+                    <!-- Campos de ingreso manual de título y descripción (R3.5.1.1.3 y R.3.5.1.2.3) -->
                     <legend>Descripción del Trabajo (Editando)</legend>
                     <div class="form-grid">
                         <div class="form-group form-group-full">
@@ -180,11 +181,13 @@
                         </div>
                     </div>
                 </fieldset>
-
+                
+                <!-- Datos PrIng / PrInv (R3.5.1.2) -->
                 <div id="seccion-pring-prinv" class="seccion-condicional" style="display: none;">
                     <fieldset>
                         <legend>Equipo Docente (PrIng / PrInv)</legend>
                         <div class="form-grid">
+                            <!-- Mostrar Profesores DINF para Profesor Guía (R3.5.1.2.1) -->
                             <div class="form-group">
                                 <label for="seleccion_guia_rut" class="required">Profesor Guía (DINF)</label>
                                 <select id="seleccion_guia_rut" name="seleccion_guia_rut">
@@ -196,6 +199,7 @@
                                     @endforeach
                                 </select>
                             </div>
+                            <!-- Mostrar Profesores DINF para Profesor Co-Guía (R2.17.4) -->
                             <div class="form-group">
                                 <label for="seleccion_co_guia_rut">Profesor Co-Guía (UCSC) (Opcional)</label>
                                 <select id="seleccion_co_guia_rut" name="seleccion_co_guia_rut">
@@ -207,6 +211,7 @@
                                     @endforeach
                                 </select>
                             </div>
+                            <!-- Mostrar Profesores DINF para Profesor Comisión (R3.5.1.2.1) -->
                             <div class="form-group">
                                 <label for="seleccion_comision_rut" class="required">Profesor Comisión (DINF)</label>
                                 <select id="seleccion_comision_rut" name="seleccion_comision_rut">
@@ -227,6 +232,7 @@
                     <fieldset>
                         <legend>Datos Práctica Tutelada (PrTut)</legend>
                         <div class="form-grid">
+                            <!-- Campo de ingreso manual de Nombre de Empresa (R3.5.1.1.3) -->
                             <div class="form-group">
                                 <label for="nombre_empresa" class="required">Nombre Empresa</label>
                                 <input type="text" id="nombre_empresa" name="nombre_empresa"
@@ -239,6 +245,7 @@
                                         <div class="error-text">{{ $errors->first('nombre_empresa') }}</div>
                                     @endif
                             </div>
+                            <!-- Campo de ingreso manual de Nombre Supervisor (R3.5.1.1.3) -->
                             <div class="form-group">
                                 <label for="nombre_supervisor" class="required">Nombre Supervisor (Empresa)</label>
                                 <input type="text" id="nombre_supervisor" name="nombre_supervisor"
@@ -274,7 +281,7 @@
             </form>
         @endif
 
-        <!-- Diálogo de Confirmación de Eliminación (Oculto por defecto) -->
+        <!-- Diálogo de Confirmación de Eliminación (Oculto por defecto) (R3.6) -->
         <div class="seccion-accion" id="confirmar-eliminacion" style="display: none;">
             <hr style="border: 0; border-top: 1px dashed #CED4DA; margin: 0 30px 30px;">
             <h2>Confirmar Eliminación</h2>
@@ -289,7 +296,7 @@
             </div>
         </div>
 
-        <!-- Modal de Confirmación para Actualizar -->
+        <!-- Modal de Confirmación para Actualizar (R3.5.3) -->
         <x-modal name="confirm-update" :show="false" maxWidth="md">
             <div class="p-6">
                 <h2 class="text-lg font-medium text-gray-900">
@@ -301,12 +308,14 @@
                 </p>
 
                 <div class="flex items-center justify-between mt-6">
+                    <!-- Botón de Cancelar Actualización (R3.5.3.2.1) -->
                     <x-secondary-button onclick="closeModal('confirm-update')">
-                        Cancelar Edición
+                        Cancelar
                     </x-secondary-button>
 
+                    <!-- Botón de Confirmación para Actualizar (R3.5.3.2.3) -->
                     <x-primary-button onclick="confirmarGuardarCambios()">
-                        Guardar Cambios
+                        Confirmar
                     </x-primary-button>
                 </div>
             </div>
@@ -322,7 +331,7 @@
         // Variable para saber si hay habilitación cargada
         var hasHabilitacion = @json($habilitacion ? true : false);
 
-        // Función para mostrar el formulario de modificación
+        // Función para mostrar el formulario de modificación (R3.5)
         function mostrarModificar() {
             // Ocultar otras secciones
             document.getElementById('seleccion-accion').style.display = 'none';
@@ -333,7 +342,7 @@
             document.getElementById('tipo_habilitacion').dispatchEvent(new Event('change'));
         }
 
-        // Función para mostrar confirmación de eliminación
+        // Función para mostrar confirmación de eliminación (R3.6)
         function mostrarEliminar(alumnoNombre) {
             // Insertar nombre del alumno en el mensaje
             document.getElementById('alumno-eliminar').textContent = alumnoNombre;
@@ -344,7 +353,7 @@
             document.getElementById('confirmar-eliminacion').style.display = 'block';
         }
 
-        // Función para cancelar eliminación y volver a opciones
+        // Función para cancelar eliminación y volver a opciones (R3.6.2)
         function cancelarEliminar() {
             // Ocultar confirmación
             document.getElementById('confirmar-eliminacion').style.display = 'none';
@@ -352,7 +361,7 @@
             document.getElementById('seleccion-accion').style.display = 'block';
         }
 
-        // Función para confirmar y ejecutar eliminación
+        // Función para confirmar y ejecutar eliminación (R3.6.1)
         function confirmarEliminar() {
             // Crear formulario dinámico para envío POST con DELETE
             const form = document.createElement('form');
@@ -368,7 +377,7 @@
             form.submit();
         }
 
-        // Función para cancelar modificación y volver a opciones
+        // Función para cancelar modificación y volver a opciones (R3.5.3.1)
         function cancelarEdicion() {
             // Ocultar formulario de modificación
             document.getElementById('form-modificar').style.display = 'none';
@@ -376,16 +385,16 @@
             document.getElementById('seleccion-accion').style.display = 'block';
         }
 
-        // Función para guardar cambios con validación previa
+        // Función para guardar cambios con validación previa (R3.5.3.2)
         async function guardarCambios() {
-            // Ejecutar validación JavaScript antes de mostrar modal
+            // Ejecutar validación JavaScript antes de mostrar modal (R3.5.3.2.2)
             if (await validarFormulario()) {
                 // Mostrar modal de confirmación
                 window.dispatchEvent(new CustomEvent('open-modal', { detail: 'confirm-update' }));
             }
         }
 
-        // Función para confirmar y ejecutar guardado de cambios
+        // Función para confirmar y ejecutar guardado de cambios (R3.5.3.2.3 y R3.5.4)
         function confirmarGuardarCambios() {
             // Obtener formulario de modificación
             const form = document.getElementById('form-modificar');

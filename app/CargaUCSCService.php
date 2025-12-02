@@ -63,7 +63,7 @@ class CargaUCSCService
         $strAsignaturas = $datosA['asignaturas'] ?? '';
         
         // Separar por la coma
-        $asignaturasArray = explode(',', $strAsignaturas);
+        $asignaturas = explode(',', $strAsignaturas);
         
         if (!in_array(self::CODIGO_HABILITACION, $asignaturas)) {
             continue; 

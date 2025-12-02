@@ -29,7 +29,7 @@ Este proyecto fue desarrollado por:
 
 - **RF3: Actualizar/Eliminar Habilitaciones**: Backend y frontend de la funcionalidad
   - `routes/web.php` (Rutas relacionadas con habilitaciones)
-  - `app/Http/Controllers/HabilitacionController.php` (Métodos index, edit, update, destroy, calculaSemestresActualizacion, líneas *125-351*)
+  - `app/Http/Controllers/HabilitacionController.php` (Métodos index, edit, update, destroy, calculaSemestresActualizacion, líneas *125-354*)
   - `app/Http/Requests/UpdateHabilitacionRequest.php` (Validaciones de actualización)
   - `resources/views/actualizar_eliminar.blade.php` (Vista principal)
   - `public/js/validacion.js` (Validaciones frontend)
@@ -41,10 +41,10 @@ Este proyecto fue desarrollado por:
 
 - **RF2: Ingreso de Habilitaciones**: Ingreso de nuevas habilitaciones
   - `routes/web.php` (Rutas relacionadas con ingreso de habilitaciones)
-  - `app/Http/Controllers/HabilitacionController.php` (Métodos create, store, checkLimit, validarMultiplesRoles, validarLimitesProfesoresBackend, validarLimiteProfesorIndividual, líneas *1-123, 362-525*)
+  - `app/Http/Controllers/HabilitacionController.php` (Métodos create, store, checkLimit, validarMultiplesRoles, validarLimitesProfesoresBackend, validarLimiteProfesorIndividual, líneas *1-123, 356-528*)
   - `app/Http/Requests/StoreHabilitacionRequest.php` (Validaciones de ingreso)
   - `resources/views/habilitacion_create.blade.php` (Vista de ingreso)
-  - `public/js/validacion.js` (Validaciones frontend, líneas *7-167, 175-206*)
+  - `public/js/validacion.js` (Validaciones frontend)
   - `public/js/formHabilitacion.js` (Control de UI condicional)
   - `public/css/form.css` (Estilos CSS para formularios)
   - Modelos relacionados: `app/ModelsAlumno.php`, `app/Models/Profesor.php`, `app/Models/Habilitacion.php`, `app/Models/Proyecto.php`, `app/Models/PrTut.php`

@@ -90,112 +90,112 @@ class CargaSeeder extends Seeder
         // 2. CARGA ACADÉMICA (ALUMNOS y ASIGNATURAS) - Fuente para el filtro IN2000C
         // -----------------------------------------------------------------
         DB::table('carga_academica')->insert([
-            // Grupo 1: Alumnos cursando IN2000C con notas disponibles
+            // Grupo 1: Alumnos cursando IN2000C (Códigos corregidos a 7 chars)
             [
                 'rut_alumno' => 18567890, 
                 'nombre_alumno' => 'Javier', 
                 'apellido_alumno' => 'Soto',
-                'asignaturas' => 'FI001C,IN2000C,MA1001,IN3001' 
+                'asignaturas' => 'FIS001C,IN2000C,MAT1001,IND3001' // Antes FI001C (6) -> FIS001C (7)
             ],
             [
                 'rut_alumno' => 14789012, 
                 'nombre_alumno' => 'Pamela', 
                 'apellido_alumno' => 'Contreras',
-                'asignaturas' => 'IN2000C,IN3001,MA1002,FI001C' 
+                'asignaturas' => 'IN2000C,IND3001,MAT1002,FIS001C' 
             ],
             [
                 'rut_alumno' => 17098765, 
                 'nombre_alumno' => 'Carlos', 
                 'apellido_alumno' => 'Vidal',
-                'asignaturas' => 'IN2000C,MA1002,FI002C' 
+                'asignaturas' => 'IN2000C,MAT1002,FIS002C' 
             ],
 
-            // Grupo 2: Alumnos cursando IN2000C con notas regulares
+            // Grupo 2: Notas regulares
             [
                 'rut_alumno' => 25252525, 
                 'nombre_alumno' => 'Lucas', 
                 'apellido_alumno' => 'Fernández',
-                'asignaturas' => 'IN2000C,MA1001,FI001C' 
+                'asignaturas' => 'IN2000C,MAT1001,FIS001C' 
             ],
             [
                 'rut_alumno' => 26262626, 
                 'nombre_alumno' => 'Isabel', 
                 'apellido_alumno' => 'Morales',
-                'asignaturas' => 'IN2000C,IN3002,MA1002,LE2000' 
+                'asignaturas' => 'IN2000C,IND3002,MAT1002,LEC2000' // LE2000 -> LEC2000
             ],
             [
                 'rut_alumno' => 27272727, 
                 'nombre_alumno' => 'Mateo', 
                 'apellido_alumno' => 'Silva',
-                'asignaturas' => 'IN2000C,FI002C,QU1001' 
+                'asignaturas' => 'IN2000C,FIS002C,QUI1001' // QU1001 -> QUI1001
             ],
 
-            // Grupo 3: Alumnos cursando IN2000C sin notas aún
+            // Grupo 3: Sin notas aún
             [
                 'rut_alumno' => 20202020, 
                 'nombre_alumno' => 'Andrea', 
                 'apellido_alumno' => 'López',
-                'asignaturas' => 'IN2000C,FI002C,MA1001,IN3001' 
+                'asignaturas' => 'IN2000C,FIS002C,MAT1001,IND3001' 
             ],
             [
                 'rut_alumno' => 21212121, 
                 'nombre_alumno' => 'Felipe', 
                 'apellido_alumno' => 'Rivas',
-                'asignaturas' => 'IN2000C,IN3002,MA1003,FI001C' 
+                'asignaturas' => 'IN2000C,IND3002,MAT1003,FIS001C' 
             ],
             [
                 'rut_alumno' => 28282828, 
                 'nombre_alumno' => 'Antonia', 
                 'apellido_alumno' => 'Guzmán',
-                'asignaturas' => 'IN2000C,MA1002,LE2001' 
+                'asignaturas' => 'IN2000C,MAT1002,LEC2001' 
             ],
 
-            // Grupo 4: Alumnos que no cursan IN2000C - Primer año
+            // Grupo 4: No cursan IN2000C - Primer año
             [
                 'rut_alumno' => 29292929, 
                 'nombre_alumno' => 'Benjamín', 
                 'apellido_alumno' => 'Muñoz',
-                'asignaturas' => 'MA1001,FI001C,QU1001,LE1001' 
+                'asignaturas' => 'MAT1001,FIS001C,QUI1001,LEC1001' 
             ],
             [
                 'rut_alumno' => 30303030, 
                 'nombre_alumno' => 'Sofía', 
                 'apellido_alumno' => 'Rivera',
-                'asignaturas' => 'MA1001,FI001C,LE1001,BIO101' 
+                'asignaturas' => 'MAT1001,FIS001C,LEC1001,BIO0101' // BIO101 -> BIO0101
             ],
 
-            // Grupo 5: Alumnos que no cursan IN2000C - Segundo año
+            // Grupo 5: No cursan IN2000C - Segundo año
             [
                 'rut_alumno' => 31313131, 
                 'nombre_alumno' => 'Tomás', 
                 'apellido_alumno' => 'Pérez',
-                'asignaturas' => 'MA1003,FI002C,QU1002,IN3001' 
+                'asignaturas' => 'MAT1003,FIS002C,QUI1002,IND3001' 
             ],
             [
                 'rut_alumno' => 32323232, 
                 'nombre_alumno' => 'Valentina', 
                 'apellido_alumno' => 'Castro',
-                'asignaturas' => 'FI002C,MA1002,LE2001,BIO102' 
+                'asignaturas' => 'FIS002C,MAT1002,LEC2001,BIO0102' 
             ],
 
-            // Grupo 6: Alumnos que no cursan IN2000C - Años superiores
+            // Grupo 6: Años superiores
             [
                 'rut_alumno' => 33333333, 
                 'nombre_alumno' => 'Joaquín', 
                 'apellido_alumno' => 'Torres',
-                'asignaturas' => 'IN4001,IN4002,IN4003' 
+                'asignaturas' => 'IND4001,IND4002,IND4003' // IN4001 -> IND4001
             ],
             [
                 'rut_alumno' => 34343434, 
                 'nombre_alumno' => 'Catalina', 
                 'apellido_alumno' => 'Flores',
-                'asignaturas' => 'IN5001,IN5002,PR001' 
+                'asignaturas' => 'IND5001,IND5002,PRA0001' // PR001 -> PRA0001
             ],
             [
                 'rut_alumno' => 35353535, 
                 'nombre_alumno' => 'Sebastián', 
                 'apellido_alumno' => 'Rojas',
-                'asignaturas' => 'PR002,IN6001,IN6002' 
+                'asignaturas' => 'PRA0002,IND6001,IND6002' 
             ],
         ]);
         

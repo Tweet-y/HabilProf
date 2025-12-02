@@ -203,13 +203,13 @@ class HabilitacionController extends Controller
         // Obtener alumnos con habilitaciones para el selector (en caso de querer volver a seleccionar alumno)
         $alumnos = Alumno::whereHas('habilitacion')->with(['habilitacion.proyecto', 'habilitacion.prTut'])->get();
 
-        // Obtener profesores DINF para guía, comisión y tutor
+        // Obtener profesores DINF para guía, comisión y tutor (R2.18.2, R2.17.3)
         $profesores_dinf = Profesor::where('departamento', 'DINF')
             ->orderBy('apellido_profesor')
             ->orderBy('nombre_profesor')
             ->get();
 
-        // Obtener TODOS los profesores para co-guía (DINF y otros departamentos)
+        // Obtener TODOS los profesores para co-guía (DINF y otros departamentos) (R2.17.4)
         $profesores_ucsc = Profesor::orderBy('departamento')
             ->orderBy('apellido_profesor')
             ->orderBy('nombre_profesor')
@@ -236,7 +236,7 @@ class HabilitacionController extends Controller
         
         $validatedData = $request->validated();
         
-        // Preparar validaciones de negocio
+        // Preparar validaciones de negocio (R3.5.3.2)
         $semestre = $validatedData['semestre_inicio'];
         $profesores = [];
 
@@ -260,6 +260,8 @@ class HabilitacionController extends Controller
         }
 
         try {
+            // Verifica validaciones de campos ingresados (R3.5.3.2) y efectua la actualización (R3.5.4)
+            // Maneja cambios de tipo de habilitación y registros relacionados
             // Usar transacción para asegurar consistencia
             DB::transaction(function () use ($habilitacion, $validatedData) {
 
@@ -306,6 +308,7 @@ class HabilitacionController extends Controller
             return redirect()->back()->with('error', 'Error al actualizar la habilitación. Por favor, intente nuevamente.');
         }
         
+        // Después de actualizar, redirigir con mensaje de éxito (R3.5.3.2.3)
         return redirect()->route('habilitaciones.index')->with('success', 'Habilitación actualizada correctamente.');
     }
    

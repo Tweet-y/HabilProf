@@ -5,7 +5,7 @@
  */
 
 /**
- * Función principal de validación del formulario.
+ * Función principal de validación del formulario. (R3.5.3.2)
  * Realiza validaciones en múltiples capas: campos básicos, roles duplicados, campos condicionales y límites de profesores.
  * @returns {boolean} true si todas las validaciones pasan, false si hay errores
  */

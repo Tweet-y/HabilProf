@@ -371,7 +371,7 @@
                                         {{ $tipo }}
                                     </td>
                                     <td>{{ $hab->titulo }}</td>
-                                    <td style="max-width: 200px; word-wrap: break-word; overflow-wrap: break-word;">{{ Str::limit($hab->descripcion, 50) }}</td>
+                                    <td style="max-width: 200px; word-wrap: break-word; overflow-wrap: break-word;">{{ Str::limit($hab->descripcion, 500) }}</td>
                                     <td>{{ $hab->nota_final ?? 'Pendiente' }}</td>
                                     <td>{{ $hab->fecha_nota ? date('d/m/Y', strtotime($hab->fecha_nota)) : 'Pendiente' }}</td>
                                     
