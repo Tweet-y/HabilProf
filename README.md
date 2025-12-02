@@ -192,7 +192,7 @@ Inicia el "scheduler" de Laravel. Este proceso es **crucial**, ya que simula la 
 php artisan schedule:work
 ```
 
-#### *(Comando de schedule.bat)*
+#### *(Comando de carga_automatica.bat)*
 
 ## **Funcionalidades Principales**
 
