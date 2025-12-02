@@ -10,14 +10,14 @@ class PrTut extends Model
     use HasFactory;
 
     public $timestamps = false;
+    public $incrementing = false;
 
     protected $table = 'pr_tut';
-    protected $primaryKey = 'id_habilitacion';
-    public $incrementing = false;
+    protected $primaryKey = 'rut_alumno';
     protected $keyType = 'integer';
 
     protected $fillable = [
-        'id_habilitacion',
+        'rut_alumno',
         'nombre_supervisor',
         'nombre_empresa',
         'rut_profesor_tutor',
@@ -25,10 +25,10 @@ class PrTut extends Model
 
     public function habilitacion()
     {
-        return $this->belongsTo(Habilitacion::class, 'id_habilitacion', 'id_habilitacion');
+        return $this->belongsTo(Habilitacion::class, 'rut_alumno', 'rut_alumno');
     }
 
-    public function tutor()
+    public function profesorTutor()
     {
         return $this->belongsTo(Profesor::class, 'rut_profesor_tutor', 'rut_profesor');
     }

@@ -14,8 +14,8 @@ return new class extends Migration
     {
         Schema::create('pr_tut', function (Blueprint $table) {
             
-            $table->integer('id_habilitacion')->primary(); 
-            $table->foreign('id_habilitacion')->references('id_habilitacion')->on('habilitacion')->onDelete('cascade'); 
+            $table->integer('rut_alumno')->primary();
+            $table->foreign('rut_alumno')->references('rut_alumno')->on('habilitacion')->onDelete('cascade');
             
             $table->string('nombre_supervisor', 50)->nullable(false);
             $table->string('nombre_empresa', 50)->nullable(false);
@@ -25,7 +25,7 @@ return new class extends Migration
             
         });
         DB::statement("ALTER TABLE pr_tut ADD CONSTRAINT supervisor_solo_letras CHECK (nombre_supervisor ~ '^[a-zA-ZñÑáéíóúÁÉÍÓÚ ]+$')");
-        DB::statement("ALTER TABLE pr_tut ADD CONSTRAINT empresa_solo_letras CHECK (nombre_empresa ~ '^[a-zA-ZñÑáéíóúÁÉÍÓÚ ]+$')");
+        DB::statement("ALTER TABLE pr_tut ADD CONSTRAINT empresa_valido CHECK (nombre_empresa ~ '^[a-zA-Z0-9ñÑáéíóúÁÉÍÓÚ ]+$')");
         DB::statement('ALTER TABLE pr_tut ADD CONSTRAINT rut_tutor_valido CHECK (rut_profesor_tutor > 999999 AND rut_profesor_tutor <= 99999999)');
     }
 

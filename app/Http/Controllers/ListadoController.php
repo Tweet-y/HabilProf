@@ -111,7 +111,6 @@ class ListadoController extends Controller
             // Subconsulta para proyectos
             $proyectos = DB::table('habilitacion as h')
                 ->select([
-                    'h.id_habilitacion',
                     'h.rut_alumno',
                     'h.nota_final',
                     'h.fecha_nota',
@@ -134,7 +133,7 @@ class ListadoController extends Controller
                     DB::raw("NULL as supervisor"),
                     DB::raw("'proyecto' as tipo_registro")
                 ])
-                ->join('proyecto as p', 'h.id_habilitacion', '=', 'p.id_habilitacion')
+                ->join('proyecto as p', 'h.rut_alumno', '=', 'p.rut_alumno')
                 ->join('alumno as a', 'h.rut_alumno', '=', 'a.rut_alumno')
                 ->leftJoin('profesor as pg', 'p.rut_profesor_guia', '=', 'pg.rut_profesor')
                 ->leftJoin('profesor as pcg', 'p.rut_profesor_co_guia', '=', 'pcg.rut_profesor')
@@ -144,7 +143,6 @@ class ListadoController extends Controller
             // Subconsulta para prácticas
             $practicas = DB::table('habilitacion as h')
                 ->select([
-                    'h.id_habilitacion',
                     'h.rut_alumno',
                     'h.nota_final',
                     'h.fecha_nota',
@@ -165,7 +163,7 @@ class ListadoController extends Controller
                     'prt.nombre_supervisor as supervisor',
                     DB::raw("'practica' as tipo_registro")
                 ])
-                ->join('pr_tut as prt', 'h.id_habilitacion', '=', 'prt.id_habilitacion')
+                ->join('pr_tut as prt', 'h.rut_alumno', '=', 'prt.rut_alumno')
                 ->join('alumno as a', 'h.rut_alumno', '=', 'a.rut_alumno')
                 ->leftJoin('profesor as ptut', 'prt.rut_profesor_tutor', '=', 'ptut.rut_profesor')
                 ->where('h.semestre_inicio', $semestre);
@@ -236,7 +234,7 @@ class ListadoController extends Controller
 
                 // Obtener habilitaciones donde el profesor participa en proyectos
                 $proyectos = DB::table('habilitacion')
-                    ->join('proyecto', 'habilitacion.id_habilitacion', '=', 'proyecto.id_habilitacion')
+                    ->join('proyecto', 'habilitacion.rut_alumno', '=', 'proyecto.rut_alumno')
                     ->join('alumno', 'habilitacion.rut_alumno', '=', 'alumno.rut_alumno')
                     ->where(function ($query) use ($profesor) {
                         $query->where('proyecto.rut_profesor_guia', $profesor->rut_profesor)
@@ -249,7 +247,7 @@ class ListadoController extends Controller
 
                 // Obtener habilitaciones donde el profesor es tutor
                 $practicas = DB::table('habilitacion')
-                    ->join('pr_tut', 'habilitacion.id_habilitacion', '=', 'pr_tut.id_habilitacion')
+                    ->join('pr_tut', 'habilitacion.rut_alumno', '=', 'pr_tut.rut_alumno')
                     ->join('alumno', 'habilitacion.rut_alumno', '=', 'alumno.rut_alumno')
                     ->where('pr_tut.rut_profesor_tutor', $profesor->rut_profesor)
                     ->select('habilitacion.*', 'alumno.*', 'pr_tut.*')

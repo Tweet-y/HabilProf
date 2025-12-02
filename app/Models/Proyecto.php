@@ -10,57 +10,36 @@ class Proyecto extends Model
     use HasFactory;
 
     public $timestamps = false;
+    public $incrementing = false;
 
     protected $table = 'proyecto';
-    protected $primaryKey = 'id_habilitacion';
-    public $incrementing = false;
+    protected $primaryKey = 'rut_alumno';
     protected $keyType = 'integer';
 
-    const Tipo_Pr_Ing ='PrIng';
-    const Tipo_Pr_Inv ='PrInv';
-
-    public static function getTiposProyecto()
-    {
-        return [
-            self::Tipo_Pr_Ing,
-            self::Tipo_Pr_Inv,
-        ];
-    }
-
-
-
     protected $fillable = [
-        'id_habilitacion',
+        'rut_alumno',
         'tipo_proyecto',
         'rut_profesor_guia',
         'rut_profesor_co_guia',
         'rut_profesor_comision',
     ];
 
-    public function getTipoProyectoAttribute($value)
-    {
-        if (!in_array($value, self::getTiposProyecto())) {
-            throw new \InvalidArgumentException("Tipo de proyecto inválido: $value");
-        }
-        return $value;
-    }
-
     public function habilitacion()
     {
-        return $this->belongsTo(Habilitacion::class, 'id_habilitacion', 'id_habilitacion');
+        return $this->belongsTo(Habilitacion::class, 'rut_alumno', 'rut_alumno');
     }
 
-    public function guia()
+    public function profesorGuia()
     {
         return $this->belongsTo(Profesor::class, 'rut_profesor_guia', 'rut_profesor');
     }
 
-    public function coGuia()
+    public function profesorCoGuia()
     {
         return $this->belongsTo(Profesor::class, 'rut_profesor_co_guia', 'rut_profesor');
     }
 
-    public function comision()
+    public function profesorComision()
     {
         return $this->belongsTo(Profesor::class, 'rut_profesor_comision', 'rut_profesor');
     }

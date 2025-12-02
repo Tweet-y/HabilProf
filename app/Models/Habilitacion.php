@@ -10,9 +10,11 @@ class Habilitacion extends Model
     use HasFactory;
 
     public $timestamps = false;
+    public $incrementing = false;
 
     protected $table = 'habilitacion';
-    protected $primaryKey = 'id_habilitacion';
+    protected $primaryKey = 'rut_alumno';
+    protected $keyType = 'integer';
 
     protected $fillable = [
         'rut_alumno',
@@ -35,11 +37,11 @@ class Habilitacion extends Model
 
     public function proyecto()
     {
-        return $this->hasOne(Proyecto::class, 'id_habilitacion', 'id_habilitacion');
+        return $this->hasOne(Proyecto::class, 'rut_alumno', 'rut_alumno');
     }
 
     public function prTut()
     {
-        return $this->hasOne(PrTut::class, 'id_habilitacion', 'id_habilitacion');
+        return $this->hasOne(PrTut::class, 'rut_alumno', 'rut_alumno');
     }
 }

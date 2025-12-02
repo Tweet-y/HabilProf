@@ -29,25 +29,25 @@ Este proyecto fue desarrollado por:
 
 - **RF3: Actualizar/Eliminar Habilitaciones**: Backend y frontend de la funcionalidad
   - `routes/web.php` (Rutas relacionadas con habilitaciones)
-  - `app/Http/Controllers/HabilitacionController.php` (Métodos index, edit, update, destroy, calculaSemestresActualizacion, líneas 120-341)
+  - `app/Http/Controllers/HabilitacionController.php` (Métodos index, edit, update, destroy, calculaSemestresActualizacion, líneas *125-351*)
   - `app/Http/Requests/UpdateHabilitacionRequest.php` (Validaciones de actualización)
   - `resources/views/actualizar_eliminar.blade.php` (Vista principal)
   - `public/js/validacion.js` (Validaciones frontend)
   - `public/js/formHabilitacion.js` (Control de UI condicional)
   - `public/css/form.css` (Estilos CSS para formularios)
-  - Modelos relacionados: `app/Models/Habilitacion.php`, `app/Models/Proyecto.php`, `app/Models/PrTut.php`
+  - Modelos relacionados: `app/ModelsAlumno.php`, `app/Models/Profesor.php`, `app/Models/Habilitacion.php`, `app/Models/Proyecto.php`, `app/Models/PrTut.php`
 
 ### **Brandon Martínez** - RF2 (Ingreso de Habilitaciones)
 
 - **RF2: Ingreso de Habilitaciones**: Ingreso de nuevas habilitaciones
   - `routes/web.php` (Rutas relacionadas con ingreso de habilitaciones)
-  - `app/Http/Controllers/HabilitacionController.php` (Métodos create, store, checkLimit, validarMultiplesRoles, validarLimitesProfesoresBackend, validarLimiteProfesorIndividual, líneas 1-118, 352-515)
+  - `app/Http/Controllers/HabilitacionController.php` (Métodos create, store, checkLimit, validarMultiplesRoles, validarLimitesProfesoresBackend, validarLimiteProfesorIndividual, líneas *1-123, 362-525*)
   - `app/Http/Requests/StoreHabilitacionRequest.php` (Validaciones de ingreso)
   - `resources/views/habilitacion_create.blade.php` (Vista de ingreso)
-  - `public/js/validacion.js` (Validaciones frontend, líneas 7-167, 175-206)
+  - `public/js/validacion.js` (Validaciones frontend, líneas *7-167, 175-206*)
   - `public/js/formHabilitacion.js` (Control de UI condicional)
   - `public/css/form.css` (Estilos CSS para formularios)
-  - Modelos relacionados: `app/Models/Habilitacion.php`, `app/Models/Proyecto.php`, `app/Models/PrTut.php`
+  - Modelos relacionados: `app/ModelsAlumno.php`, `app/Models/Profesor.php`, `app/Models/Habilitacion.php`, `app/Models/Proyecto.php`, `app/Models/PrTut.php`
 
 ### **Rodrigo Sandoval** - RF1 (Carga de Datos) y MR (Base de Datos)
 
@@ -56,13 +56,20 @@ Este proyecto fue desarrollado por:
   - `app/CargaUCSCService.php` (Servicio principal)
   - `app/Console/Commands/SimulacionCarga.php` (Comando para Carga Automática)
   - `app/Console/Kernel.php` (Configuración del Scheduler)
-  - `app/Models/Profesor.php` (Modelo Base de Profesor)
-  - `app/Models/GestionAcademica.php` (Modelo Base de Gestión Académica)
   - `app/Models/Alumno.php` (Modelo Base de Alumno)
+  - `app/Models/Profesor.php` (Modelo Base de Profesor)
+  - `app/Models/Habilitacion.php` (Modelo Base de Habilitacion)
   - `config/database.php` (Configuración de Base de Datos)
   - Migraciones de Base de Datos: ubicados en `database/migrations`
+    - profesores
+    - alumnos
+    - habilitaciones
+    - pr_tuts
+    - proyectos
+    - gestion_academica
+    - carga_academica
+    - notas_en_linea
   - `database/seeders/CargaSeeder.php` (Datos de simulación)
-  - Modelos relacionados: `app/Models/Alumno.php`, `app/Models/Profesor.php`, `app/Models/Habilitacion.php`, `app/Models/Proyecto.php`, `app/Models/PrTut.php`
 
 ## **Índice**
 
@@ -113,12 +120,28 @@ Crea una carpeta para la aplicación, abre la terminal en la carpeta y sigue est
 
 5. Configurar la base de datos en .env:  
    Abre el archivo .env y asegúrate de que las variables DB\_ apunten a tu base de datos PostgreSQL local:  
-   DB\_CONNECTION=pgsql  
-   DB\_HOST=127.0.0.1  
-   DB\_PORT=5432  
-   DB\_DATABASE=habilprof  
-   DB\_USERNAME=tu\_usuario\_postgres  
-   DB\_PASSWORD=tu\_contraseña\_postgres
+
+   ```txt
+   DB_CONNECTION=pgsql  
+   DB_HOST=127.0.0.1  
+   DB_PORT=5432  
+   DB_DATABASE=habilprof  
+   DB_USERNAME=tu_usuario_postgres  
+   DB_PASSWORD=tu_contraseña_postgres
+   ```
+  
+   También asegúrate de que las variables MAIL\_ tengan los datos del correo a usar en HabilProf:  
+
+    ```txt
+   MAIL_MAILER=smtp
+   MAIL_HOST=smtp.gmail.com
+   MAIL_PORT=587
+   MAIL_USERNAME=tu_correo_mail
+   MAIL_PASSWORD="tu_contraseña_mail"
+   MAIL_ENCRYPTION=tls
+   MAIL_FROM_ADDRESS=tu_correo_mail
+   MAIL_FROM_NAME="HabilProf"
+    ```
 
 6. **Generar la clave de la aplicación:**  
 

@@ -91,7 +91,6 @@ class HabilitacionController extends Controller
                 'semestre_inicio' => $validatedData['semestre_inicio'],
                 'titulo' => $validatedData['titulo'],
                 'descripcion' => $validatedData['descripcion'],
-                // Nota inicial por defecto
                 'nota_final' => 0.0,
                 'fecha_nota' => null,
             ]);
@@ -100,7 +99,7 @@ class HabilitacionController extends Controller
             if ($validatedData['tipo_habilitacion'] === 'PrIng' || $validatedData['tipo_habilitacion'] === 'PrInv') {
                 // Crear registro de proyecto
                 Proyecto::create([
-                    'id_habilitacion' => $habilitacion->id_habilitacion,
+                    'rut_alumno' => $habilitacion->rut_alumno,
                     'tipo_proyecto' => $validatedData['tipo_habilitacion'],
                     'rut_profesor_guia' => $validatedData['seleccion_guia_rut'],
                     'rut_profesor_co_guia' => $validatedData['seleccion_co_guia_rut'] ?: null,
@@ -109,7 +108,7 @@ class HabilitacionController extends Controller
             } elseif ($validatedData['tipo_habilitacion'] === 'PrTut') {
                 // Crear registro de práctica tutelada
                 PrTut::create([
-                    'id_habilitacion' => $habilitacion->id_habilitacion,
+                    'rut_alumno' => $habilitacion->rut_alumno,
                     'nombre_supervisor' => $validatedData['nombre_supervisor'],
                     'nombre_empresa' => $validatedData['nombre_empresa'],
                     'rut_profesor_tutor' => $validatedData['seleccion_tutor_rut'],
@@ -125,7 +124,7 @@ class HabilitacionController extends Controller
     
     /**
      * Elimina una habilitación y sus registros relacionados.
-    */
+     */
     public function destroy($alumno)
     {
         $habilitacion = Habilitacion::where('rut_alumno', $alumno)->firstOrFail();
@@ -148,6 +147,7 @@ class HabilitacionController extends Controller
      * Muestra la vista de actualizar/eliminar habilitaciones.
      * Lista alumnos con habilitaciones disponibles para selección.
      * Si se recibe rut_alumno, busca y muestra la habilitación específica.
+     * Funciona para vista inicial y precarga de datos para edición. 
      */
     public function index(Request $request)
     {
@@ -172,16 +172,9 @@ class HabilitacionController extends Controller
             ->pluck('semestre_inicio')
             ->toArray();
 
-        // Si no hay semestres, agregar los próximos 2 semestres disponibles
+        // En caso de no haber semestres registrados
         if (empty($semestres)) {
-            // Calcular próximos 2 semestres para nuevas habilitaciones
-            $mesActual = date('n');
-            $yearActual = date('Y');
-            if ($mesActual <= 6) { // Primer semestre
-                $semestres = [$yearActual . '-1', $yearActual . '-2'];
-            } else { // Segundo semestre
-                $semestres = [$yearActual . '-2', ($yearActual + 1) . '-1'];
-            }
+            // No hace nada (no se usa en la vista si no hay habilitaciones)
         }
 
         // Buscar habilitación si se recibió rut_alumno
@@ -201,95 +194,13 @@ class HabilitacionController extends Controller
     }
     
     /**
-     * Actualiza una habilitación existente.
-     * Maneja cambios de tipo y validaciones de negocio.
-     */
-    public function update(UpdateHabilitacionRequest $request, $alumno)
-    {
-        $habilitacion = Habilitacion::where('rut_alumno', $alumno)->firstOrFail();
-        
-        $validatedData = $request->validated();
-        
-        // Preparar validaciones de negocio
-        $semestre = $validatedData['semestre_inicio'];
-        $profesores = [];
-
-        // Determinar profesores según tipo
-        if ($validatedData['tipo_habilitacion'] === 'PrTut') {
-            $profesores = [$validatedData['seleccion_tutor_rut']];
-        } else {
-            $profesores = array_filter([$request->seleccion_guia_rut, $request->seleccion_co_guia_rut, $request->seleccion_comision_rut]);
-        }
-
-        // Validar roles únicos
-        $error = $this->validarMultiplesRoles($validatedData['tipo_habilitacion'], $request->seleccion_guia_rut, $request->seleccion_co_guia_rut, $request->seleccion_comision_rut);
-        if ($error) {
-            return redirect()->back()->with('error', $error)->withInput();
-        }
-
-        // Validar límites de profesores (excluyendo la habilitación actual)
-        $error = $this->validarLimitesProfesoresBackend($profesores, $semestre, $alumno);
-        if ($error) {
-            return redirect()->back()->with('error', $error)->withInput();
-        }
-
-        try {
-            // Usar transacción para asegurar consistencia
-            DB::transaction(function () use ($habilitacion, $validatedData) {
-
-                // Actualizar datos principales de la habilitación
-                $habilitacion->update([
-                    'semestre_inicio' => $validatedData['semestre_inicio'],
-                    'titulo' => $validatedData['titulo'],
-                    'descripcion' => $validatedData['descripcion'],
-                ]);
-
-                // Manejar cambio de tipo de habilitación
-                if (in_array($validatedData['tipo_habilitacion'], ['PrIng', 'PrInv'])) {
-                    // Cambiando a proyecto: eliminar PrTut si existe y crear/actualizar Proyecto
-                    if ($habilitacion->prTut) {
-                        $habilitacion->prTut->delete();
-                    }
-                    Proyecto::updateOrCreate(
-                        ['id_habilitacion' => $habilitacion->id_habilitacion],
-                        [
-                            'tipo_proyecto' => $validatedData['tipo_habilitacion'],
-                            'rut_profesor_guia' => $validatedData['seleccion_guia_rut'],
-                            'rut_profesor_co_guia' => $validatedData['seleccion_co_guia_rut'] ?? null,
-                            'rut_profesor_comision' => $validatedData['seleccion_comision_rut'],
-                        ]
-                    );
-                } elseif ($validatedData['tipo_habilitacion'] === 'PrTut') {
-                    // Cambiando a PrTut: eliminar Proyecto si existe y crear/actualizar PrTut
-                    if ($habilitacion->proyecto) {
-                        $habilitacion->proyecto->delete();
-                    }
-                    PrTut::updateOrCreate(
-                        ['id_habilitacion' => $habilitacion->id_habilitacion],
-                        [
-                            'nombre_empresa' => $validatedData['nombre_empresa'],
-                            'nombre_supervisor' => $validatedData['nombre_supervisor'],
-                            'rut_profesor_tutor' => $validatedData['seleccion_tutor_rut'],
-                        ]
-                    );
-                }
-            });
-
-        } catch (\Exception $e) {
-            Log::error('Error al actualizar habilitación: ' . $e->getMessage());
-            return redirect()->back()->with('error', 'Error al actualizar la habilitación. Por favor, intente nuevamente.');
-        }
-        
-        return redirect()->route('habilitaciones.index')->with('success', 'Habilitación actualizada correctamente.');
-    }
-    
-    /**
      * Muestra el formulario de edición para una habilitación específica.
      * Carga la habilitación seleccionada y prepara datos para edición.
+     * Se encarga de la vista posterior a la selección de alumno en index().
      */
     public function edit($rut_alumno)
     {
-        // Obtener alumnos con habilitaciones para el selector
+        // Obtener alumnos con habilitaciones para el selector (en caso de querer volver a seleccionar alumno)
         $alumnos = Alumno::whereHas('habilitacion')->with(['habilitacion.proyecto', 'habilitacion.prTut'])->get();
 
         // Obtener profesores DINF para guía, comisión y tutor
@@ -314,7 +225,90 @@ class HabilitacionController extends Controller
 
         return view('actualizar_eliminar', compact('alumnos', 'profesores_dinf', 'profesores_ucsc', 'habilitacion', 'semestres'));
     }
-    
+ 
+    /**
+     * Actualiza una habilitación existente.
+     * Maneja cambios de tipo, valores de campos y verifica restricciones del negocio (roles repetidos, etc).
+     */
+    public function update(UpdateHabilitacionRequest $request, $alumno)
+    {
+        $habilitacion = Habilitacion::where('rut_alumno', $alumno)->firstOrFail();
+        
+        $validatedData = $request->validated();
+        
+        // Preparar validaciones de negocio
+        $semestre = $validatedData['semestre_inicio'];
+        $profesores = [];
+
+        // Determinar profesores según tipo
+        if ($validatedData['tipo_habilitacion'] === 'PrTut') {
+            $profesores = [$validatedData['seleccion_tutor_rut']];
+        } else {
+            $profesores = array_filter([$request->seleccion_guia_rut, $request->seleccion_co_guia_rut, $request->seleccion_comision_rut]);
+        }
+
+        // Validar roles únicos
+        $error = $this->validarMultiplesRoles($validatedData['tipo_habilitacion'], $request->seleccion_guia_rut, $request->seleccion_co_guia_rut, $request->seleccion_comision_rut);
+        if ($error) {
+            return redirect()->route('habilitaciones.edit', $alumno)->with('error', $error)->withInput();
+        }
+
+        // Validar límites de profesores (excluyendo la habilitación actual)
+        $error = $this->validarLimitesProfesoresBackend($profesores, $semestre, $alumno);
+        if ($error) {
+            return redirect()->route('habilitaciones.edit', $alumno)->with('error', $error)->withInput();
+        }
+
+        try {
+            // Usar transacción para asegurar consistencia
+            DB::transaction(function () use ($habilitacion, $validatedData) {
+
+                // Actualizar datos principales de la habilitación
+                $habilitacion->update([
+                    'semestre_inicio' => $validatedData['semestre_inicio'],
+                    'titulo' => $validatedData['titulo'],
+                    'descripcion' => $validatedData['descripcion'],
+                ]);
+
+                // Manejar cambio de tipo de habilitación
+                if (in_array($validatedData['tipo_habilitacion'], ['PrIng', 'PrInv'])) {
+                    // Cambiando a Proyecto: eliminar PrTut si existe antes de crear nuevo Proyecto
+                    if ($habilitacion->prTut) {
+                        $habilitacion->prTut->delete();
+                    }
+                    Proyecto::updateOrCreate(
+                        ['rut_alumno' => $habilitacion->rut_alumno],
+                        [
+                            'tipo_proyecto' => $validatedData['tipo_habilitacion'],
+                            'rut_profesor_guia' => $validatedData['seleccion_guia_rut'],
+                            'rut_profesor_co_guia' => $validatedData['seleccion_co_guia_rut'] ?? null,
+                            'rut_profesor_comision' => $validatedData['seleccion_comision_rut'],
+                        ]
+                    );
+                } elseif ($validatedData['tipo_habilitacion'] === 'PrTut') {
+                    // Cambiando a PrTut: eliminar Proyecto si existe antes de crear nueva PrTut
+                    if ($habilitacion->proyecto) {
+                        $habilitacion->proyecto->delete();
+                    }
+                    PrTut::updateOrCreate(
+                        ['rut_alumno' => $habilitacion->rut_alumno],
+                        [
+                            'nombre_empresa' => $validatedData['nombre_empresa'],
+                            'nombre_supervisor' => $validatedData['nombre_supervisor'],
+                            'rut_profesor_tutor' => $validatedData['seleccion_tutor_rut'],
+                        ]
+                    );
+                }
+            });
+
+        } catch (\Exception $e) {
+            Log::error('Error al actualizar habilitación: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Error al actualizar la habilitación. Por favor, intente nuevamente.');
+        }
+        
+        return redirect()->route('habilitaciones.index')->with('success', 'Habilitación actualizada correctamente.');
+    }
+   
     /**
      * Calcula semestres disponibles para actualización: anterior, actual y siguiente.
      * Limita opciones para evitar cambios drásticos.
@@ -361,7 +355,7 @@ class HabilitacionController extends Controller
      */
     public function show(string $id)
     {
-        // Método no implementado en esta versión
+        // Método que puede implementarse en el futuro si se requiere
     }
 
 

@@ -1,6 +1,7 @@
 # Documentación Técnica del Proyecto HabilProf
 
 ## Introducción
+
 Esta documentación describe las decisiones técnicas, validaciones y lógica de negocio implementadas en el proyecto HabilProf, una aplicación Laravel para la gestión de habilitaciones académicas.
 
 ## Arquitectura General
@@ -70,21 +71,21 @@ Route::middleware(['auth', 'verified'])->group(function () {
 - **Habilitacion**: Entidad principal, relacionada con Alumno, Proyecto y PrTut.
 - **Proyecto**: Para habilitaciones PrIng/PrInv, con roles de profesor (guía, co-guía, comisión).
 - **PrTut**: Para prácticas tuteladas, con empresa, supervisor y tutor.
-- Relaciones polimórficas implícitas a través de `id_habilitacion`.
+- Relaciones a través de `rut_alumno` como clave foránea.
 
 ### Relaciones
 
 ```php
 // Habilitacion.php
 public function alumno() { return $this->belongsTo(Alumno::class, 'rut_alumno', 'rut_alumno'); }
-public function proyecto() { return $this->hasOne(Proyecto::class, 'id_habilitacion'); }
-public function prTut() { return $this->hasOne(PrTut::class, 'id_habilitacion'); }
+public function proyecto() { return $this->hasOne(Proyecto::class, 'rut_alumno', 'rut_alumno'); }
+public function prTut() { return $this->hasOne(PrTut::class, 'rut_alumno', 'rut_alumno'); }
 
 // Alumno.php
 public function habilitacion() { return $this->hasOne(Habilitacion::class, 'rut_alumno', 'rut_alumno'); }
 
 // Proyecto.php y PrTut.php
-public function habilitacion() { return $this->belongsTo(Habilitacion::class, 'id_habilitacion'); }
+public function habilitacion() { return $this->belongsTo(Habilitacion::class, 'rut_alumno', 'rut_alumno'); }
 ```
 
 ## Validaciones
@@ -177,10 +178,10 @@ public function habilitacion() { return $this->belongsTo(Habilitacion::class, 'i
 
 ## Mejoras Futuras
 
-- Cambiar id_habilitacion por {rut_alumno, semestre_inicio} en la Base de Datos.
+- Cambiar PK de la tabla Habilitacion por {rut_alumno, semestre_inicio}.
 - Optimizar consultas.
 - Reestructurar validaciones.
-- Agregar logs más detallado.
+- Agregar logs más detallados.
 - Realizar testeo de forma más completa.
 - Agregar un registro de auditoría con los últimos cambios que hace un usuario.
 - Implementar autenticación de usuarios via email.

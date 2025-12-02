@@ -52,22 +52,57 @@ async function validarFormulario() {
         return false;
     }
 
-    // Validar título usando HTML5 validation API
+    // Validar título usando validación manual
     const titulo = document.getElementById('titulo');
-    if (titulo && !titulo.checkValidity()) {
-        titulo.classList.add('field-error');
-        errorDiv.innerHTML = '<strong>Error de validación:</strong> El título no cumple con los requisitos (6-50 caracteres, solo alfanumérico y símbolos permitidos).';
-        errorDiv.style.display = 'block';
-        return false;
+    if (titulo) {
+        const tituloValue = titulo.value.trim();
+        const tituloRegex = /^[a-zA-Z0-9\s.,;:'"&\-_()áéíóúñÁÉÍÓÚ]+$/;
+        if (tituloValue.length < 6 || tituloValue.length > 80 || !tituloRegex.test(tituloValue)) {
+            titulo.classList.add('field-error');
+            errorDiv.innerHTML = '<strong>Error de validación:</strong> El título no cumple con los requisitos (6-50 caracteres, solo alfanumérico y símbolos permitidos).';
+            errorDiv.style.display = 'block';
+            return false;
+        }
     }
 
-    // Validar descripción usando HTML5 validation API
+    // Validar descripción usando validación manual
     const descripcion = document.getElementById('descripcion');
-    if (descripcion && !descripcion.checkValidity()) {
-        descripcion.classList.add('field-error');
-        errorDiv.innerHTML = '<strong>Error de validación:</strong> La descripción no cumple con los requisitos (30-500 caracteres).';
-        errorDiv.style.display = 'block';
-        return false;
+    if (descripcion) {
+        const descripcionValue = descripcion.value.trim();
+        const descripcionRegex = /^[a-zA-Z0-9\s.,;:'"&\-_()áéíóúñÁÉÍÓÚ]+$/;
+        if (descripcionValue.length < 30 || descripcionValue.length > 500 || !descripcionRegex.test(descripcionValue)) {
+            descripcion.classList.add('field-error');
+            errorDiv.innerHTML = '<strong>Error de validación:</strong> La descripción no cumple con los requisitos (30-500 caracteres, solo alfanumérico y símbolos permitidos).';
+            errorDiv.style.display = 'block';
+            return false;
+        }
+    }
+
+    // Validar nombre empresa y supervisor usando validación manual (solo cuando es PrTut)
+    const tipoHabilitacionValue = document.getElementById('tipo_habilitacion').value;
+    if (tipoHabilitacionValue === 'PrTut') {
+        const nombreEmpresa = document.getElementById('nombre_empresa');
+        if (nombreEmpresa) {
+            const valueEmpresa = nombreEmpresa.value.trim();
+            if (valueEmpresa.length < 1 || valueEmpresa.length > 50 || !/^[a-zA-Z0-9\sñÑáéíóúÁÉÍÓÚ]+$/.test(valueEmpresa)) {
+                nombreEmpresa.classList.add('field-error');
+                errorDiv.innerHTML = '<strong>Error de validación:</strong> El nombre de empresa no cumple con los requisitos (1-50 caracteres, solo alfanumérico y espacios).';
+                errorDiv.style.display = 'block';
+                return false;
+            }
+        }
+
+        // Validar nombre supervisor usando validación manual (solo cuando es PrTut)
+        const nombreSupervisor = document.getElementById('nombre_supervisor');
+        if (nombreSupervisor) {
+            const valueSupervisor = nombreSupervisor.value.trim();
+            if (valueSupervisor.length < 1 || valueSupervisor.length > 50 || !/^[a-zA-Z\sñÑáéíóúÁÉÍÓÚ]+$/.test(valueSupervisor)) {
+                nombreSupervisor.classList.add('field-error');
+                errorDiv.innerHTML = '<strong>Error de validación:</strong> El nombre del supervisor no cumple con los requisitos (1-50 caracteres, solo letras y espacios).';
+                errorDiv.style.display = 'block';
+                return false;
+            }
+        }
     }
 
     // === 2. VALIDACIÓN DE ROLES DUPLICADOS ===
