@@ -325,15 +325,16 @@
                 mo.observe(tabla, { childList: true, subtree: true, characterData: true });
             });
         </script>
-
+        <!-- 4.4 Se debe mostrar por pantalla el campo “Tipo de Listado”, y al seleccionarlo, despliega dos opciones: -->
+         <!-- “Listado Semestral” y “Listado Histórico”; solo se puede seleccionar una a la vez y esto se guardará en tipo_listado. -->
         <div class="seccion-tabla">
             <fieldset>
-                <legend>Resultados del Listado</legend>
-                
+                <legend>Resultados del Listado</legend> 
                 @if($tipo_listado === null)
                     <div class="alert alert-info">
                         Seleccione un tipo de listado para comenzar
                     </div>
+                    <!-- Listado Semestral -->
                 @elseif($tipo_listado === 'Listado Semestral' && isset($habilitaciones) && $habilitaciones->total() > 0)
                     <div class="tabla-wrapper">
                         <div class="tabla-container" id="tabla-container">
@@ -403,11 +404,12 @@
                             <div class="h-scroll-inner" id="h-scroll-inner"></div>
                         </div>
                     </div>
-                    
+                <!-- 4.5 El listado desplegado deberá mostrarse en páginas de hasta 5 resultados (5 alumnos o 5 profesores según tipo), 
+                 con la opción de navegar a las siguientes páginas, las cuales también contienen hasta 5 resultados. -->
                     <div class="pagination mt-4">
                         {{ $habilitaciones->links() }}
                     </div>
-
+                 <!-- Listado Historico-->
                 @elseif($tipo_listado === 'Listado Histórico' && isset($profesores_dinf) && $profesores_dinf->count() > 0)
                     <div class="tabla-container">
                         <table>

@@ -90,112 +90,112 @@ class CargaSeeder extends Seeder
         // 2. CARGA ACADÉMICA (ALUMNOS y ASIGNATURAS) - Fuente para el filtro IN2000C
         // -----------------------------------------------------------------
         DB::table('carga_academica')->insert([
-            // Grupo 1: Alumnos cursando IN2000C con notas disponibles (buenos resultados)
+            // Grupo 1: Alumnos cursando IN2000C con notas disponibles
             [
                 'rut_alumno' => 18567890, 
                 'nombre_alumno' => 'Javier', 
                 'apellido_alumno' => 'Soto',
-                'asignaturas' => json_encode(['FI001C', 'IN2000C', 'MA1001', 'IN3001']) 
+                'asignaturas' => 'FI001C,IN2000C,MA1001,IN3001' 
             ],
             [
                 'rut_alumno' => 14789012, 
                 'nombre_alumno' => 'Pamela', 
                 'apellido_alumno' => 'Contreras',
-                'asignaturas' => json_encode(['IN2000C', 'IN3001', 'MA1002', 'FI001C']) 
+                'asignaturas' => 'IN2000C,IN3001,MA1002,FI001C' 
             ],
             [
                 'rut_alumno' => 17098765, 
                 'nombre_alumno' => 'Carlos', 
                 'apellido_alumno' => 'Vidal',
-                'asignaturas' => json_encode(['IN2000C', 'MA1002', 'FI002C']) 
+                'asignaturas' => 'IN2000C,MA1002,FI002C' 
             ],
-            
+
             // Grupo 2: Alumnos cursando IN2000C con notas regulares
             [
                 'rut_alumno' => 25252525, 
                 'nombre_alumno' => 'Lucas', 
                 'apellido_alumno' => 'Fernández',
-                'asignaturas' => json_encode(['IN2000C', 'MA1001', 'FI001C']) 
+                'asignaturas' => 'IN2000C,MA1001,FI001C' 
             ],
             [
                 'rut_alumno' => 26262626, 
                 'nombre_alumno' => 'Isabel', 
                 'apellido_alumno' => 'Morales',
-                'asignaturas' => json_encode(['IN2000C', 'IN3002', 'MA1002', 'LE2000']) 
+                'asignaturas' => 'IN2000C,IN3002,MA1002,LE2000' 
             ],
             [
                 'rut_alumno' => 27272727, 
                 'nombre_alumno' => 'Mateo', 
                 'apellido_alumno' => 'Silva',
-                'asignaturas' => json_encode(['IN2000C', 'FI002C', 'QU1001']) 
+                'asignaturas' => 'IN2000C,FI002C,QU1001' 
             ],
-            
+
             // Grupo 3: Alumnos cursando IN2000C sin notas aún
             [
                 'rut_alumno' => 20202020, 
                 'nombre_alumno' => 'Andrea', 
                 'apellido_alumno' => 'López',
-                'asignaturas' => json_encode(['IN2000C', 'FI002C', 'MA1001', 'IN3001']) 
+                'asignaturas' => 'IN2000C,FI002C,MA1001,IN3001' 
             ],
             [
                 'rut_alumno' => 21212121, 
                 'nombre_alumno' => 'Felipe', 
                 'apellido_alumno' => 'Rivas',
-                'asignaturas' => json_encode(['IN2000C', 'IN3002', 'MA1003', 'FI001C']) 
+                'asignaturas' => 'IN2000C,IN3002,MA1003,FI001C' 
             ],
             [
                 'rut_alumno' => 28282828, 
                 'nombre_alumno' => 'Antonia', 
                 'apellido_alumno' => 'Guzmán',
-                'asignaturas' => json_encode(['IN2000C', 'MA1002', 'LE2001']) 
+                'asignaturas' => 'IN2000C,MA1002,LE2001' 
             ],
-            
+
             // Grupo 4: Alumnos que no cursan IN2000C - Primer año
             [
                 'rut_alumno' => 29292929, 
                 'nombre_alumno' => 'Benjamín', 
                 'apellido_alumno' => 'Muñoz',
-                'asignaturas' => json_encode(['MA1001', 'FI001C', 'QU1001', 'LE1001']) 
+                'asignaturas' => 'MA1001,FI001C,QU1001,LE1001' 
             ],
             [
                 'rut_alumno' => 30303030, 
                 'nombre_alumno' => 'Sofía', 
                 'apellido_alumno' => 'Rivera',
-                'asignaturas' => json_encode(['MA1001', 'FI001C', 'LE1001', 'BIO101']) 
+                'asignaturas' => 'MA1001,FI001C,LE1001,BIO101' 
             ],
-            
+
             // Grupo 5: Alumnos que no cursan IN2000C - Segundo año
             [
                 'rut_alumno' => 31313131, 
                 'nombre_alumno' => 'Tomás', 
                 'apellido_alumno' => 'Pérez',
-                'asignaturas' => json_encode(['MA1003', 'FI002C', 'QU1002', 'IN3001']) 
+                'asignaturas' => 'MA1003,FI002C,QU1002,IN3001' 
             ],
             [
                 'rut_alumno' => 32323232, 
                 'nombre_alumno' => 'Valentina', 
                 'apellido_alumno' => 'Castro',
-                'asignaturas' => json_encode(['FI002C', 'MA1002', 'LE2001', 'BIO102']) 
+                'asignaturas' => 'FI002C,MA1002,LE2001,BIO102' 
             ],
-            
+
             // Grupo 6: Alumnos que no cursan IN2000C - Años superiores
             [
                 'rut_alumno' => 33333333, 
                 'nombre_alumno' => 'Joaquín', 
                 'apellido_alumno' => 'Torres',
-                'asignaturas' => json_encode(['IN4001', 'IN4002', 'IN4003']) 
+                'asignaturas' => 'IN4001,IN4002,IN4003' 
             ],
             [
                 'rut_alumno' => 34343434, 
                 'nombre_alumno' => 'Catalina', 
                 'apellido_alumno' => 'Flores',
-                'asignaturas' => json_encode(['IN5001', 'IN5002', 'PR001']) 
+                'asignaturas' => 'IN5001,IN5002,PR001' 
             ],
             [
                 'rut_alumno' => 35353535, 
                 'nombre_alumno' => 'Sebastián', 
                 'apellido_alumno' => 'Rojas',
-                'asignaturas' => json_encode(['PR002', 'IN6001', 'IN6002']) 
+                'asignaturas' => 'PR002,IN6001,IN6002' 
             ],
         ]);
         

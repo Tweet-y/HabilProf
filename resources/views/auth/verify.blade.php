@@ -130,7 +130,7 @@
             <h1>Verificación</h1>
             <h1>Sistema HabilProf</h1>
         </header>
-
+    <!-- 5.6.2 Interfaz de pantalla de verificacion-->
         <main class="form-container">
             <h2>Verificar Cuenta</h2>
 

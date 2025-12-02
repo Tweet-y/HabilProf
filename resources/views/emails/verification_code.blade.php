@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    <!-- Interfaz con colores para el correo de autenticación -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Verificación de Cuenta HabilProf</title>
@@ -46,6 +47,7 @@
         }
     </style>
 </head>
+<!-- 5.6.1.3 Cuerpo del correo del cual se obtien el codigo de autenticación -->
 <body>
     <div class="container">
         <div class="header">

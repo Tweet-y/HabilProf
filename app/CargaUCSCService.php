@@ -58,13 +58,17 @@ class CargaUCSCService
         // 2. Usar la sintaxis de array para acceder a las claves
         $rutAlumno = $datosA['rut_alumno'];
             
-        // 3. Decodificar asignaturas, usando una clave segura y manejo de nulls
-        $asignaturas = json_decode($datosA['asignaturas'] ?? '[]', true) ?: []; 
-            
+        // 3. Convertir string separado por comas en array
+        // Obtenemos el string 
+        $strAsignaturas = $datosA['asignaturas'] ?? '';
+        
+        // Separar por la coma
+        $asignaturasArray = explode(',', $strAsignaturas);
+        
         if (!in_array(self::CODIGO_HABILITACION, $asignaturas)) {
             continue; 
         }
-        
+    
         // 2.2 REGISTRO OBLIGATORIO DE ALUMNO 
         Alumno::updateOrCreate(
             ['rut_alumno' => $rutAlumno], 

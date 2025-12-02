@@ -14,12 +14,13 @@ return new class extends Migration
             
             $table->string('nombre_alumno', 50)->nullable(false);
             $table->string('apellido_alumno', 50)->nullable(false);
-            $table->jsonb('asignaturas')->nullable(false); 
+            $table->string('asignaturas', 47)->nullable(false); 
         });
         DB::statement('ALTER TABLE carga_academica ADD CONSTRAINT rut_valido CHECK (rut_alumno > 999999 AND rut_alumno <= 99999999)');
         DB::statement("ALTER TABLE carga_academica ADD CONSTRAINT nombre_solo_letras CHECK (nombre_alumno ~ '^[a-zA-ZñÑáéíóúÁÉÍÓÚ ]+$')");
         DB::statement("ALTER TABLE carga_academica ADD CONSTRAINT apellido_solo_letras CHECK (apellido_alumno ~ '^[a-zA-ZñÑáéíóúÁÉÍÓÚ ]+$')");
-        DB::statement('ALTER TABLE carga_academica ADD CONSTRAINT maximo_asignaturas CHECK (jsonb_array_length(asignaturas) <= 6)');
+        DB::statement("ALTER TABLE carga_academica ADD CONSTRAINT maximo_asignaturas CHECK (array_length(string_to_array(asignaturas, ','), 1) <= 6)");
+        DB::statement("ALTER TABLE carga_academica ADD CONSTRAINT formato_asignaturas CHECK (asignaturas ~ '^[A-Z0-9]{7}(,[A-Z0-9]{7}){0,5}$')");
     }
 
     public function down(): void

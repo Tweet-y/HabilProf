@@ -1,5 +1,5 @@
 <?php
-
+// R5 VALIDACIONES DE REGISTRO Y LOGIN EN ESPAÑOL.
 return [
     'accepted'             => 'El campo :attribute debe ser aceptado.',
     'active_url'           => 'El campo :attribute no es una URL válida.',
