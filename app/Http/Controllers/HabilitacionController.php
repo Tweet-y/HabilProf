@@ -220,7 +220,7 @@ class HabilitacionController extends Controller
             ->with(['proyecto', 'prTut'])
             ->firstOrFail();
 
-        // Limitar semestres a anterior, actual y siguiente para edición
+        // Limitar semestres a anterior, actual y siguiente para edición (R3.5.1.1.2.1)
         $semestres = $this->calculaSemestresActualizacion($habilitacion->semestre_inicio);
 
         return view('actualizar_eliminar', compact('alumnos', 'profesores_dinf', 'profesores_ucsc', 'habilitacion', 'semestres'));
@@ -240,7 +240,7 @@ class HabilitacionController extends Controller
         $semestre = $validatedData['semestre_inicio'];
         $profesores = [];
 
-        // Determinar profesores según tipo
+        // Determinar profesores según tipo de habilitación
         if ($validatedData['tipo_habilitacion'] === 'PrTut') {
             $profesores = [$validatedData['seleccion_tutor_rut']];
         } else {

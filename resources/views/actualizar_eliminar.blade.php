@@ -116,12 +116,15 @@
                 @csrf
                 @method('PUT')
                 
+                <!-- Sección de datos principales en el formulario de edición -->
                 <fieldset>
                     <legend>Datos Principales (Editando)</legend>
                     <div class="form-grid">
                         <div class="form-group">
+                            <!-- Selector para cambiar el tipo de habilitación durante la edición (R3.5) -->
                             <label for="tipo_habilitacion" class="required">Tipo de Habilitación</label>
                             <select id="tipo_habilitacion" name="tipo_habilitacion" required>
+                                <!-- Opciones: PrIng, PrInv, PrTut. Selecciona basado en old() (errores) o tipo actual de la habilitación (desde proyecto o prTut) -->
                                 <option value="PrIng" {{ (old('tipo_habilitacion', $habilitacion->proyecto ? $habilitacion->proyecto->tipo_proyecto : ($habilitacion->prTut ? 'PrTut' : '')) == 'PrIng') ? 'selected' : '' }}>PrIng (Proyecto de Ingeniería)</option>
                                 <option value="PrInv" {{ (old('tipo_habilitacion', $habilitacion->proyecto ? $habilitacion->proyecto->tipo_proyecto : ($habilitacion->prTut ? 'PrTut' : '')) == 'PrInv') ? 'selected' : '' }}>PrInv (Proyecto de Innovación)</option>
                                 <option value="PrTut" {{ (old('tipo_habilitacion', $habilitacion->proyecto ? $habilitacion->proyecto->tipo_proyecto : ($habilitacion->prTut ? 'PrTut' : '')) == 'PrTut') ? 'selected' : '' }}>PrTut (Práctica Tutelada)</option>
@@ -132,6 +135,7 @@
                             <label for="semestre_inicio" class="required">Semestre de Inicio</label>
                             <select id="semestre_inicio" name="semestre_inicio" required>
                                 <option value="" disabled>Seleccione semestre...</option>
+                                <!-- Selector para cambiar el semestre durante la edición (R3.5.1.1.2) -->
                                 @foreach($semestres as $semestre)
                                     <option value="{{ $semestre }}" {{ (old('semestre_inicio', $habilitacion->semestre_inicio) == $semestre) ? 'selected' : '' }}>{{ $semestre }}</option>
                                 @endforeach
@@ -218,6 +222,7 @@
                     </fieldset>
                 </div>
 
+                <!-- Datos PrTut (R3.5.1.1) -->
                 <div id="seccion-prtut" class="seccion-condicional" style="display: none;">
                     <fieldset>
                         <legend>Datos Práctica Tutelada (PrTut)</legend>
@@ -246,6 +251,7 @@
                                     <div class="error-text">{{ $errors->first('nombre_supervisor') }}</div>
                                 @endif
                             </div>
+                            <!-- Mostrar Profesores DINF para Profesor Tutor (R3.5.1.1.1) -->
                             <div class="form-group">
                                 <label for="seleccion_tutor_rut" class="required">Profesor Tutor (DINF)</label>
                                 <select id="seleccion_tutor_rut" name="seleccion_tutor_rut">
@@ -397,7 +403,7 @@
             window.dispatchEvent(new CustomEvent('close-modal', { detail: modalName }));
         }
 
-        // Función para mostrar/ocultar secciones condicionales según tipo de habilitación
+        // Función para mostrar/ocultar secciones condicionales según tipo de habilitación (R3.5.1)
         function toggleSections() {
             // Obtener elementos del DOM
             const tipoHabilitacion = document.getElementById('tipo_habilitacion');
@@ -422,12 +428,12 @@
 
             // Mostrar sección correspondiente y hacer campos requeridos
             if (valor === 'PrTut') {
-                // Mostrar sección de práctica tutelada
+                // Mostrar sección de práctica tutelada (R3.5.1.1)
                 seccionPractica.style.display = 'block';
                 // Hacer requeridos todos los campos de PrTut
                 document.querySelectorAll('#seccion-prtut input[name], #seccion-prtut select[name]').forEach(el => el.required = true);
             } else if (valor === 'PrIng' || valor === 'PrInv') {
-                // Mostrar sección de proyecto
+                // Mostrar sección de proyecto (R3.5.1.2)
                 seccionProyecto.style.display = 'block';
                 // Hacer requeridos los campos obligatorios de proyecto (excepto co-guía)
                 document.querySelectorAll('#seccion-pring-prinv select[name]').forEach(el => {
